@@ -1,0 +1,25 @@
+user_rules:
+   tableName: user_rules
+   tableType:
+     engine: innoDB
+     charset: utf8
+   actAs: [Timestampable]
+   columns:
+     id:
+       type: integer
+       notnull: true
+       unsigned: true
+       primary: true
+       sequence: user_rules_id
+     title:
+       type: string(125)
+     rule:
+       type: text
+     usergroups:
+       type: text
+     status:
+       type: char(10)
+       index: true
+     datesend:
+       type: datetime
+       index: true

@@ -1,0 +1,28 @@
+article_comm:
+   tableName: article_comm
+   tableType:
+     engine: MyISAM
+     charset: utf8
+   actAs: [Timestampable]
+   columns:
+     id:
+       type: integer
+       unsigned: true
+       notnull: true
+       primary: true
+       sequence: article_comm_id
+     ident:
+       type: string(20)
+     comm_id:
+       type: integer
+     name:
+       type: string(60)
+     email:
+       type: string(60)
+     comment:
+       type: text
+       notnull: true
+     adm_answer:
+       type: text
+     time:
+       type: integer

@@ -1,0 +1,35 @@
+log_action:
+   tableName: log_action
+   tableType:
+     engine: innoDB
+     charset: utf8
+   actAs: [Timestampable]
+   columns:
+     id:
+       type: integer
+       notnull: true
+       primary: true
+       unsigned: true
+       sequence: log_action_id
+     type:
+       type: string(20)
+     action:
+       type: string(250)
+     datestart:
+       type: datetime
+     period:
+       type: integer
+       unsigned: true
+     id_author:
+       type: integer
+       unsigned: true
+     id_order:
+       unsigned: true
+       type: integer
+     id_param:
+       unsigned: true
+       type: integer
+     active:
+       type: enum
+       values: ['Y','N']
+       default: 'N'

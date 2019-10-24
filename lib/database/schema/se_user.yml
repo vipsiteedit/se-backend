@@ -1,0 +1,32 @@
+seUser:
+   tableName: se_user
+   tableType:
+     engine: innoDB
+     charset: utf8
+   actAs: [Timestampable]
+   columns:
+     id:
+       type: integer
+       unsigned: true
+       primary: true
+       sequence: author_id
+     username: 
+       type: string(125)
+       unique: true
+     password:
+       type: string(40)
+       index: true
+     tmppassw:
+       type: string(40)
+       index: true
+     is_active: 
+       type: enum
+       values: ['Y','N']
+       notnull: true
+       default: 'Y'
+     is_super_admin:
+       type: enum
+       values: ['Y','N']
+       notnull: true
+       default: 'N'
+     last_login: datetime

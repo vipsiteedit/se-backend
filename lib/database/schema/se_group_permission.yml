@@ -1,0 +1,26 @@
+seGroupPermission:
+   tableName: se_group_permission
+   tableType:
+     engine: innoDB
+     charset: utf8
+   actAs: [Timestampable]
+   columns:
+     group_id:
+       type: integer
+       unsigned: true
+       index: true
+     permission_id:
+       type: integer
+       unsigned: true
+       index: true
+   relations:
+     se_group:
+       local: group_id
+       foreign: id
+       onDelete: CASCADE
+       onUpdate: CASCADE
+     se_permission:
+       local: permission_id
+       foreign: id
+       onDelete: CASCADE
+       onUpdate: CASCADE

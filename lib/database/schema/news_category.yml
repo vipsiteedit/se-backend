@@ -1,0 +1,42 @@
+news_category:
+   tableName: news_category
+   tableType:
+     engine: innoDB
+     charset: utf8
+   actAs: [Timestampable]
+   columns:
+     id:
+       type: integer
+       unsigned: true
+       notnull: true
+       primary: true
+       sequence: news_category_id
+     parent_id:
+       type: integer
+       unsigned: true
+       index: true
+     ident:
+       type: string(40)
+       index: true
+     title:
+       type: string(125)
+     lang:
+       type: char(3)
+       index: true
+       default: rus
+     sort:
+       type: integer
+       index: true
+       default: 1
+   relations:
+     news_category:
+       local: parent_id
+       foreign: id
+       onDelete: CASCADE
+       onUpdate: CASCADE
+   values:
+     1:
+       id: 1
+       ident: news
+       title: 'Новости'
+       lang: 'rus'

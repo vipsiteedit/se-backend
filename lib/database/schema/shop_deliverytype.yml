@@ -1,0 +1,43 @@
+shop_deliverytype:
+   tableName: shop_deliverytype
+   tableType:
+     engine: innoDB
+     charset: utf8
+   actAs: [Timestampable]
+   columns:
+     id:
+       type: integer
+       notnull: true
+       primary: true
+       unsigned: true
+       sequence: shop_deliverytype_id
+     lang:
+       type: char(3)
+       notnull: true
+       default: rus
+     name:
+       type: string(125)
+       notnull: true
+     time:
+       type: integer
+       notnull: true
+       unsigned: true
+     price:
+       type: float(10,2)
+       notnull: true
+       default: 0.00
+     curr:
+       type: char(3)
+       notnull: true
+       default: RUR
+     note:
+       type: text
+     volume:
+       type: integer
+       unsigned: true
+     weight:
+       type: integer
+       unsigned: true
+     forone:
+       type: enum('Y','N')
+       default: 'N'

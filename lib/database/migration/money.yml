@@ -1,0 +1,8 @@
+#Миграция таблиц
+money:
+   tableName1: money
+   charset1: utf8
+   tableName2: money_tmp
+   charset2: cp1251
+   columns:
+     money_title_id: kod

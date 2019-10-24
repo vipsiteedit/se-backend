@@ -1,0 +1,97 @@
+<?php
+require_once dirname(__FILE__)."/basePayment.class.php"; 
+
+/**
+ * @author Sergey Shchelkonogov
+ * @copyright 2013
+ * 
+ * Плагин платежных систем
+ */
+ 
+class payment_yandex extends basePayment{
+  private $client_id = '';
+  private function postData($url, $postdata)
+  {
+		$curl = curl_init($url);
+		curl_setopt ($curl, CURLOPT_HEADER, 0);
+		curl_setopt ($curl, CURLOPT_POST, 1);
+		curl_setopt ($curl, CURLOPT_POSTFIELDS, $postdata);
+		curl_setopt ($curl, CURLOPT_SSL_VERIFYPEER, 0);
+		curl_setopt ($curl, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt ($curl, CURLOPT_SSL_VERIFYHOST, 0);
+		return curl_exec ($curl);  
+  }
+  
+  public function setVars()
+  {
+		return array('ym'=>'Номер счета Yandex', 'ym_secret'=>'Секретный ключ');
+  }   
+
+  public function startform() 
+  {
+		$macros = new plugin_macros(0, $this->order_id, $this->payment_id);
+		return $macros->execute($this->startform);
+  }
+
+  public function blank($pagename)
+  {
+        $sitename = $_SERVER['HTTP_HOST'];
+	$blank = '[SETCURRENCY:RUR] <h3 class="contentTitle">Оплата заказа: - Яндекс деньги</h3>
+<p>Будет произведен платеж на счет: [PAYMENT.YM] в сумме: [ORDER_SUMMA]<br>
+</p><br>
+   <form method="POST" action="https://money.yandex.ru/quickpay/confirm.xml">
+   <input type="hidden" name="receiver" value="[PAYMENT.YM]">
+   <input type="hidden" name="short-dest" value="[MAIN.SHORNAME]">
+   <input type="hidden" name="writable-targets" value="false">
+   <input type="hidden" name="writable-sum" value="true">
+   <input type="hidden" name="comment-needed" value="false">
+   <input type="hidden" name="label" value="[ORDER.ID]">
+   <input type="hidden" name="quickpay-form" value="shop">
+   <input type="hidden" name="targets" value="Заказ [ORDER.ID]">
+   <input type="hidden" name="sum" value="[ORDER.SUMMA]" data-type="number">
+   <input type="hidden" name="comment" value="">
+   <input type="hidden" name="fio" value="[CLIENTNAME]"> 
+   <input type="hidden" name="mail" value="[USER.USEREMAIL]" >
+   <input type="hidden" name="phone" value="0">
+   <input type="hidden" name="address" value="0">
+   <input type="submit" class="buttonSend" name="submit-button" value="Перейти к оплате">
+</form>';
+//   <input type="hidden" name="formcomment" value="Заказ: [ORDER.ID]">
+
+//$blank='<iframe allowtransparency="true" src="https://money.yandex.ru/embed/small.xml?uid=[PAYMENT.YM]&button-text=01&button-size=m&button-color=orange&targets=[ORDER.ID]&default-sum=[ORDER.SUMMA]" frameborder="0" height="42" scrolling="no" width="auto"></iframe>';
+		$macros = new plugin_macros(0, $this->order_id, $this->payment_id);
+		$this->newPaymentLog();
+	    return $macros->execute($this->getPathPayment($blank, $pagename));
+  }
+  
+  public function result() 
+  {
+   if (!$this->payment_id) return;
+		$this->order_id = intval($_POST['label']);
+		$res = $this->getPaymentLog(); // Получение языка
+
+		$macros = new plugin_macros(0, $this->order_id, $this->payment_id);
+		$str = $macros->execute('[POST.notification_type]&[POST.operation_id]&[POST.amount]&[POST.currency]&[POST.datetime]&[POST.sender]&[POST.codepro]&[PAYMENT.YM_SECRET]&[POST.label]');
+		
+		if (sha1($str)==$_POST['sha1_hash']) {
+			// Активируем заказ
+			$this->activate($this->order_id, $_POST['amount'], 'RUR', $_POST['operation_id'], $macros->execute('[PAYMENT.YM]'), $this->name_payment);
+			exit('OK');
+		}
+		exit('OK');
+  }
+
+  public function success()
+  {
+		$macros = new plugin_macros(0, $this->order_id, $this->payment_id);
+		$this->success = $macros->execute($this->success);  
+		return $this->success;
+		
+  }
+
+  public function fail() 
+  {
+		$macros = new plugin_macros(0, $this->order_id, $this->payment_id);
+		return $macros->execute($this->fail);
+  }
+}

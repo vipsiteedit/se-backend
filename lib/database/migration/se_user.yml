@@ -1,0 +1,12 @@
+#Миграция таблиц
+seUser:
+   tableName1: se_user
+   charset1: utf8
+   tableName2: author
+   charset2: cp1251
+   columns:
+     username: a_login
+     password: a_password
+     tmppassw: a_tmppassw
+     is_active: a_enable
+     last_login: a_log_date

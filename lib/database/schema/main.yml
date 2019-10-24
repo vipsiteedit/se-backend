@@ -1,0 +1,48 @@
+main:
+   tableName: main
+   tableType:
+     engine: innoDB
+     charset: utf8
+   actAs: [Timestampable]
+   columns:
+     id:
+       type: integer
+       notnull: true
+       primary: true
+       unsigned: true
+       sequence: main_id
+     lang:
+       type: char(3)
+       unique: true
+       default: rus
+     company:
+       type: string(250)
+     director:
+       type: string(125)
+     posthead:
+       type: string(125)
+     bookkeeper:
+       type: string(125)
+     addr_f:
+       type: text
+     addr_u:
+       type: text
+     phone:
+       type: string(125)
+     fax:
+       type: string(50)
+     esupport:
+       type: string(250)
+     esales:
+       type: string(250)
+     nds:
+       type: float
+     basecurr:
+       type: char(3)
+       default: 'RUR'
+     domain: string(255)
+   values:
+     1:
+       id: 1
+       lang: rus
+       basecurr: RUR

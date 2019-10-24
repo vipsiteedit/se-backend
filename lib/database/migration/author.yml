@@ -1,0 +1,24 @@
+#Миграция таблиц
+sePerson:
+   tableName1: person
+   charset1: utf8
+   tableName2: author_tmp
+   charset2: cp1251
+   columns:
+     user_id: id
+     last_name: a_last_name
+     first_name: a_first_name
+     sec_name: a_sec_name
+     sex: a_sex
+     birth_date: a_birth_date
+     nick: a_nick
+     email: a_email
+     country_id: country
+     state_id: state
+     town_id: city
+     overcity: string(255)
+     addr: string(255)
+     phone: string(125)
+     icq: string(20)
+     discount: a_discount
+     enable: a_enable

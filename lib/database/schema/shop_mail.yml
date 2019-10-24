@@ -1,0 +1,217 @@
+shop_mail:
+   tableName: shop_mail
+   tableType:
+     engine: innoDB
+     charset: utf8
+   actAs: [Timestampable]
+   columns:
+     id:
+       type: integer
+       notnull: true
+       primary: true
+       unsigned: true
+       sequence: shop_mail_id
+     shop_mail_group_id:
+       type: integer
+       index: true
+       default: NULL
+     lang:
+       type: char(3)
+       index: true
+       default: rus
+     title:
+       type: string(125)
+     letter:
+       type: text
+     subject:
+       type: string(250)
+     mailtype:
+       type: char(40)
+       default: 'reguser'
+     itempost:
+       type: integer
+       default: 0
+   values:
+     1:
+       id: 1
+       lang: rus
+       title: Письмо клиенту о регистрации
+       letter: |
+         Здравствуйте, [USERNAME]!
+         Вы зарегистрировались на сайте [THISNAMESITE]
+         
+         Ваши коды авторизации:
+         
+         Ваш логин : [SHOP_USERLOGIN]
+         Ваш пароль: [SHOP_USERPASSW]
+         
+         После авторизации, Вы имеете доступ к странице &quot;ВАШИ ЗАКАЗЫ&quot; http://[THISNAMESITE]/clientaccount/,
+         на которой сможете отслеживать состояние заказа, изменять личные данные, а также оплатить или отменить заказ.
+         
+         С уважением,
+         Компания [ADMIN_COMPANY]
+        
+         E-Mail:
+         [ADMIN_MAIL_SALES] - отдел продаж
+         [ADMIN_MAIL_SUPPORT] - техподдержка 
+
+       subject: Registration on SITE
+       mailtype: 'reguser'
+       itempost: 0
+     2:
+       id: 2
+       lang: rus
+       title: Письмо Администратору о регистрации клиента
+       letter: |
+         Здравствуйте, Администратор!
+         
+         У Вас на сайте [THISNAMESITE] зарегистрировался клиент:  [USERNAME]
+         
+         Его коды авторизации:
+         
+         Логин : [SHOP_USERLOGIN]
+         Пароль: [SHOP_USERPASSW]
+ 
+       subject: Registration new User
+       mailtype: regadm
+       itempost: 0
+     3:
+       id: 3
+       lang: rus
+       title: Письмо клиенту о заказе
+       letter: |
+         Здравствуйте,  [NAMECLIENT]!
+         
+         Вы оформили заказ №[SHOP_ORDER_NUM] на сайте [THISNAMESITE]
+         ­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­--------------------
+         [SHOP_ORDER_VALUE_LIST]
+         ­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­-------------------­­­­­­­­­­­­­­­­­­­­­­­-
+         Сумма заказа  :[SHOP_ORDER_SUMM]
+         Сумма доставки:[SHOP_ORDER_DEVILERY] 
+         Итого: [SHOP_ORDER_TOTAL]
+         
+         Посмотреть статус заказа и оплатить можно на странице &quot;Мои заказы&quot; [THISNAMESITE]/clientaccount
+          
+         Доставка осуществляется выбранным Вами способом после оплаты заказа.
+         
+         Любые пожелания и вопросы, касающиеся прибретения продукта и работы с ним, присылайте в наш отдел продаж по адресу sales@siteedit.ru 
+         
+         С уважением,
+         Компания [ADMIN_COMPANY]
+         
+         E-Mail:
+         [ADMIN_MAIL_SALES] - отдел продаж
+         [ADMIN_MAIL_SUPPORT] - техподдержка 
+
+       subject: Order [SHOP_ORDER_NUM]
+       mailtype: 'orderuser'
+       itempost: 0
+     4:
+       id: 9
+       lang: rus
+       title: Письмо клиенту об изменении суммы заказа
+       letter: |
+         Здравствуйте,  [NAMECLIENT]!
+         
+         Сумма вашего заказа №[SHOP_ORDER_NUM] на сайте [THISNAMESITE] изменена.
+         Сумма доставки для вашего региона составит [SHOP_ORDER_DEVILERY].
+         ­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­
+         <table width=600 border=0><td>[SHOP_ORDER_VALUE_LIST]</td></table>
+         ­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­
+         Сумма заказа : [SHOP_ORDER_SUMM]
+         Сумма скидки: [SHOP_ORDER_DISCOUNT] 
+         Сумма доставки: [SHOP_ORDER_DEVILERY] 
+         Итого: [SHOP_ORDER_TOTAL]
+         
+         Посмотреть статус заказа и оплатить можно на странице &quot;ВАШ ЗАКАЗ&quot;, по адресу http://edgestile.ru/clientaccount
+         
+         Любые пожелания и вопросы, касающиеся приобретения продукта и работы с ним, присылайте в наш отдел продаж по адресу sales@siteedit.ru
+         
+         С уважением,
+         Компания [ADMIN_COMPANY]
+         
+         E-Mail:
+         [ADMIN_MAIL_SALES] - отдел продаж
+         [ADMIN_MAIL_SUPPORT] - техподдержка 
+       subject: Сумма вашего заказа №[SHOP_ORDER_NUM] изменена.
+       mailtype: 'orduserch'
+       itempost: 0
+     5:
+       id: 4
+       lang: rus
+       title: Письмо Администратору о заказе
+       letter: |
+         Здравствуйте, Администратор!
+         
+         Ваш клиент:[NAMECLIENT] оформил заказ  №[SHOP_ORDER_NUM] на сайте [THISNAMESITE]
+         -----------------------------------------------------------------------
+         [SHOP_ORDER_VALUE_LIST]
+         -----------------------------------------------------------------------
+         Сумма заказа  :[SHOP_ORDER_SUMM]
+         Сумма доставки:[SHOP_ORDER_DEVILERY] 
+         Итого: [SHOP_ORDER_TOTAL]
+       subject: Order [SHOP_ORDER_NUM]
+       mailtype: orderadm
+       itempost: 0
+     6:
+       id: 6
+       lang: ukr
+       title: Письмо клиенту о регистрации
+       letter: |
+         Здравствуйте, [USERNAME]!
+         
+         Вы зарегистрировались на сайте [THISNAMESITE]
+         
+         Ваши коды авторизации:
+         
+         Ваш логин : [SHOP_USERLOGIN]
+         Ваш пароль: [SHOP_USERPASSW]
+         
+         После авторизации, Вы имеете доступ к странице &quot;Мои заказы&quot;
+         [THISNAMESITE]/clientaccount/ ,
+         на которой сможете отслеживать состояние заказа, изменять личные данные, пополнить лицевой счет, получить коды для активизации приобретенного продукта, а также оплатить или отменить заказ.
+         
+         С уважением,
+         Компания [ADMIN_COMPANY]
+         
+         E-Mail:
+         [ADMIN_MAIL_SALES] - отдел продаж
+         [ADMIN_MAIL_SUPPORT] - техподдержка 
+
+       subject: 'Registration'
+       mailtype: 'reguser'
+       itempost: 0
+     7:
+       id: 7
+       lang: rus
+       title: Письмо клиенту об оплате
+       letter: |
+         Уважаемый(ая) [CLIENTNAME]
+         
+         Ваш заказ №[ORDER.ID]  оплачен через [PAYMENT.NAME] в сумме [ORDER_SUMMA].
+         Спасибо за доверие
+         
+         С уважением,
+         Компания [ADMIN_COMPANY]
+         
+         E-Mail:
+         [ADMIN_MAIL_SALES] - отдел продаж
+         [ADMIN_MAIL_SUPPORT] - техподдержка 
+       subject: Your order [ORDER.ID] is paid!
+       mailtype: 'payuser'
+       itempost: 0
+     8:
+       id: 8
+       lang: rus
+       title: Письмо Администратору об оплате
+       letter: |
+         Уважаемый Администратор!
+         
+         Ваш клиент [CLIENTNAME] проивел плату заказа [ORDER.ID] 
+         с помошью [PAYMENT.NAME] в сумме [ORDER_SUMMA]
+         Дата транзакции: [ORDER.date_payee]
+         
+         Прошу проконтролировать данную операцию.
+       subject: Automatic payment of the order [ORDER.ID]
+       mailtype: 'payadm'
+       itempost: 0

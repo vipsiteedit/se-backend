@@ -1,0 +1,29 @@
+shop_admin:
+   tableName: shop_admin
+   tableType:
+     engine: innoDB
+     charset: utf8
+   actAs: [Timestampable]
+   columns:
+     id:
+       type: integer
+       unsigned: true
+       notnull: true
+       primary: true
+       sequence: shop_admin_id
+     id_author:
+       type: integer
+       unsigned: true
+       index: true
+     grant:
+       type: enum
+       values: ['Y','N']
+     update:
+       type: enum
+       values: ['Y','N']
+   relations:
+     se_user:
+       local: id_author
+       foreign: id
+       onDelete: CASCADE
+       onUpdate: CASCADE

@@ -1,0 +1,8 @@
+#Миграция таблиц
+shop_price_translate:
+   tableName1: shop_price_translate
+   charset1: utf8
+   tableName2: shop_price
+   charset2: cp1251
+   columns:
+     price_id: id

@@ -1,0 +1,22 @@
+main_log:
+   tableName: main_log
+   tableType:
+     engine: innoDB
+     charset: utf8
+   actAs: [Timestampable]
+   columns:
+     id:
+       type: integer
+       notnull: true
+       unsigned: true
+       primary: true
+       sequence: main_log_id
+     date:
+       type: datetime
+     client_name: 
+       type: string(60)
+       index: true
+     manager_name:
+       type: string(60)
+       index: true
+     comment: string

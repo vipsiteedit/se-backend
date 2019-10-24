@@ -1,0 +1,27 @@
+zipcode:
+   tableName: zipcode
+   tableType:
+     engine: innoDB
+     charset: utf8
+   actAs: [Timestampable]
+   columns:
+     id:
+       type: integer
+       notnull: true
+       unsigned: true
+       primary: true
+       sequence: zipcode_id
+     id_town:
+       type: integer
+       notnull: true
+       unsigned: true
+       index: true
+     name:
+       type: string(40)
+       notnull: true
+   relations:
+     town:
+       local: id_town
+       foreign: id
+       onDelete: CASCADE
+       onUpdate: CASCADE

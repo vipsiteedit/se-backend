@@ -1,0 +1,1417 @@
+shop_payment:
+   tableName: shop_payment
+   tableType:
+     engine: innoDB
+     charset: utf8
+   actAs: [Timestampable]
+   columns:
+     id:
+       type: integer
+       notnull: true
+       primary: true
+       unsigned: true
+       sequence: shop_payment_id
+     lang:
+       type: char(3)
+       index: true
+       default: 'rus'
+     logoimg:
+       type: string(40)
+     name_payment:
+       type: string(255)
+     startform:
+       type: text
+     type:
+       type: enum
+       values: ['p','e']
+       default: 'e'
+     blank:
+       type: text
+     result:
+       type: text
+     success:
+       type: text
+     fail:
+       type: text
+     sort:
+       type: integer
+       index: true
+       default: 1
+     active:
+       type: enum
+       values: ['N','Y']
+       default: 'N'
+       index: true
+     authorize:
+       type: enum
+       values: ['N','Y']
+       default: 'N'
+     hosts: text
+     filters: text
+   values:
+     1:
+       id: 1
+       lang: rus
+       logoimg: payment_bank.jpg
+       name_payment: Безналичный расчет
+       startform: |
+         1. Для оплаты по безналичному расчету внесите&nbsp; <A href="/rekvcompany"  target=_blank>реквизиты Вашего предприятия</A>, 
+         и нажмите на кнопку "Выбрать оплату"&nbsp; <BR>
+         2. Оплатите счет;<BR>
+         3. Для оперативности получения продукта, отправьте сканированную (разрешением не менее 150dpi) копию заверенной квитанции об оплате на наш почтовый адрес<BR>
+         4. Ожидайте письмо с подтверждением;<BR>
+         5. На странице "Ваш заказ" Вы можете посмотреть статус заказа и доставки;<BR>
+       type: 'p'
+       blank: |
+         [SETCURRENCY:RUR]
+         </p>
+         <P align=center>
+         <TABLE width="614"><TBODY>
+         <TR><TD align=middle>
+         <TABLE cellSpacing="0" cellPadding="0" width="614" border="0">
+         <TBODY>
+         <TR>
+          <TD align=left><BR><STRONG><U>[MAIN.COMPANY]<BR></U>Адрес: 
+            [MAIN.ADDR_U] Тел.: [MAIN.PHONE]</STRONG></TD>
+          <TD align=right></TD></TR></TBODY></TABLE>
+         <br><br>
+         <P align=center>
+         <TABLE style="WIDTH: 614px; BORDER-COLLAPSE: collapse" cellSpacing="0" cellPadding="0" width="614" border="0" x:str>
+         <TBODY>
+         <TR style="HEIGHT: 12.75pt; height="17">
+          <TD class="xl35" style="BORDER-RIGHT: #d4d0c8; BORDER-TOP: windowtext 0.5pt solid; BORDER-LEFT: windowtext 0.5pt solid; WIDTH: 145pt; BORDER-BOTTOM: windowtext 0.5pt solid; HEIGHT: 12.75pt; BACKGROUND-COLOR: transparent"            width="192" colSpan=2 height="17"><FONT face=Arial size=2>&nbsp;ИНН 
+            [PAYMENT.INN]</FONT></TD>
+          <TD class="xl35"            style="BORDER-RIGHT: #d4d0c8; BORDER-TOP: windowtext 0.5pt solid; BORDER-LEFT: windowtext 0.5pt solid; WIDTH: 123pt; BORDER-BOTTOM: windowtext 0.5pt solid; BACKGROUND-COLOR: transparent"            width="163" colSpan=2><FONT face=Arial size=2>&nbsp;КПП 
+            [PAYMENT.KPP]</FONT></TD>
+          <TD style="BORDER-RIGHT: windowtext 0.5pt solid; BORDER-TOP: windowtext 0.5pt solid; BORDER-LEFT: windowtext 0.5pt solid; WIDTH: 38pt; BORDER-BOTTOM: #d4d0c8; BACKGROUND-COLOR: transparent"            width="51"><FONT face=Arial size=2>&nbsp;</FONT></TD>
+          <TD style="BORDER-RIGHT: #d4d0c8; BORDER-TOP: windowtext 0.5pt solid; BORDER-LEFT: #d4d0c8; WIDTH: 78pt; BORDER-BOTTOM: #d4d0c8; BACKGROUND-COLOR: transparent"            width="104"><FONT face=Arial size=2>&nbsp;</FONT></TD>
+          <TD style="BORDER-RIGHT: windowtext 0.5pt solid; BORDER-TOP: windowtext 0.5pt solid; BORDER-LEFT: #d4d0c8; WIDTH: 78pt; BORDER-BOTTOM: #d4d0c8; BACKGROUND-COLOR: transparent"            width="104"><FONT face=Arial size=2>&nbsp;</FONT></TD></TR>
+         <TR style="HEIGHT: 12.75pt" height="17">
+          <TD style="BORDER-RIGHT: #d4d0c8; BORDER-TOP: windowtext 0.5pt solid; BORDER-LEFT: windowtext 0.5pt solid; BORDER-BOTTOM: #d4d0c8; HEIGHT: 12.75pt; BACKGROUND-COLOR: transparent; mso-ignore: colspan" colSpan=2 height="17"><FONT face=Arial size=2>&nbsp;Получатель</FONT></TD>
+          <TD style="BORDER-RIGHT: #d4d0c8; BORDER-TOP: windowtext; BORDER-LEFT: #d4d0c8; BORDER-BOTTOM: #d4d0c8; BACKGROUND-COLOR: transparent"><FONT              face=Arial size=2>&nbsp;</FONT></TD>
+          <TD style="BORDER-RIGHT: #d4d0c8; BORDER-TOP: windowtext; BORDER-LEFT: #d4d0c8; BORDER-BOTTOM: #d4d0c8; BACKGROUND-COLOR: transparent"><FONT              face=Arial size=2>&nbsp;</FONT></TD>
+          <TD style="BORDER-RIGHT: windowtext 0.5pt solid; BORDER-TOP: #d4d0c8; BORDER-LEFT: windowtext 0.5pt solid; BORDER-BOTTOM: #d4d0c8; BACKGROUND-COLOR: transparent"><FONT              face=Arial size=2>&nbsp;</FONT></TD>
+          <TD style="BORDER-RIGHT: #d4d0c8; BORDER-TOP: #d4d0c8; BORDER-LEFT: windowtext; BORDER-BOTTOM: #d4d0c8; BACKGROUND-COLOR: transparent"><FONT              face=Arial size=2>&nbsp;</FONT></TD>
+          <TD style="BORDER-RIGHT: windowtext 0.5pt solid; BORDER-TOP: #d4d0c8; BORDER-LEFT: #d4d0c8; BORDER-BOTTOM: #d4d0c8; BACKGROUND-COLOR: transparent"><FONT              face=Arial size=2>&nbsp;</FONT></TD></TR>
+         <TR style="HEIGHT: 12.75pt" height="17">
+          <TD style="BORDER-RIGHT: #d4d0c8; BORDER-TOP: #d4d0c8; BORDER-LEFT: windowtext 0.5pt solid; WIDTH: 268pt; BORDER-BOTTOM: windowtext 0.5pt solid; HEIGHT: 12.75pt; BACKGROUND-COLOR: transparent"            width="355" colSpan=4 height="17"><FONT face=Arial size=2>&nbsp;[MAIN.COMPANY]</FONT></TD>
+          <TD style="BORDER-RIGHT: windowtext 0.5pt solid; BORDER-TOP: #d4d0c8; BORDER-LEFT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BACKGROUND-COLOR: transparent"><FONT face=Arial size=2>&nbsp;Сч. №</FONT></TD>
+          <TD style="BORDER-RIGHT: black 0.5pt solid; BORDER-TOP: #d4d0c8; BORDER-LEFT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BACKGROUND-COLOR: transparent; mso-ignore: colspan" colSpan=2><FONT face=Arial size=2>&nbsp;[PAYMENT.RS]</FONT></TD></TR>
+         <TR style="HEIGHT: 12.75pt; mso-height-source: userset" height="17">
+          <TD style="BORDER-RIGHT: #d4d0c8; BORDER-TOP: #d4d0c8; BORDER-LEFT: windowtext 0.5pt solid; BORDER-BOTTOM: #d4d0c8; HEIGHT: 12.75pt; BACKGROUND-COLOR: transparent" height="17"><FONT face=Arial size=2>&nbsp;Банк получателя</FONT></TD>
+          <TD style="BORDER-RIGHT: #d4d0c8; BORDER-TOP: windowtext; BORDER-LEFT: #d4d0c8; BORDER-BOTTOM: #d4d0c8; BACKGROUND-COLOR: transparent"><FONT              face=Arial size=2>&nbsp;</FONT></TD>
+          <TD style="BORDER-RIGHT: #d4d0c8; BORDER-TOP: #d4d0c8; BORDER-LEFT: #d4d0c8; BORDER-BOTTOM: #d4d0c8; BACKGROUND-COLOR: transparent"><FONT              face=Arial size=2></FONT></TD>
+          <TD style="BORDER-RIGHT: #d4d0c8; BORDER-TOP: #d4d0c8; BORDER-LEFT: #d4d0c8; BORDER-BOTTOM: #d4d0c8; BACKGROUND-COLOR: transparent"><FONT              face=Arial size=2></FONT></TD>
+          <TD style="BORDER-RIGHT: windowtext 0.5pt solid; BORDER-TOP: windowtext; BORDER-LEFT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BACKGROUND-COLOR: transparent"><FONT face=Arial size=2>&nbsp;БИК</FONT></TD>
+          <TD style="BORDER-RIGHT: #d4d0c8; BORDER-TOP: windowtext; BORDER-LEFT: windowtext; BORDER-BOTTOM: #d4d0c8; BACKGROUND-COLOR: transparent"><FONT              face=Arial size=2>&nbsp;[PAYMENT.BIK]</FONT></TD>
+          <TD style="BORDER-RIGHT: windowtext 0.5pt solid; BORDER-TOP: windowtext; BORDER-LEFT: #d4d0c8; BORDER-BOTTOM: #d4d0c8; BACKGROUND-COLOR: transparent"><FONT face=Arial size=2>&nbsp;</FONT></TD></TR>
+         <TR style="HEIGHT: 12.75pt; mso-height-source: userset" height="17">
+          <TD style="BORDER-RIGHT: #d4d0c8; BORDER-TOP: #d4d0c8; BORDER-LEFT: windowtext 0.5pt solid; WIDTH: 268pt; BORDER-BOTTOM: windowtext 0.5pt solid; HEIGHT: 12.75pt; BACKGROUND-COLOR: transparent" width="355" colSpan=4 height="17"><FONT face=Arial size=2>&nbsp;[PAYMENT.BANK]</FONT></TD>
+          <TD style="BORDER-RIGHT: windowtext 0.5pt solid; BORDER-TOP: #d4d0c8; BORDER-LEFT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BACKGROUND-COLOR: transparent"><FONT face=Arial size=2>&nbsp;Сч. №</FONT></TD>
+          <TD style="BORDER-RIGHT: black 0.5pt solid; BORDER-TOP: #d4d0c8; BORDER-LEFT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BACKGROUND-COLOR: transparent; mso-ignore: colspan" colSpan=2><FONT face=Arial size=2>&nbsp;[PAYMENT.KS]</FONT></TD></TR></TBODY></TABLE>
+         <P align=center><B>СЧЕТ № [ORDER.ACCOUNT] от [FORMATDATE,[ORDER.DATE_ORDER],'d ms Y'] года</B></P>
+         <P align=left><U>Заказчик:</U> [USER.COMPANY], ИНН: [USER.INN]&nbsp;&nbsp;<BR><U>Плательщик:</U> [USER.COMPANY], ИНН: [USER.INN]</P>
+         <br><br>
+         <TABLE style="BORDER-RIGHT: black 1px solid; BORDER-TOP: black 1px solid" cellSpacing="0" cellPadding="0" width="614" bgColor=white>
+         <TBODY>
+         <TR>
+          <TD style="BORDER-RIGHT: black 1px solid; BORDER-LEFT: black 1px solid; BORDER-BOTTOM: black 1px solid" align=middle height="20" wifth="40px"><FONT face=Arial            size=2>№</FONT></TD>
+          <TD style="BORDER-RIGHT: black 1px solid; BORDER-BOTTOM: black 1px solid" align=middle>Предмет счета</TD>
+          <TD style="BORDER-RIGHT: black 1px solid; BORDER-BOTTOM: black 1px solid" align=middle width="100">Единица измерения</TD>
+          <TD style="BORDER-RIGHT: black 1px solid; BORDER-BOTTOM: black 1px solid" align=middle width="80">Коли-<BR>чество</TD>
+          <TD style="BORDER-RIGHT: black 1px solid; BORDER-BOTTOM: black 1px solid" align=middle width="80">Цена</TD>
+          <TD class="text" style="BORDER-BOTTOM: black 1px solid" align=middle>Сумма</TD></TR><SHOPLIST>
+         <TR>
+          <TD style="BORDER-RIGHT: black 1px solid; BORDER-LEFT: black 1px solid; BORDER-BOTTOM: black 1px solid" align=middle>&nbsp;[SHOPLIST.ITEM]</TD>
+          <TD style="BORDER-RIGHT: black 1px solid; BORDER-BOTTOM: black 1px solid">[SHOPLIST.NAME]&nbsp;</TD>
+          <TD style="BORDER-RIGHT: black 1px solid; BORDER-BOTTOM: black 1px solid" align=middle>шт</TD>
+          <TD style="BORDER-RIGHT: black 1px solid; BORDER-BOTTOM: black 1px solid" align=middle>&nbsp;[SHOPLIST.COUNT]</TD>
+          <TD style="BORDER-RIGHT: black 1px solid; BORDER-BOTTOM: black 1px solid" align=right>&nbsp;[SHOPLIST.PRICE]</TD>
+          <TD style="BORDER-BOTTOM: black 1px solid" align=right>&nbsp;[SHOPLIST.SUMMA]</TD></TR></SHOPLIST><DELIVERY>
+         <TR>
+          <TD style="BORDER-RIGHT: black 1px solid; BORDER-LEFT: black 1px solid; BORDER-BOTTOM: black 1px solid" align=middle>&nbsp;[ORDER.ITEMCOUNT]</TD>
+          <TD style="BORDER-RIGHT: black 1px solid; BORDER-BOTTOM: black 1px solid">Услуги по доставке носителей ПО </TD>
+          <TD style="BORDER-RIGHT: black 1px solid; BORDER-BOTTOM: black 1px solid" align=right><P align=center>усл&nbsp;</P></TD>
+          <TD style="BORDER-RIGHT: black 1px solid; BORDER-BOTTOM: black 1px solid" align=right><P align=center>&nbsp;1</P></TD>
+          <TD style="BORDER-RIGHT: black 1px solid; BORDER-BOTTOM: black 1px solid" align=right>&nbsp;[ORDER_DELIVERY]</TD>
+          <TD style="BORDER-BOTTOM: black 1px solid" align=right>&nbsp;[ORDER_DELIVERY]</TD></TR></DELIVERY>
+         <TR>
+          <TD style="BORDER-RIGHT: black 1px solid" align=right colSpan=5 height="20"><STRONG>Скидка:</STRONG>&nbsp;</TD>
+          <TD style="BORDER-BOTTOM: black 1px solid" align=right><STRONG>&nbsp;[ORDER_DISCOUNT]&nbsp; </STRONG></TD></TR>
+         <TR>
+          <TD style="BORDER-RIGHT: black 1px solid" align=right colSpan=5 height="20"><STRONG>Итого:</STRONG>&nbsp;</TD>
+          <TD style="BORDER-BOTTOM: black 1px solid" align=right><STRONG>&nbsp;[ORDER_SUMMA]&nbsp; </STRONG></TD></TR>
+         <TR>
+          <TD style="BORDER-RIGHT: black 1px solid" align=right colSpan=5 height="20"><STRONG>Без налога (НДС).</STRONG></TD>
+          <TD style="BORDER-BOTTOM: black 1px solid" align=align>
+            <P align=center><STRONG>&nbsp;[ORDER.SUMMNDS]</STRONG>&nbsp;</P></TD></TR>
+         <TR>
+          <TD style="BORDER-RIGHT: black 1px solid" align=right colSpan=5 height="20"><STRONG>Всего к оплате:</STRONG>&nbsp;</TD>
+          <TD style="BORDER-BOTTOM: black 1px solid" align=right><STRONG>&nbsp;[ORDER_SUMMA]&nbsp;</STRONG></TD></TR></TBODY></TABLE>
+         <br><br>
+         <P align=left>Всего наименований [ORDER.ITEMCOUNT], на сумму [ORDER_SUMMA] 
+         <br><STRONG>[STR_SUMM,[ORDER.SUMMA]]</STRONG></P>
+         <br>
+         <TABLE width="100%" border="0">
+         <TBODY>
+         <TR>
+          <TD align=left width="150">
+            <P align=right>Ген.директор:</P>
+            <P align=right>Гл. бухгалтер:</P></TD>
+          <TD align=left width="300"><IMG src="[PAYMENT.STAMP]">&nbsp;</TD>
+          <TD align=left width="150">
+            <P align=left>([MAIN.DIRECTOR])</P>
+            <br></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></P>
+       active: 'Y'
+     2:
+       id: 2
+       lang: rus
+       logoimg: payment_zpay.jpg
+       name_payment: Z-PAYMENT
+       startform: |
+         <P>Оплата через платежную систему Z-PAYMENT</P>Через данную платежную систему 
+         можно оплатить с помощью:<BR><BR><BR>Интернет переводов<BR><BR><LO>
+         <LI>Z-PAYMENT 
+         <LI>Банковской пластиковой карты<BR><BR><BR></LO>Банковских переводов<BR><LO>
+         <LI>Перевод в Райффайзенбанк 
+         <LI>СберБанк РФ 
+         <LI>ТелеБанк ВТБ24 
+         <LI>Банковский перевод в USD 
+         <LI>Банковский перевод в EURO <BR><BR><BR></LO>Денежных переводов по 
+         России<BR><LO>
+         <LI>Почтовый перевод в рублях 
+         <LI>Перевод Anelik (RUR) 
+         <LI>Быстрая почта Райффайзенбанк (RUR) 
+         <LI>Перевод Аллюр (RUR) 
+         <LI>Перевод Юнистрим (RUR) 
+         <LI>Перевод Migom (RUR) 
+         <LI>Western Union (RUR) <BR><BR><BR></LO>Денежных переводов из-за 
+         границы<BR><LO>
+         <LI>Перевод MoneyGram (USD) 
+         <LI>Western Union (USD) 
+         <LI>Western Union (EUR)<BR><BR><BR></LO>Наличных расчетов<BR><LO>
+         <LI>Оплата наличными 
+         <LI>Оплата через терминалы </LO>Оплата через терминалы<BR><LO>
+         <LI>Терминалы Мультикассы (multikassa.com)<BR><BR><BR></LO>Мобильных 
+         платежей<BR><LO>
+         <LI>Оплата по SMS для абонентов Билайн 
+         <LI>Оплата SMS в России 
+         <LI>Оплата SMS в Казахстане 
+         <LI>Оплата SMS в Таджикистане 
+         <LI>Оплата SMS в Киргизии 
+         <LI>Оплата SMS в Австрии 
+         <LI>Оплата SMS в Бельгии 
+         <LI>Оплата SMS в Болгарии 
+         <LI>Оплата SMS в Германии 
+         <LI>Оплата SMS в Голландии 
+         <LI>Оплата SMS в Великобритании 
+         <LI>Оплата SMS в Латвии 
+         <LI>Оплата SMS в Дании 
+         <LI>Оплата SMS в Венгрии 
+         <LI>Оплата SMS в Израиле 
+         <LI>Оплата SMS в Литве 
+         <LI>Оплата SMS в Испании 
+         <LI>Оплата SMS в Норвегии 
+         <LI>Оплата SMS в Норвегии 
+         <LI>Оплата SMS в Португалии 
+         <LI>Оплата SMS в Польше 
+         <LI>Оплата SMS в Франции 
+         <LI>Оплата SMS в Финляндии 
+         <LI>Оплата SMS в Эстонии 
+         <LI>Оплата SMS в Чехии 
+         <LI>Оплата SMS в Швеции </LO></LI>
+       type: e
+       blank: |
+         [SETCURRENCY:RUR] 
+         <H3 class="contentTitle">Оплата заказа: - Z-PAYMENT</H3>
+         <FORM id="pay_zpayment" name="pay_zpayment" action=https://z-payment.ru/merchant.php  method=post target=_blank>
+         <TABLE cellSpacing="3" cellPadding="0" width="300" border="0">
+           <TBODY>
+           <TR>
+             <TD width="50%">Номер заказа</TD>
+             <TD>[ORDER.ID]</TD></TR>
+           <TR>
+             <TD>Сумма платежа</TD>
+             <TD>[ORDER_SUMMA]</TD></TR>
+           <TR>
+            <TD>Комментарий к платежу </TD>
+            <TD>Заказ:[ORDER.ID] / Договор: [USER.ID]</TD></TR>
+          <TR>
+            <TD>Ваш e-mail </TD>
+            <TD><INPUT maxLength=120 size=25 name="CLIENT_MAIL" value="[USER.USEREMAIL]"></TD></TR>
+          <TR>
+         <TD align=middle colSpan=2><INPUT class="buttonSend" type="submit" value="Продолжить"> 
+           <INPUT type="hidden" value="2629" name="LMI_PAYEE_PURSE">
+         </TD><INPUT type="hidden"      value="[ORDER.ID]" name="LMI_PAYMENT_NO"></TD>
+         <INPUT type="hidden"      value="[ORDER.SUMMA]" name="LMI_PAYMENT_AMOUNT"></TD>
+         <INPUT type="hidden"      value="Заказ:[ORDER.ID] / Договор: [USER.ID]" name="LMI_PAYMENT_DESC"></TD> 
+           </TR></TBODY></TABLE></FORM>
+       result: |
+         SE_PAYEXECUTE(
+         SAMETEXT("MD5("[POST.LMI_PAYEE_PURSE][POST.LMI_PAYMENT_AMOUNT][POST.LMI_PAYMENT_NO][POST.LMI_MODE][POST.LMI_SYS_INVS_NO][POST.LMI_SYS_TRANS_NO][POST.LMI_SYS_TRANS_DATE][POST.LMI_SECRET_KEY][POST.LMI_PAYER_PURSE][POST.LMI_PAYER_WM]")","[POST.LMI_HASH]"),
+         [POST.LMI_PAYMENT_AMOUNT],
+         [POST.LMI_SYS_INVS_NO],
+         [POST.LMI_PAYEE_PURSE])
+         YES
+       success: |
+         <ACCESS><INPUT type="hidden" value="[POST.LMI_SYS_INVS_NO]"  name="LMI_SYS_INVS_NO">
+         <INPUT type="hidden" value="[POST.LMI_SYS_TRANS_DATE]"  name="LMI_SYS_TRANS_DATE">
+         <INPUT type="hidden" value="[POST.LMI_SYS_TRANS_NO]"  name="LMI_SYS_TRANS_NO">
+         </ACCESS>
+         <H4>Оплата проведена успешно</H4><BR>Ваш заказ № [ORDER.ID] оплачен 
+         <TABLE class="tableTable" border="0">
+          <TBODY class="tableBody">
+           <TR>
+            <TD>Номер счета Z-PAYMENT:</TD>
+            <TD>[POST.LMI_SYS_INVS_NO]</TD></TR>
+          <TR>
+            <TD>Номер платежа в Z-PAYMENT:</TD>
+            <TD>[POST.LMI_SYS_TRANS_NO]</TD></TR>
+          <TR>
+            <TD>Дата и время платежа:</TD>
+            <TD>[POST.LMI_SYS_TRANS_DATE]</TD></TR></TBODY></TABLE>
+       fail: |
+         <ACCESS></ACCESS>
+         <H4>Ошибка платежа Z-PAYMENT</H4><BR>Оплата заказа № [ORDER.ID] не
+         проведена<BR><BR>
+       active: 'N'
+     3:
+       id: 3
+       lang: rus
+       logoimg: payment_yand.jpg
+       name_payment: Яндекс деньги
+       startform: |
+         Оплата через систему интернет-платежей Яндекс.Деньги. Вам необходимо иметь
+         свой собственный счет (кошелек) Яндекс.Деньги (<A  href="http://www.money.yandex.ru" target=_blank>www.money.yandex.ru</A>). При 
+         заказе через сайт Вы можете выбрать способ оплаты "оплата Яндекс.Деньги" и 
+         оплата пройдёт в автоматическом режиме. Примечание: в момент оплаты кошелёк 
+         должен быть запущен на Вашем компьютере. 
+       type: 'e'
+       blank: |
+         [SETCURRENCY:RUR] 
+         <H3 class="contentTitle">Оплата заказа: - Яндекс деньги</H3>Будет произведен 
+         платеж на счет: [PAYMENT.YAN_M] в сумме: [ORDER_SUMMA]<BR>Перед тем как 
+         продолжить оплату, необходимо активизировать Ваш Yandex 
+         Интернет-кошелек.<BR><BR><BR>
+         <FORM action=http://money.yandex.ru/select-wallet.xml method=post><INPUT  type="hidden" value="643" name="TargetCurrency">
+         <INPUT type="hidden" value="643"  name="currency">
+         <INPUT type="hidden" value="2" name="wbp_Version">
+         <INPUT type="hidden"  value="DirectPaymentIntoAccountRequest" name="wbp_MessageType">
+         <INPUT type="hidden"  value="mailto:[MAIN.ESUPPORT]" name="wbp_ShopAddres">
+         <INPUT type="hidden"  value="[PAYMENT.YAN_M] " name="wbp_accountid">
+         <INPUT type="hidden"  value="643;[ORDER.SUMMA]" name="wbp_currencyamount">
+         <INPUT type="hidden"  value="Заказ No:[ORDER.ID]" name="wbp_shoptdescription">
+         <INPUT type="hidden"  value="Заказ No:[ORDER.ID]" name="wbp_template_1">
+         <INPUT type="hidden"  name="wbp_ShopErrorInfo">
+         <INPUT class="buttonSend" type="submit" value="Продолжить"> 
+         </FORM>
+       result: 
+       success: 
+       fail: 
+       active: 'N'
+     4:
+       id: 4
+       logoimg: payment_webm.jpg
+       lang: rus
+       name_payment: WebMoney
+       startform: Оплата через систему интернет-платежей Web Money (Веб Мани). Вам необходимо иметь свой собственный счет (кошелек) в системе интернет платежей WebMoney (<a href="www.webmoney.ru" target=_blank>www.webmoney.ru</a>) При оформлении заказа на нашем сайте Вы можете выбрать "оплата Web Money" и оплата пройдёт в автоматическом режиме.
+       Примечание: в момент оплаты кошелёк должен быть запущен на Вашем компьютере.
+       type: e
+       blank: |
+         <H3 class="contentTitle">Оплата заказа: - WebMoney</H3>
+         <FORM name="frm" method=post>Выберите вид валюты для оплаты: <SELECT  onchange=document.frm.submit(); name="valuts">
+         <OPTION value="wm_z" [SELECTED:wm_z]>WMZ<OPTION value="wm_r" [SELECTED:wm_r]>WMR<OPTION value="wm_e" [SELECTED:wm_e]>WME</OPTION></SELECT>
+         <INPUT type="hidden" value="[POST.FP]"  name="FP">
+         <INPUT type="hidden" value="[ORDER.ID]" name="ORDER_PAYEE"> 
+         </FORM><BR><BR>Сумма к оплате: [ORDER_SUMMA]<BR><BR>Для выполения прямого 
+         платежа на кошелек продавца нажмите кнопку "Продолжить оплату" и пройдите 
+         авторизацию в системе. Вы увидите все детали платежа на экране и сможете 
+         подтвердить или отменить платеж. Для выполнения платежа вы должны быть 
+         зарегистрированы в системе <A href="http://www.webmoney.ru/"  target=_blank>WebMoney 
+         Transfer</A><BR><BR><BR>[SETCURRENCY:[IF(RUR=wm_r,USD=wm_z,EUR=wm_e:USD)]] 
+         <FORM action=https://merchant.webmoney.ru/lmi/payment.asp method=post  target=_blank><INPUT type="hidden" value="1" name="LMI_MODE">
+         <INPUT type="hidden"  value="[PAYMENT.[POST.VALUTS:wm_z]]" name="LMI_PAYEE_PURSE">
+         <INPUT type="hidden"  value="[ORDER.SUMMA]" name="LMI_PAYMENT_AMOUNT">
+         <INPUT type="hidden"  value="Заказ:[ORDER.ID]" name="LMI_PAYMENT_NO">
+         <INPUT type="hidden"  value="Заказ:[ORDER.ID] / Договор: [USER.ID]" name="LMI_PAYMENT_DESC">
+         <INPUT  type="hidden" value="1" name="LMI_SUCCESS_METHOD">
+         <INPUT type="hidden"  value="http://[THISNAMESITE]/modules/sshop_payment/result.php"  name="LMI_RESULT_URL">
+         <INPUT type="hidden"  value="http://[THISNAMESITE]/modules/sshop_payment/success.php"  name="LMI_SUCCESS_URL">
+         <INPUT type="hidden"  value="http://[THISNAMESITE]/modules/sshop_payment/fail.php" name="LMI_FAIL_URL"> 
+         <INPUT type="hidden" value="0" name="LMI_SIM_MODE">
+         <INPUT type="hidden"  value="http://[THISNAMESITE]/[PAGENAME]?razdel=[RAZDEL]>amp;sub=3" name="PAGEPAYEE"> 
+         <INPUT class="buttonSend" type="submit" value="Продолжить"> 
+         </FORM>
+       result: |
+         SE_PAYEXECUTE(
+         SAMETEXT("MD5("[POST.LMI_PAYEE_PURSE][POST.LMI_PAYMENT_AMOUNT][POST.LMI_PAYMENT_NO][POST.LMI_MODE][POST.LMI_SYS_INVS_NO][POST.LMI_SYS_TRANS_NO][POST.LMI_SYS_TRANS_DATE][POST.LMI_SECRET_KEY][POST.LMI_PAYER_PURSE][POST.LMI_PAYER_WM]")","[POST.LMI_HASH]"),
+         [POST.LMI_PAYMENT_AMOUNT],
+         [POST.LMI_SYS_INVS_NO],
+         [POST.LMI_PAYEE_PURSE])
+       success: |
+         <ACCESS><INPUT type="hidden" value="[POST.LMI_SYS_INVS_NO]"  name="LMI_SYS_INVS_NO">
+         <INPUT type="hidden" value="[POST.LMI_SYS_TRANS_DATE]"  name="LMI_SYS_TRANS_DATE">
+         <INPUT type="hidden" value="[POST.LMI_SYS_TRANS_NO]"  name="LMI_SYS_TRANS_NO">
+         </ACCESS>
+         <H4>Оплата проведена успешно</H4><BR>Ваш заказ № [ORDER.ID] оплачен
+         <TABLE class="tableTable" border="0">
+         <TBODY class="tableBody">
+         <TR>
+         <TD>Номер счета WebMoney Transfer:</TD>
+         <TD>[POST.LMI_SYS_INVS_NO]</TD></TR>
+         <TR>
+         <TD>Номер платежа в WebMoney:</TD>
+         <TD>[POST.LMI_SYS_TRANS_NO]</TD></TR>
+         <TR>
+         <TD>Дата и время платежа:</TD>
+         <TD>[POST.LMI_SYS_TRANS_DATE]</TD></TR></TBODY></TABLE>
+       fail: |
+         <ACCESS>
+         </ACCESS>
+         <H4>Ошибка платежа WebMoney</H4><BR>
+         Оплата заказа № [ORDER.ID] не проведена<BR>
+         <BR>
+       active: 'N'
+     5:
+       id: 5
+       lang: rus
+       logoimg: payment_rbk.jpg
+       name_payment: RBK Money
+       startform: |
+         RBK Money – это электронная платежная система, с помощью которой Вы 
+         сможете совершать платежи с персонального компьютера, коммуникатора или 
+         мобильного телефона. Для того, чтобы оплатить услуги достаточно войти в свой 
+         электронный кошелек и сделать пару кликов 
+         <TABLE cellSpacing="0" cellPadding="2" width="100%" border="0">
+         <TBODY>
+         <TR>
+         <TD width="638">
+           <H3>Широкий выбор способов оплаты.</H3>
+           <P>В Вашем распоряжении широкий спектр платежных инструментов для оплаты 
+           товаров и услуг: </P>
+           <UL>
+             <LI>электронные кошельки RBK Money; 
+             <LI>Яндекс.Деньги; 
+             <LI>платежные терминалы крупнейших федеральных сетей; 
+             <LI>
+             <P>системы денежных переводов «CONTACT» и «Юнистрим».</P></LI></UL>
+           <P>24 часа в сутки Вы можете оплатить предлагаемые нами товары как с 
+           помощью электронного кошелька, так и напрямую – выписав счет и оплатив его 
+           в любом банке или терминале самообслуживания.</P>
+           <H3>Онлайн-консультации по вопросам оплаты.</H3>
+           <P>В любое время суток Вы, можете обратиться в службу поддержки RBK Money, 
+           которая работает в режиме 24х7х365 без перерывов и выходных. RBK Money 
+           гарантирует быстрый и исчерпывающий ответ по е-mail, телефону или в 
+           круглосуточном онлайн-чате.</P>
+           <H3><BR></H3></TD></TR></TBODY></TABLE>
+       type: e
+       blank: |
+         [SETCURRENCY:RUR] 
+         <H4>Оплата заказа [ORDER.ID] через платежную систему RBK Money</H4>Сумма заказа: 
+         [ORDER_SUMMA] 
+         <FORM name="pay" action=" https://rbkmoney.ru/processpurchase.aspx"  method=post><INPUT type="hidden" value="[PAYMENT.RUPAY]" name="pay_id">
+         <INPUT  type="hidden" value="[ORDER.SUMMA]" name="sum_pol">
+         <INPUT type="hidden"  value="Оплата заказа No: [ORDER.ID]" name="name_service">
+         <INPUT type="hidden"  value="[ORDER.ACCOUNT]" name="order_id">
+         <INPUT type="hidden" value="810"  name="currencycode">
+         <INPUT type="hidden"  value="http://[THISNAMESITE]/modules/shop_payment/success.php"  name=" success_url ">
+         <INPUT type="hidden"  value="http://[THISNAMESITE]/modules/shop_payment/fail.php" name=" fail_url "> 
+         <INPUT type="hidden" value="[CLIENTNAME]" name="user_name">
+         <INPUT type="hidden"  value="[USER.USEREMAIL]" name="user_email">
+         <INPUT type="submit" value="оплатить" name="button">
+         </FORM>
+       result: SE_PAYEXECUTE(SAMETEXT("MD5("[POST.rupay_action]::[POST.rupay_site_id]::[POST.rupay_order_id]::[POST.rupay_sum]::[POST.rupay_id]::[POST.rupay_data]::[POST.rupay_status]::dFrt34hg67")","[POST.rupay_hash]"),[POST.rupay_sum],[POST.rupay_id],RuPay)
+       success: |
+         <ACCESS><INPUT type="hidden" value="[POST.rupay_id]" name="rupay_id">
+         <INPUT  type="hidden" value="[POST.rupay_data]" name="rupay_data">
+         <INPUT type="hidden"  value="[POST.rupay_status]" name="rupay_status">
+         </ACCESS>
+         <H4>Оплата проведена успешно</H4><BR>Ваш заказ № [ORDER.ID] оплачен 
+       fail: |
+         <ACCESS></ACCESS>
+         <H4>Ошибка платежа RBK Money</H4><BR>Оплата заказа № [ORDER.ID] не
+         проведена<BR><BR>
+       active: 'N'
+     6:
+       id: 6
+       lang: rus
+       logoimg: payment_sbr.jpg
+       name_payment: Сбербанк (для физических лиц)
+       startform: |
+         <P>1. Распечатайте квитанцию и оплатите через ближайший банк.<BR>2. Для 
+         оперативности получения продукта, отправьте сканированную (разрешением не менее 
+         150dpi) копию заверенной квитанции об оплате на <A  href="mailto: [MAIN.ESUPPORT]">[MAIN.ESUPPORT]</A><BR>3. Ожидайте письмо с 
+         подтверждением;<BR>4. На странице "Ваш заказ" Вы можете посмотреть статус заказа 
+         и доставки;<BR></P>
+       type: p
+       blank: |
+         [SETCURRENCY:RUR]
+         <STYLE>
+         .n6 {FONT-SIZE: 6pt; FONT-FAMILY: Arial, "Arial Cyr", Helvetica}
+         .t10,.t11 {FONT-SIZE: 10pt; FONT-FAMILY: "Times New Roman", Times, serif}
+         .n7 {FONT-SIZE: 7pt; FONT-FAMILY: Arial, "Arial Cyr", Helvetica}
+         .b12 {FONT-SIZE: 10pt; BORDER-LEFT-COLOR: black; BORDER-BOTTOM-WIDTH: thin; BORDER-BOTTOM-COLOR: black; CURSOR: hand; BORDER-TOP-COLOR: black; FONT-FAMILY: Arial, "Arial Cyr", Helvetica; BORDER-RIGHT-COLOR: black}
+         .b10 {BORDER-RIGHT: black 0px solid; BORDER-TOP: black 0px solid; FONT-WEIGHT: bold; FONT-SIZE: 10pt; BORDER-LEFT: black 0px solid; CURSOR: hand; BORDER-BOTTOM: black 1px solid; FONT-FAMILY: Arial, "Arial Cyr", Helvetica}
+         .n10 {BORDER-RIGHT: black 0px solid; BORDER-TOP: black 0px solid; FONT-WEIGHT: normal; FONT-SIZE: 10pt; BORDER-LEFT: black 0px solid; CURSOR: hand; BORDER-BOTTOM: black 1px solid; FONT-FAMILY: Arial, "Arial Cyr", Helvetica}
+         .b10i {BORDER-RIGHT: black 0px solid; BORDER-TOP: black 0px solid; FONT-WEIGHT: bold; FONT-SIZE: 10pt; BORDER-LEFT: black 0px solid; CURSOR: hand; BORDER-BOTTOM: black 1px solid; FONT-STYLE: italic; FONT-FAMILY: Arial, "Arial Cyr", Helvetica}
+         .t10n {FONT-WEIGHT: normal; FONT-SIZE: 10pt; FONT-FAMILY: "Times New Roman", Times, serif}
+         .n10_ {FONT-WEIGHT: normal; FONT-SIZE: 10pt; BORDER-LEFT-COLOR: black; BORDER-BOTTOM-COLOR: #000000; CURSOR: hand; BORDER-TOP-COLOR: black; FONT-FAMILY: Arial, "Arial Cyr", Helvetica; BORDER-RIGHT-COLOR: black}
+         FONT {FONT-SIZE: 9pt; FONT-FAMILY: Arial, "Arial Cyr", Helvetica, sans-serif}
+         .smf {FONT-SIZE: 7pt; FONT-FAMILY: Arial, "Arial Cyr", Helvetica, sans-serif; TEXT-ALIGN: justify}
+         .brd {BORDER-RIGHT: #000000 1px dotted; BORDER-TOP: #000000 1px dotted; BORDER-LEFT: #000000 1px dotted; BORDER-BOTTOM: #000000 1px dotted}</STYLE>
+         <TABLE height="99%" cellSpacing="0" cellPadding="0" width="99%" border="0">
+         <TBODY>
+         <TR>
+         <TD width="33%" height="33%"><FONT face=Arial size=1>&nbsp;</FONT></TD>
+         <TD width="33%" height="33%"><FONT face=Arial size=1>&nbsp;</FONT></TD>
+         <TD width="33%" height="33%"><FONT face=Arial size=1>&nbsp;</FONT></TD></TR>
+         <TR>
+         <TD width="33%" height="33%"><FONT face=Arial size=1>&nbsp;</FONT></TD>
+         <TD borderColor=#000000 width="33%" height="33%">
+           <DIV align=center>
+           <TABLE borderColor=#999999 height="100" cellSpacing="0" cellPadding="0"        width="100" border="1">
+             <TBODY>
+             <TR>
+               <TD>
+                 <DIV align=center>
+                 <TABLE cellSpacing="0" cellPadding="0" border="0">
+                   <TBODY>
+                   <TR>
+                     <TD colSpan=4>
+                       <DIV  style="WIDTH: 191px; HEIGHT: 30px; BACKGROUND-COLOR: #ffffff"></DIV></TD>
+                     <TD class="t10">
+                       <DIV align=right><FONT face=Arial size=1>Форма ПД-4</FONT></DIV></TD>
+                     <TD>
+                       <DIV style="WIDTH: 14px; HEIGHT: 30px; BACKGROUND-COLOR: #ffffff"></DIV></TD></TR>
+                   <TR>
+                     <TD rowSpan=35>
+                       <DIV style="WIDTH: 34px; HEIGHT: 492px; BACKGROUND-COLOR: #ffffff"></DIV></TD>
+                     <TD class="t11" vAlign=bottom>
+                       <DIV align=center><FONT face=Arial size=1>Извещение</FONT></DIV></TD>
+                     <TD rowSpan=17><IMG style="BACKGROUND-COLOR: #000000" height="242" src="lineblace.gif" width="4"></TD>
+                     <TD rowSpan=17>
+                       <DIV style="WIDTH: 6px; HEIGHT: 242px; BACKGROUND-COLOR: #ffffff"></DIV></TD>
+                     <TD class="b10" vAlign=bottom>
+                       <DIV align=center><FONT size=1>[MAIN.COMPANY]&nbsp;[PAYMENT.INN] / [PAYMENT.KPP]</FONT></DIV></TD>
+                     <TD rowSpan=35>
+                       <DIV style="WIDTH: 14px; HEIGHT: 492px; BACKGROUND-COLOR: #ffffff"></DIV></TD></TR>
+                   <TR>
+                     <TD rowSpan=14>
+                       <DIV style="WIDTH: 147px; HEIGHT: 199px; BACKGROUND-COLOR: #ffffff"></DIV></TD>
+                     <TD class="n6" vAlign=top height="10">
+                       <DIV align=center><FONT size=1>(наименование и ИНН / КПП получателя платежа)</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="b10" vAlign=bottom>
+                       <DIV align=center><FONT size=1>р/сч. [PAYMENT.RS]</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="n6" vAlign=top>
+                       <DIV align=center><FONT size=1>(номер счета получателя 
+                       платежа)</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="b10" vAlign=bottom>
+                       <DIV align=center><FONT size=1>[PAYMENT.BANK]</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="n6" vAlign=top>
+                       <DIV align=center><FONT size=1>(наименование банка получателя платежа)</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="b10" vAlign=bottom>
+                       <DIV align=center><FONT size=1>к/сч. [PAYMENT.KS], БИК 
+                       [PAYMENT.BIK]</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="n6" vAlign=top>
+                       <DIV align=center><FONT size=1>(банковские реквизиты 
+                       получателя платежа)</FONT></DIV></TD></TR>
+                   <TR></TR>
+                   <TR>
+                     <TD class="b10" vAlign=top>
+                       <DIV align=center><FONT size=1>Оплата заказа&nbsp; [ORDER.ID] 
+                       от&nbsp; [FORMATDATE,[ORDER.DATE_ORDER],'d. m.Y'] 
+                       г.</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="n6" vAlign=top>
+                       <DIV align=center><FONT size=1>(наименование платежа)</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="n10" vAlign=bottom>
+                       <DIV align=center><FONT size=1><STRONG>[CLIENTNAME]</STRONG></FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="n10" vAlign=top>
+                       <DIV align=center>
+                       <DIV align=center><FONT size=1>паспорт серия&nbsp;[USER.DOC_SER], № 
+                       [USER.DOC_NUM],выдан</FONT></DIV></DIV></TD></TR>
+                   <TR>
+                     <TD class="n6" vAlign=top>
+                       <DIV align=center><FONT size=1>(Ф.И.О. и адрес плательщика)</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="t10" vAlign=bottom>
+                       <DIV><FONT face=Arial size=1>&nbsp;&nbsp;Дата: [CURDATE] Сумма 
+                       платежа: [ORDER_SUMMA]</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="t10">
+                       <DIV align=center><FONT face=Arial size=1>Кассир</FONT></DIV></TD>
+                     <TD class="t10" vAlign=bottom>
+                       <DIV align=center><FONT face=Arial><FONT size=1>Плательщик 
+                       <SPAN class="t10n">(подпись): 
+                       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</SPAN></FONT></FONT></DIV></TD></TR>
+                   <TR>
+                     <TD>
+                       <DIV style="FONT-SIZE: 0pt; WIDTH: 147px; HEIGHT: 3px; BACKGROUND-COLOR: #ffffff"><FONT                    face=Arial size=1></FONT></DIV></TD>
+                     <TD>
+                       <DIV style="FONT-SIZE: 0pt; WIDTH: 295px; HEIGHT: 3px; BACKGROUND-COLOR: #ffffff"><FONT                    face=Arial size=1></FONT></DIV></TD></TR>
+                   <TR>
+                     <TD colSpan=4><IMG style="BACKGROUND-COLOR: #000000" height="4"                    src="lineblace.gif" width="452"></TD></TR>
+                   <TR>
+                     <TD>
+                       <DIV style="WIDTH: 147px; HEIGHT: 8px; BACKGROUND-COLOR: #ffffff"></DIV></TD>
+                     <TD rowSpan=17><IMG style="BACKGROUND-COLOR: #000000" height="246" src="lineblace.gif" width="4"></TD>
+                     <TD rowSpan=17>
+                       <DIV style="FONT-SIZE: 0pt; WIDTH: 6px; HEIGHT: 246px; BACKGROUND-COLOR: #ffffff"></DIV></TD>
+                     <TD>
+                       <DIV style="FONT-SIZE: 0pt; WIDTH: 295px; HEIGHT: 8px; BACKGROUND-COLOR: #ffffff"></DIV></TD></TR>
+                   <TR>
+                     <TD class="n7" vAlign=top>
+                       <DIV align=center><FONT size=1>место для круглой печати</FONT></DIV></TD>
+                     <TD class="b10" vAlign=bottom>
+                       <DIV align=center><FONT size=1>[MAIN.COMPANY]&nbsp;&nbsp;[PAYMENT.INN] / [PAYMENT.KPP]</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD rowSpan=11>
+                       <DIV style="FONT-SIZE: 0pt; WIDTH: 147px; HEIGHT: 150px; BACKGROUND-COLOR: #ffffff"><FONT                    face=Arial size=1></FONT></DIV></TD>
+                     <TD class="n6" vAlign=top>
+                       <DIV align=center><FONT size=1>(наименование и ИНН / КПП получателя платежа)</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="b10" vAlign=bottom>
+                       <DIV align=center><FONT size=1>р/сч. [PAYMENT.RS]</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="n6" vAlign=top>
+                       <DIV align=center><FONT size=1>(номер счета получателя платежа)</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="b10" vAlign=bottom>
+                       <DIV align=center><FONT size=1>[PAYMENT.BANK]</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="n6" vAlign=top>
+                       <DIV align=center><FONT size=1>(наименование банка получателя платежа)</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="b10" vAlign=bottom>
+                       <DIV align=center><FONT size=1>к/сч. [PAYMENT.KS], БИК [PAYMENT.BIK]</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="n6" vAlign=top>
+                       <DIV align=center><FONT size=1>(банковские реквизиты получателя платежа)</FONT></DIV></TD></TR>
+                   <TR></TR>
+                   <TR>
+                     <TD class="b10" vAlign=top>
+                       <DIV align=center><FONT size=1>Оплата заказа [ORDER.ID] от&nbsp; [FORMATDATE,[ORDER.DATE_ORDER],'d. m.Y'] 
+                       г.</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="n6" vAlign=top>
+                       <DIV align=center><FONT size=1>(наименование 
+                       платежа)</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="n10" vAlign=bottom>
+                       <DIV align=center>
+                       <DIV align=center><FONT                    size=1><STRONG>[CLIENTNAME]</STRONG></FONT></DIV></DIV></TD></TR>
+                   <TR>
+                     <TD class="t11" vAlign=top>
+                       <DIV align=center><FONT face=Arial                    size=1>Квитанция</FONT></DIV></TD>
+                     <TD class="n10" vAlign=top>
+                       <DIV align=center><FONT size=1>
+                       <DIV align=center>паспорт серия&nbsp;[USER.DOC_SER], № 
+                       [USER.DOC_NUM],выдан</DIV></FONT></DIV></TD></TR>
+                   <TR>
+                     <TD><FONT face=Arial size=1>&nbsp;</FONT></TD>
+                     <TD class="n6" vAlign=top>
+                       <DIV align=center><FONT size=1>(Ф.И.О. и адрес 
+                       плательщика)</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="t10" vAlign=bottom height="20">
+                       <DIV align=center><FONT face=Arial                  size=1>Кассир</FONT></DIV></TD>
+                     <TD class="t10" vAlign=bottom height="20">
+                       <DIV><FONT face=Arial size=1>&nbsp;&nbsp;Дата: [CURDATE] Сумма 
+                       платежа: [ORDER_SUMMA]</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD>
+                       <DIV                    style="FONT-SIZE: 0pt; WIDTH: 147px; HEIGHT: 20px; BACKGROUND-COLOR: #ffffff"><FONT                    face=Arial size=1></FONT></DIV></TD>
+                     <TD class="t10" vAlign=bottom>
+                       <DIV align=center><FONT face=Arial><FONT size=1>Плательщик 
+                       <SPAN class="t10n">(подпись): 
+                       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</SPAN></FONT></FONT></DIV></TD></TR>
+                   <TR>
+                     <TD colSpan=4>
+                       <DIV style="FONT-SIZE: 0pt; WIDTH: 91px; HEIGHT: 3px; BACKGROUND-COLOR: #ffffff"><FONT                    face=Arial size=1></FONT></DIV></TD>
+                     <TD>
+                       <DIV style="FONT-SIZE: 0pt; WIDTH: 295px; HEIGHT: 3px; BACKGROUND-COLOR: #ffffff"><FONT                    face=Arial size=1></FONT></DIV></TD>
+                     <TD>
+                       <DIV style="FONT-SIZE: 0pt; WIDTH: 14px; HEIGHT: 3px; BACKGROUND-COLOR: #ffffff"><FONT                    face=Arial size=1></FONT></DIV></TD></TR>
+                   <TR>
+                     <TD colSpan=6>
+                       <DIV style="FONT-SIZE: 0pt; WIDTH: 500px; HEIGHT: 18px; BACKGROUND-COLOR: #ffffff"><FONT                    face=Arial          size=1></FONT></DIV></TD></TR></TBODY></TABLE></DIV></TD></TR></TBODY></TABLE></DIV></TD>
+         <TD width="33%" height="33%"><FONT face=Arial size=1>&nbsp;</FONT></TD></TR>
+         <TR>
+         <TD width="33%" height="33%"><FONT face=Arial size=1>&nbsp;</FONT></TD>
+         <TD class="n7" vAlign=top width="33%" height="33%">
+           <DIV align=center><FONT size=1><BR></FONT></DIV></TD>
+         <TD width="33%" height="33%"><FONT face=Arial size=1>&nbsp;</FONT></TD></TR></TBODY></TABLE>
+       result: 
+       success: 
+       fail: |
+         1. Распечатайте квитанцию и оплатите в любом ближайшем Банке.<BR>2. Для 
+         оперативности получения продукта, отправьте сканированную (разрешением не менее 
+         150dpi) копию заверенной квитанции об оплате на <A  href="mailto:[MAIN.ESUPPORT]">[MAIN.ESUPPORT]</A>&nbsp;<BR>4. Ожидайте письмо с 
+         подтверждением;<BR>5. На странице "Ваш заказ" Вы можете мосмотреть статус заказа 
+         и доставки;<BR>
+       active: 'Y'
+     7:
+       id: 7
+       lang: rus
+       name_payment: Денежный перевод "БЛИЦ" Сбербанка России
+       logoimg: payment_blic.jpg
+       startform: |
+         Срочные денежные переводы Блиц. Доступны везде! <LO>
+         <LI>в рублях; 
+         <LI>без открытия счета; 
+         <LI>в любом отделении Сбербанка России; 
+         <LI>деньги поступают в течение 1 часа;
+         <li>комиссия: 1,75% от суммы, min</lo>
+         100 руб.<BR><BR>Как отправить Блиц-перевод:<BR><BR>
+         <OL>
+         <LI>Обратиться в филиал Сбербанка России. 
+         <LI>Предъявить паспорт. 
+         <LI>Сообщить ФИО и данные паспорта получателя (делайте запрос через сайт, либо 
+         по телефону: +7 (XXX) XXX-XX-XX&nbsp;&nbsp;&nbsp;&nbsp;и мы Вам сообщим данные для 
+         перевода). 
+         <LI>Оплатить перевод и получить контрольный номер (указан в квитанции – 6-7 цифр). 
+         <LI>Позвонить по телефону:&nbsp;указанные выше&nbsp;и сообщить контрольный 
+         номер Блиц-перевода. 
+         <LI>Заказ Вам будет выслан в этот же день. В этом главное преимущество системы 
+         "Блиц" перевода.</LI></OL></LI>
+       type: p
+       blank: |
+         <FONT face=Arial><FONT size=1>[SETCURRENCY:RUR]
+         <SCRIPT language=javascript>
+             function saveAs (pic1) {
+                       document.execCommand('SaveAs',true,'blank.html');
+                       if (typeof pic1 == 'object')
+                      pic1 = pic1.src;
+                       window.win = open (pic1);
+                       setTimeout('win.document.execCommand("SaveAs")', 500);
+                       setTimeout('win.close();', 500);
+             }
+         </SCRIPT>
+         <STYLE>
+         .n6 {
+           FONT-SIZE: 6pt; FONT-FAMILY: Arial, "Arial Cyr", Helvetica
+         }
+         .t10 {
+           FONT-SIZE: 10pt; FONT-FAMILY: "Times New Roman", Times, serif
+         }
+         .t11 {
+           FONT-SIZE: 10pt; FONT-FAMILY: "Times New Roman", Times, serif
+         }
+         .n7 {
+          FONT-SIZE: 7pt; FONT-FAMILY: Arial, "Arial Cyr", Helvetica
+         }
+         .b12 {
+          FONT-SIZE: 10pt; BORDER-LEFT-COLOR: black; BORDER-BOTTOM-WIDTH: thin; BORDER-BOTTOM-COLOR: black; CURSOR: hand; BORDER-TOP-COLOR: black; FONT-FAMILY: Arial, "Arial Cyr", Helvetica; BORDER-RIGHT-COLOR: black
+         }
+         .b10 {
+          BORDER-RIGHT: black 0px solid; BORDER-TOP: black 0px solid; FONT-WEIGHT: bold; FONT-SIZE: 10pt; BORDER-LEFT: black 0px solid; CURSOR: hand; BORDER-BOTTOM: black 1px solid; FONT-FAMILY: Arial, "Arial Cyr", Helvetica
+         }
+         .n10 {
+          BORDER-RIGHT: black 0px solid; BORDER-TOP: black 0px solid; FONT-WEIGHT: normal; FONT-SIZE: 10pt; BORDER-LEFT: black 0px solid; CURSOR: hand; BORDER-BOTTOM: black 1px solid; FONT-FAMILY: Arial, "Arial Cyr", Helvetica
+         }
+         .b10i {
+          BORDER-RIGHT: black 0px solid; BORDER-TOP: black 0px solid; FONT-WEIGHT: bold; FONT-SIZE: 10pt; BORDER-LEFT: black 0px solid; CURSOR: hand; BORDER-BOTTOM: black 1px solid; FONT-STYLE: italic; FONT-FAMILY: Arial, "Arial Cyr", Helvetica
+         }
+         .t10n {
+          FONT-WEIGHT: normal; FONT-SIZE: 10pt; FONT-FAMILY: "Times New Roman", Times, serif
+         }
+         .n10_ {
+          FONT-WEIGHT: normal; FONT-SIZE: 10pt; BORDER-LEFT-COLOR: black; BORDER-BOTTOM-COLOR: #000000; CURSOR: hand; BORDER-TOP-COLOR: black; FONT-FAMILY: Arial, "Arial Cyr", Helvetica; BORDER-RIGHT-COLOR: black
+         }
+         FONT {
+          FONT-SIZE: 9pt; FONT-FAMILY: Arial, "Arial Cyr", Helvetica, sans-serif
+         }
+         .smf {
+          FONT-SIZE: 7pt; FONT-FAMILY: Arial, "Arial Cyr", Helvetica, sans-serif; TEXT-ALIGN: justify
+         }
+         .brd {
+           BORDER-RIGHT: #000000 1px dotted; BORDER-TOP: #000000 1px dotted; BORDER-LEFT: #000000 1px dotted; BORDER-BOTTOM: #000000 1px dotted
+         }</STYLE>
+         </FONT></FONT>
+         <P align=right><A onclick="saveAs('stamp.gif'); return false;"  href="javascript:%20void%200;"><FONT face=Arial size=1><IMG height="17"  alt="Сохранить страницу" src="disk.gif" width="17" border="0"  name="disk"></FONT></A><FONT face=Arial size=1>
+         </FONT><A  href="javascript:window.print();"><FONT face=Arial size=1><IMG height="17"  alt="Печать страницы" src="print.gif" width="17" border="0"  name="print"></FONT></A></P>
+         <TABLE height="99%" cellSpacing="0" cellPadding="0" width="99%" border="0">
+         <TBODY>
+         <TR>
+         <TD width="33%" height="33%"><FONT face=Arial size=1>&nbsp;</FONT></TD>
+         <TD width="33%" height="33%"><FONT face=Arial size=1>&nbsp;</FONT></TD>
+         <TD width="33%" height="33%"><FONT face=Arial size=1>&nbsp;</FONT></TD></TR>
+         <TR>
+         <TD width="33%" height="33%"><FONT face=Arial size=1>&nbsp;</FONT></TD>
+         <TD borderColor=#000000 width="33%" height="33%">
+           <DIV align=center>
+           <TABLE borderColor=#999999 height="100" cellSpacing="0" cellPadding="0"        width="100" border="1">
+             <TBODY>
+             <TR>
+               <TD>
+                 <DIV align=center>
+                 <TABLE cellSpacing="0" cellPadding="0" border="0">
+                   <TBODY>
+                   <TR>
+                     <TD colSpan=4>
+                       <DIV                    style="WIDTH: 191px; HEIGHT: 30px; BACKGROUND-COLOR: #ffffff"><FONT                    face=Arial size=1></FONT></DIV></TD>
+                     <TD class="t10">
+                       <DIV align=right><FONT face=Arial size=1>Форма 
+                       ПД-4</FONT></DIV></TD>
+                     <TD>
+                       <DIV                    style="WIDTH: 14px; HEIGHT: 30px; BACKGROUND-COLOR: #ffffff"><FONT                    face=Arial size=1></FONT></DIV></TD></TR>
+                   <TR>
+                     <TD rowSpan=35>
+                       <DIV                    style="WIDTH: 34px; HEIGHT: 492px; BACKGROUND-COLOR: #ffffff"><FONT                    face=Arial size=1></FONT></DIV></TD>
+                     <TD class="t11" vAlign=bottom>
+                       <DIV align=center><FONT face=Arial                    size=1>Извещение</FONT></DIV></TD>
+                     <TD rowSpan=17><IMG style="BACKGROUND-COLOR: #000000"                    height="242" src="lineblace.gif" width="4"></TD>
+                     <TD rowSpan=17>
+                       <DIV                    style="WIDTH: 6px; HEIGHT: 242px; BACKGROUND-COLOR: #ffffff"><FONT                    face=Arial size=1></FONT></DIV></TD>
+                     <TD class="b10" vAlign=bottom>
+                       <DIV align=center><FONT                    size=1>[MAIN.COMPANY]&nbsp;&nbsp;&nbsp; [PAYMENT.INN] / 
+                       [PAYMENT.KPP]</FONT></DIV></TD>
+                     <TD rowSpan=35>
+                       <DIV                    style="WIDTH: 14px; HEIGHT: 492px; BACKGROUND-COLOR: #ffffff"><FONT                    face=Arial size=1></FONT></DIV></TD></TR>
+                   <TR>
+                     <TD rowSpan=14>
+                       <DIV                    style="WIDTH: 147px; HEIGHT: 199px; BACKGROUND-COLOR: #ffffff"><FONT                    face=Arial size=1></FONT></DIV></TD>
+                     <TD class="n6" vAlign=top height="10">
+                       <DIV align=center><FONT size=1>(наименование и ИНН / КПП 
+                       получателя платежа)</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="b10" vAlign=bottom>
+                       <DIV align=center><FONT size=1>р/сч. 
+                     [PAYMENT.RS]</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="n6" vAlign=top>
+                       <DIV align=center><FONT size=1>(номер счета получателя 
+                       платежа)</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="b10" vAlign=bottom>
+                       <DIV align=center><FONT                size=1>[PAYMENT.BANK]</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="n6" vAlign=top>
+                       <DIV align=center><FONT size=1>(наименование банка получателя 
+                       платежа)</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="b10" vAlign=bottom>
+                       <DIV align=center><FONT size=1>к/сч. [PAYMENT.KS], БИК 
+                       [PAYMENT.BIK]</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="n6" vAlign=top>
+                       <DIV align=center><FONT size=1>(банковские реквизиты 
+                       получателя платежа)</FONT></DIV></TD></TR>
+                   <TR></TR>
+                   <TR>
+                     <TD class="b10" vAlign=top>
+                       <DIV align=center><FONT size=1>Оплата по Договору [CONTRACT] 
+                       от&nbsp; [FORMATDATE,[ORDER.DATE_ORDER],'d. m.Y'] 
+                       г.</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="n6" vAlign=top>
+                       <DIV align=center><FONT size=1>(наименование 
+                       платежа)</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="n10" vAlign=bottom>
+                       <DIV align=center><FONT                    size=1><STRONG>[CLIENTNAME]</STRONG></FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="n10" vAlign=top>
+                       <DIV align=center>
+                       <DIV align=center><FONT size=1>паспорт 
+                       серия&nbsp;[USER.DOC_SER], № 
+                       [USER.DOC_NUM],выдан</FONT></DIV></DIV></TD></TR>
+                   <TR>
+                     <TD class="n6" vAlign=top>
+                       <DIV align=center><FONT size=1>(Ф.И.О. и адрес 
+                       плательщика)</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="t10" vAlign=bottom>
+                       <DIV><FONT face=Arial size=1>&nbsp;&nbsp;Дата: [CURDATE] Сумма 
+                       платежа: [ORDER_SUMMA]</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="t10">
+                       <DIV align=center><FONT face=Arial                  size=1>Кассир</FONT></DIV></TD>
+                     <TD class="t10" vAlign=bottom>
+                       <DIV align=center><FONT face=Arial><FONT size=1>Плательщик 
+                       <SPAN class="t10n">(подпись): 
+                       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</SPAN></FONT></FONT></DIV></TD></TR>
+                   <TR>
+                     <TD>
+                       <DIV                    style="FONT-SIZE: 0pt; WIDTH: 147px; HEIGHT: 3px; BACKGROUND-COLOR: #ffffff"><FONT                    face=Arial size=1></FONT></DIV></TD>
+                     <TD>
+                       <DIV                    style="FONT-SIZE: 0pt; WIDTH: 295px; HEIGHT: 3px; BACKGROUND-COLOR: #ffffff"><FONT                    face=Arial size=1></FONT></DIV></TD></TR>
+                   <TR>
+                     <TD colSpan=4><IMG style="BACKGROUND-COLOR: #000000" height="4"                    src="lineblace.gif" width="452"></TD></TR>
+                   <TR>
+                     <TD>
+                       <DIV                    style="WIDTH: 147px; HEIGHT: 8px; BACKGROUND-COLOR: #ffffff"><FONT                    face=Arial size=1></FONT></DIV></TD>
+                     <TD rowSpan=17><IMG style="BACKGROUND-COLOR: #000000"                    height="246" src="lineblace.gif" width="4"></TD>
+                     <TD rowSpan=17>
+                       <DIV                    style="FONT-SIZE: 0pt; WIDTH: 6px; HEIGHT: 246px; BACKGROUND-COLOR: #ffffff"><FONT                    face=Arial size=1></FONT></DIV></TD>
+                     <TD>
+                       <DIV                    style="FONT-SIZE: 0pt; WIDTH: 295px; HEIGHT: 8px; BACKGROUND-COLOR: #ffffff"><FONT                    face=Arial size=1></FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="n7" vAlign=top>
+                       <DIV align=center><FONT size=1>место для круглой 
+                       печати</FONT></DIV></TD>
+                     <TD class="b10" vAlign=bottom>
+                       <DIV align=center><FONT size=1>[MAIN.COMPANY]&nbsp;&nbsp; 
+                       [PAYMENT.INN] / [PAYMENT.KPP]</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD rowSpan=11>
+                       <DIV                    style="FONT-SIZE: 0pt; WIDTH: 147px; HEIGHT: 150px; BACKGROUND-COLOR: #ffffff"><FONT                    face=Arial size=1></FONT></DIV></TD>
+                     <TD class="n6" vAlign=top>
+                       <DIV align=center><FONT size=1>(наименование и ИНН / КПП 
+                       получателя платежа)</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="b10" vAlign=bottom>
+                       <DIV align=center><FONT size=1>р/сч. 
+                     [PAYMENT.RS]</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="n6" vAlign=top>
+                       <DIV align=center><FONT size=1>(номер счета получателя 
+                       платежа)</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="b10" vAlign=bottom>
+                       <DIV align=center><FONT                size=1>[PAYMENT.BANK]</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="n6" vAlign=top>
+                       <DIV align=center><FONT size=1>(наименование банка получателя 
+                       платежа)</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="b10" vAlign=bottom>
+                       <DIV align=center><FONT size=1>к/сч. [PAYMENT.KS], БИК 
+                       [PAYMENT.BIK]</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="n6" vAlign=top>
+                       <DIV align=center><FONT size=1>(банковские реквизиты 
+                       получателя платежа)</FONT></DIV></TD></TR>
+                   <TR></TR>
+                   <TR>
+                     <TD class="b10" vAlign=top>
+                       <DIV align=center><FONT size=1>Оплата по Договору [CONTRACT] 
+                       от&nbsp; [FORMATDATE,[ORDER.DATE_ORDER],'d. m.Y'] 
+                       г.</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="n6" vAlign=top>
+                       <DIV align=center><FONT size=1>(наименование 
+                       платежа)</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="n10" vAlign=bottom>
+                       <DIV align=center>
+                       <DIV align=center><FONT                    size=1><STRONG>[CLIENTNAME]</STRONG></FONT></DIV></DIV></TD></TR>
+                   <TR>
+                     <TD class="t11" vAlign=top>
+                       <DIV align=center><FONT face=Arial                    size=1>Квитанция</FONT></DIV></TD>
+                     <TD class="n10" vAlign=top>
+                       <DIV align=center><FONT size=1>
+                       <DIV align=center>паспорт серия&nbsp;[USER.DOC_SER], № 
+                       [USER.DOC_NUM],выдан</DIV></FONT></DIV></TD></TR>
+                   <TR>
+                     <TD><FONT face=Arial size=1>&nbsp;</FONT></TD>
+                     <TD class="n6" vAlign=top>
+                       <DIV align=center><FONT size=1>(Ф.И.О. и адрес 
+                       плательщика)</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD class="t10" vAlign=bottom height="20">
+                       <DIV align=center><FONT face=Arial                  size=1>Кассир</FONT></DIV></TD>
+                     <TD class="t10" vAlign=bottom height="20">
+                       <DIV><FONT face=Arial size=1>&nbsp;&nbsp;Дата: [CURDATE] Сумма 
+                       платежа: [ORDER_SUMMA]</FONT></DIV></TD></TR>
+                   <TR>
+                     <TD>
+                       <DIV                    style="FONT-SIZE: 0pt; WIDTH: 147px; HEIGHT: 20px; BACKGROUND-COLOR: #ffffff"><FONT                    face=Arial size=1></FONT></DIV></TD>
+                     <TD class="t10" vAlign=bottom>
+                       <DIV align=center><FONT face=Arial><FONT size=1>Плательщик 
+                       <SPAN class="t10n">(подпись): 
+                       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</SPAN></FONT></FONT></DIV></TD></TR>
+                   <TR>
+                     <TD colSpan=4>
+                       <DIV                    style="FONT-SIZE: 0pt; WIDTH: 91px; HEIGHT: 3px; BACKGROUND-COLOR: #ffffff"><FONT                    face=Arial size=1></FONT></DIV></TD>
+                     <TD>
+                       <DIV                    style="FONT-SIZE: 0pt; WIDTH: 295px; HEIGHT: 3px; BACKGROUND-COLOR: #ffffff"><FONT                    face=Arial size=1></FONT></DIV></TD>
+                     <TD>
+                       <DIV                    style="FONT-SIZE: 0pt; WIDTH: 14px; HEIGHT: 3px; BACKGROUND-COLOR: #ffffff"><FONT                    face=Arial size=1></FONT></DIV></TD></TR>
+                   <TR>
+                     <TD colSpan=6>
+                       <DIV                    style="FONT-SIZE: 0pt; WIDTH: 500px; HEIGHT: 18px; BACKGROUND-COLOR: #ffffff"><FONT                    face=Arial          size=1></FONT></DIV></TD></TR></TBODY></TABLE></DIV></TD></TR></TBODY></TABLE></DIV></TD>
+         <TD width="33%" height="33%"><FONT face=Arial size=1>&nbsp;</FONT></TD></TR>
+         <TR>
+         <TD width="33%" height="33%"><FONT face=Arial size=1>&nbsp;</FONT></TD>
+         <TD class="n7" vAlign=top width="33%" height="33%">
+           <DIV align=center><FONT size=1><BR></FONT></DIV></TD>
+         <TD width="33%" height="33%"><FONT face=Arial    size=1>&nbsp;</FONT></TD></TR></TBODY></TABLE>
+       result: 
+       success: 
+       fail: 
+       active: 'Y'
+     8:
+       id: 8
+       lang: rus
+       name_payment: Наличными в офисе компании
+       startform: 
+       type: e
+       blank: 
+       result: 
+       success: 
+       fail: 
+       active: 'Y'
+     9:
+       id: 9
+       lang: ukr
+       name_payment: Банк
+       startform: |
+         Заказ № [ID_ORDER]<br>Сумма оплаты:[SUMM_ORDER:RUR]<br>
+         <br>1. Для оплаты по безналичному расчету внесите&nbsp;
+         <A href="/rekvcompany" target=_blank>реквизиты Вашего предприятия</A>, и 
+         нажмите на кнопку "Выписать счет"; (Проверьте)
+         <BR>
+         2. Оплатите счет;<BR>
+         3. Для оперативности получения продукта, отправьте сканированную (разрешением не менее 
+         150dpi) копию заверенной квитанции об оплате на 
+         <A href="mailto:[MAIN_EMAIL]">[MAIN_EMAIL]</A>&nbsp;или на факс [MAIN_FAX]<BR>4. Ожидайте письмо с подтверждением;<BR>5. На странице "Мои 
+         заказы" войдите в № заказа, в котором Вам будет предоставлены ссылка для 
+         скачивания программы и коды доступа для активизации;<BR>6. Документы (Договор, 
+         Счет-фактура и Акт) будет высланы на Ваш почтовый адрес, указанный как адрес 
+         доставки;<BR>7. Заверьте документы и вышлите вторую копию на адрес 
+         компании.<BR>
+         <BR>
+         <FORM name=frm action="/order/payment.php" METHOD=POST target=_blank>
+         <INPUT TYPE=hidden name=ORDER_PAYEE value="[ID_ORDER]">
+         <INPUT TYPE=submit class="buttonSend" value="Выписать счет">
+         </FORM>
+       type: p
+       blank: |
+         <center>
+         <P>
+         <TABLE 
+         style="BORDER-COLLAPSE: collapse; mso-table-layout-alt: fixed; mso-padding-alt: 0cm 2.8pt 0cm 2.8pt" 
+         cellSpacing=0 cellPadding=0 border=0 >
+         <TBODY >
+         <TR style="mso-row-margin-right: .75pt" >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; PADDING-RIGHT: 2.8pt; BORDER-TOP: black 1pt solid; PADDING-LEFT: 2.8pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: black 1pt solid; WIDTH: 187.1pt; PADDING-TOP: 0cm; BORDER-BOTTOM: #e0dfe3; BACKGROUND-COLOR: transparent; mso-border-top-alt: solid black .5pt; mso-border-left-alt: solid black .5pt" 
+         vAlign=top width=249 >
+           <P 
+           style="MARGIN: 0cm 0cm 0pt; LAYOUT-GRID-MODE: char; mso-pagination: none" ><B 
+           style="mso-bidi-font-weight: normal" ><FONT size=1 >&nbsp;</FONT ><FONT 
+           size=2 >Постачальник _______________________</FONT ></B ></P ></TD >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; PADDING-RIGHT: 2.8pt; BORDER-TOP: #e0dfe3; PADDING-LEFT: 2.8pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: black 1pt solid; WIDTH: 177.2pt; PADDING-TOP: 0cm; BORDER-BOTTOM: #e0dfe3; BACKGROUND-COLOR: transparent; mso-border-left-alt: solid black .5pt" 
+         vAlign=top width=236 colSpan=6 >
+           <P 
+           style="MARGIN: 0cm 0cm 0pt; LAYOUT-GRID-MODE: char; mso-pagination: none" ><B 
+           style="mso-bidi-font-weight: normal" ><FONT size=2 ></FONT ></B >&nbsp;</P ></TD >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; PADDING-RIGHT: 0cm; BORDER-TOP: #e0dfe3; PADDING-LEFT: 0cm; PADDING-BOTTOM: 0cm; BORDER-LEFT: #e0dfe3; PADDING-TOP: 0cm; BORDER-BOTTOM: #e0dfe3; BACKGROUND-COLOR: transparent; mso-cell-special: placeholder" 
+         width=1 >
+           <P style="MARGIN: 0cm 0cm 0pt" ><FONT size=2 ></FONT >&nbsp;</P ></TD ></TR >
+         <TR style="mso-row-margin-right: .75pt" >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; PADDING-RIGHT: 2.8pt; BORDER-TOP: #e0dfe3; PADDING-LEFT: 2.8pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: black 1pt solid; WIDTH: 187.1pt; PADDING-TOP: 0cm; BORDER-BOTTOM: #e0dfe3; BACKGROUND-COLOR: transparent; mso-border-left-alt: solid black .5pt" 
+         vAlign=top width=249 >
+           <P 
+           style="MARGIN: 0cm 0cm 0pt; LAYOUT-GRID-MODE: char; mso-pagination: none" ><B 
+           style="mso-bidi-font-weight: normal" ><SPAN style="mso-spacerun: yes" ><FONT 
+           size=2 >&nbsp;Адреса ____________________________</FONT ></SPAN ></B ></P ></TD >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; PADDING-RIGHT: 2.8pt; BORDER-TOP: #e0dfe3; PADDING-LEFT: 2.8pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: black 1pt solid; WIDTH: 177.2pt; PADDING-TOP: 0cm; BORDER-BOTTOM: #e0dfe3; BACKGROUND-COLOR: transparent; mso-border-left-alt: solid black .5pt" 
+         vAlign=top width=236 colSpan=6 >
+           <P 
+           style="MARGIN: 0cm 0cm 0pt; LAYOUT-GRID-MODE: char; mso-pagination: none" ><FONT 
+           size=2 >РАХУНОК-ФАКТУРА</FONT ></P ></TD >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; PADDING-RIGHT: 0cm; BORDER-TOP: #e0dfe3; PADDING-LEFT: 0cm; PADDING-BOTTOM: 0cm; BORDER-LEFT: #e0dfe3; PADDING-TOP: 0cm; BORDER-BOTTOM: #e0dfe3; BACKGROUND-COLOR: transparent; mso-cell-special: placeholder" 
+         width=1 >
+           <P style="MARGIN: 0cm 0cm 0pt" ><FONT size=2 ></FONT >&nbsp;</P ></TD ></TR >
+         <TR style="mso-row-margin-right: .75pt" >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; PADDING-RIGHT: 2.8pt; BORDER-TOP: #e0dfe3; PADDING-LEFT: 2.8pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: black 1pt solid; WIDTH: 187.1pt; PADDING-TOP: 0cm; BORDER-BOTTOM: #e0dfe3; BACKGROUND-COLOR: transparent; mso-border-left-alt: solid black .5pt" 
+         vAlign=top width=249 >
+           <P 
+           style="MARGIN: 0cm 0cm 0pt; LAYOUT-GRID-MODE: char; mso-pagination: none" ><B 
+           style="mso-bidi-font-weight: normal" ><FONT size=2 >&nbsp;Р/рахунок 
+           __________________________ </FONT ></B ></P ></TD >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; PADDING-RIGHT: 2.8pt; BORDER-TOP: #e0dfe3; PADDING-LEFT: 2.8pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: black 1pt solid; WIDTH: 63.8pt; PADDING-TOP: 0cm; BORDER-BOTTOM: #e0dfe3; BACKGROUND-COLOR: transparent; mso-border-left-alt: solid black .5pt" 
+         vAlign=top width=85 colSpan=3 >
+           <P 
+           style="MARGIN: 0cm 0cm 0pt; LAYOUT-GRID-MODE: char; mso-pagination: none" ><FONT 
+           size=2 >№</FONT ></P ></TD >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; PADDING-RIGHT: 2.8pt; BORDER-TOP: black 1pt solid; PADDING-LEFT: 2.8pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: black 1pt solid; WIDTH: 70.85pt; PADDING-TOP: 0cm; BORDER-BOTTOM: black 1pt solid; BACKGROUND-COLOR: transparent; mso-border-top-alt: solid black .5pt; mso-border-left-alt: solid black .5pt; mso-border-bottom-alt: solid black .5pt" 
+         vAlign=top width=94 colSpan=2 >
+           <P 
+           style="MARGIN: 0cm 0cm 0pt; LAYOUT-GRID-MODE: char; mso-pagination: none" ><B 
+           style="mso-bidi-font-weight: normal" ><FONT size=2 ></FONT ></B >&nbsp;</P ></TD >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; PADDING-RIGHT: 2.8pt; BORDER-TOP: #e0dfe3; PADDING-LEFT: 2.8pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: black 1pt solid; WIDTH: 42.55pt; PADDING-TOP: 0cm; BORDER-BOTTOM: #e0dfe3; BACKGROUND-COLOR: transparent; mso-border-left-alt: solid black .5pt" 
+         vAlign=top width=57 >
+           <P 
+           style="MARGIN: 0cm 0cm 0pt; LAYOUT-GRID-MODE: char; mso-pagination: none" ><B 
+           style="mso-bidi-font-weight: normal" ><FONT size=2 ></FONT ></B >&nbsp;</P ></TD >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; PADDING-RIGHT: 0cm; BORDER-TOP: #e0dfe3; PADDING-LEFT: 0cm; PADDING-BOTTOM: 0cm; BORDER-LEFT: #e0dfe3; PADDING-TOP: 0cm; BORDER-BOTTOM: #e0dfe3; BACKGROUND-COLOR: transparent; mso-cell-special: placeholder" 
+         width=1 >
+           <P style="MARGIN: 0cm 0cm 0pt" ><FONT size=2 ></FONT >&nbsp;</P ></TD ></TR >
+         <TR style="mso-row-margin-right: .75pt" >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; PADDING-RIGHT: 2.8pt; BORDER-TOP: #e0dfe3; PADDING-LEFT: 2.8pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: black 1pt solid; WIDTH: 187.1pt; PADDING-TOP: 0cm; BORDER-BOTTOM: #e0dfe3; BACKGROUND-COLOR: transparent; mso-border-left-alt: solid black .5pt" 
+         vAlign=top width=249 >
+           <P 
+           style="MARGIN: 0cm 0cm 0pt; LAYOUT-GRID-MODE: char; mso-pagination: none" ><B 
+           style="mso-bidi-font-weight: normal" ><FONT size=2 >&nbsp;в 
+           _________________________________</FONT ></B ></P ></TD >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; PADDING-RIGHT: 2.8pt; BORDER-TOP: #e0dfe3; PADDING-LEFT: 2.8pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: black 1pt solid; WIDTH: 28.55pt; PADDING-TOP: 0cm; BORDER-BOTTOM: #e0dfe3; BACKGROUND-COLOR: transparent; mso-border-left-alt: solid black .5pt" 
+         vAlign=top width=38 >
+           <P 
+           style="MARGIN: 0cm 0cm 0pt; LAYOUT-GRID-MODE: char; mso-pagination: none" ><B 
+           style="mso-bidi-font-weight: normal" ><FONT size=2 ></FONT ></B >&nbsp;</P ></TD >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; PADDING-RIGHT: 2.8pt; BORDER-TOP: #e0dfe3; PADDING-LEFT: 2.8pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: #e0dfe3; WIDTH: 148.65pt; PADDING-TOP: 0cm; BORDER-BOTTOM: #e0dfe3; BACKGROUND-COLOR: transparent" 
+         vAlign=top width=198 colSpan=5 >
+           <P 
+           style="MARGIN: 0cm 0cm 0pt; LAYOUT-GRID-MODE: char; mso-pagination: none" ><B 
+           style="mso-bidi-font-weight: normal" ><FONT size=2 ></FONT ></B >&nbsp;</P ></TD >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; BORDER-TOP: #e0dfe3; BORDER-LEFT: #e0dfe3; BORDER-BOTTOM: black 1pt solid; BACKGROUND-COLOR: transparent; mso-cell-special: placeholder" 
+         width=1 >
+           <P style="MARGIN: 0cm 0cm 0pt" ><FONT size=2 ></FONT >&nbsp;</P ></TD ></TR >
+         <TR >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; PADDING-RIGHT: 2.8pt; BORDER-TOP: #e0dfe3; PADDING-LEFT: 2.8pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: black 1pt solid; WIDTH: 187.1pt; PADDING-TOP: 0cm; BORDER-BOTTOM: #e0dfe3; BACKGROUND-COLOR: transparent; mso-border-left-alt: solid black .5pt" 
+         vAlign=top width=249 >
+           <P 
+           style="MARGIN: 0cm 0cm 0pt; LAYOUT-GRID-MODE: char; mso-pagination: none" ><B 
+           style="mso-bidi-font-weight: normal" ><FONT 
+           size=2 >&nbsp;__________________МФО____________</FONT ></B ></P ></TD >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; PADDING-RIGHT: 2.8pt; BORDER-TOP: #e0dfe3; PADDING-LEFT: 2.8pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: black 1pt solid; WIDTH: 28.55pt; PADDING-TOP: 0cm; BORDER-BOTTOM: #e0dfe3; BACKGROUND-COLOR: transparent; mso-border-left-alt: solid black .5pt" 
+         vAlign=top width=38 >
+           <P 
+           style="MARGIN: 0cm 0cm 0pt; LAYOUT-GRID-MODE: char; mso-pagination: none" ><B 
+           style="mso-bidi-font-weight: normal" ><FONT size=2 >від</FONT ></B ></P ></TD >
+         <TD 
+         style="BORDER-RIGHT: black 1pt solid; PADDING-RIGHT: 2.8pt; BORDER-TOP: black 1pt solid; PADDING-LEFT: 2.8pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: black 1pt solid; WIDTH: 149.4pt; PADDING-TOP: 0cm; BORDER-BOTTOM: black 1pt solid; BACKGROUND-COLOR: transparent; mso-border-alt: solid black .5pt" 
+         vAlign=top width=199 colSpan=6 >
+           <P 
+           style="MARGIN: 0cm 0cm 0pt; LAYOUT-GRID-MODE: char; mso-pagination: none" ><B 
+           style="mso-bidi-font-weight: normal" ><FONT size=2 >&nbsp;"____" 
+           ___________________ р.</FONT ></B ></P ></TD ></TR >
+         <TR style="mso-row-margin-right: .75pt" >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; PADDING-RIGHT: 2.8pt; BORDER-TOP: #e0dfe3; PADDING-LEFT: 2.8pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: black 1pt solid; WIDTH: 187.1pt; PADDING-TOP: 0cm; BORDER-BOTTOM: #e0dfe3; BACKGROUND-COLOR: transparent; mso-border-left-alt: solid black .5pt" 
+         vAlign=top width=249 >
+           <P 
+           style="MARGIN: 0cm 0cm 0pt; LAYOUT-GRID-MODE: char; mso-pagination: none" ><B 
+           style="mso-bidi-font-weight: normal" ><FONT size=2 >&nbsp;ЄДРПОУ 
+           __________________________</FONT ></B ></P ></TD >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; PADDING-RIGHT: 2.8pt; BORDER-TOP: #e0dfe3; PADDING-LEFT: 2.8pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: black 1pt solid; WIDTH: 30.95pt; PADDING-TOP: 0cm; BORDER-BOTTOM: #e0dfe3; BACKGROUND-COLOR: transparent; mso-border-left-alt: solid black .5pt" 
+         vAlign=top width=41 colSpan=2 >
+           <P 
+           style="MARGIN: 0cm 0cm 0pt; LAYOUT-GRID-MODE: char; mso-pagination: none" ><B 
+           style="mso-bidi-font-weight: normal" ><FONT size=2 ></FONT ></B >&nbsp;</P ></TD >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; PADDING-RIGHT: 2.8pt; BORDER-TOP: #e0dfe3; PADDING-LEFT: 2.8pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: #e0dfe3; WIDTH: 68.25pt; PADDING-TOP: 0cm; BORDER-BOTTOM: #e0dfe3; BACKGROUND-COLOR: transparent" 
+         vAlign=top width=91 colSpan=2 >
+           <P 
+           style="MARGIN: 0cm 0cm 0pt; LAYOUT-GRID-MODE: char; mso-pagination: none" ><B 
+           style="mso-bidi-font-weight: normal" ><FONT size=2 ></FONT ></B >&nbsp;</P ></TD >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; PADDING-RIGHT: 2.8pt; BORDER-TOP: #e0dfe3; PADDING-LEFT: 2.8pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: #e0dfe3; WIDTH: 78pt; PADDING-TOP: 0cm; BORDER-BOTTOM: #e0dfe3; BACKGROUND-COLOR: transparent" 
+         vAlign=top width=104 colSpan=2 >
+           <P 
+           style="MARGIN: 0cm 0cm 0pt; LAYOUT-GRID-MODE: char; mso-pagination: none" ><B 
+           style="mso-bidi-font-weight: normal" ><FONT size=2 ></FONT ></B >&nbsp;</P ></TD >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; BORDER-TOP: #e0dfe3; BORDER-LEFT: #e0dfe3; BORDER-BOTTOM: black 1pt solid; BACKGROUND-COLOR: transparent; mso-cell-special: placeholder" 
+         width=1 >
+           <P style="MARGIN: 0cm 0cm 0pt" ><FONT size=2 ></FONT >&nbsp;</P ></TD ></TR >
+         <TR >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; PADDING-RIGHT: 2.8pt; BORDER-TOP: #e0dfe3; PADDING-LEFT: 2.8pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: black 1pt solid; WIDTH: 187.1pt; PADDING-TOP: 0cm; BORDER-BOTTOM: #e0dfe3; BACKGROUND-COLOR: transparent; mso-border-left-alt: solid black .5pt" 
+         vAlign=top width=249 >
+           <P 
+           style="MARGIN: 0cm 0cm 0pt; LAYOUT-GRID-MODE: char; mso-pagination: none" ><B 
+           style="mso-bidi-font-weight: normal" ><FONT size=2 >&nbsp;Тел./ф. 
+           ____________________________</FONT ></B ></P ></TD >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; PADDING-RIGHT: 2.8pt; BORDER-TOP: #e0dfe3; PADDING-LEFT: 2.8pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: black 1pt solid; WIDTH: 99.2pt; PADDING-TOP: 0cm; BORDER-BOTTOM: #e0dfe3; BACKGROUND-COLOR: transparent; mso-border-left-alt: solid black .5pt" 
+         vAlign=top width=132 colSpan=4 >
+           <P 
+           style="MARGIN: 0cm 0cm 0pt; LAYOUT-GRID-MODE: char; mso-pagination: none" ><B 
+           style="mso-bidi-font-weight: normal" ><FONT size=2 >до платіжн. вимоги 
+           №</FONT ></B ></P ></TD >
+         <TD 
+         style="BORDER-RIGHT: black 1pt solid; PADDING-RIGHT: 2.8pt; BORDER-TOP: black 1pt solid; PADDING-LEFT: 2.8pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: black 1pt solid; WIDTH: 78.75pt; PADDING-TOP: 0cm; BORDER-BOTTOM: black 1pt solid; BACKGROUND-COLOR: transparent; mso-border-alt: solid black .5pt" 
+         vAlign=top width=105 colSpan=3 >
+           <P 
+           style="MARGIN: 0cm 0cm 0pt; LAYOUT-GRID-MODE: char; mso-pagination: none" ><B 
+           style="mso-bidi-font-weight: normal" ><FONT 
+         size=2 ></FONT ></B >&nbsp;</P ></TD ></TR >
+         <TR style="mso-row-margin-right: .75pt" >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; PADDING-RIGHT: 2.8pt; BORDER-TOP: black 1pt solid; PADDING-LEFT: 2.8pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: #e0dfe3; WIDTH: 187.1pt; PADDING-TOP: 0cm; BORDER-BOTTOM: black 1pt solid; BACKGROUND-COLOR: transparent; mso-border-top-alt: solid black .5pt; mso-border-bottom-alt: solid black .5pt" 
+         vAlign=top width=249 >
+           <P 
+           style="MARGIN: 0cm 0cm 0pt; LAYOUT-GRID-MODE: char; mso-pagination: none" ><B 
+           style="mso-bidi-font-weight: normal" ><FONT size=2 ></FONT ></B >&nbsp;</P ></TD >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; PADDING-RIGHT: 2.8pt; BORDER-TOP: #e0dfe3; PADDING-LEFT: 2.8pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: #e0dfe3; WIDTH: 177.2pt; PADDING-TOP: 0cm; BORDER-BOTTOM: #e0dfe3; BACKGROUND-COLOR: transparent" 
+         vAlign=top width=236 colSpan=6 >
+           <P 
+           style="MARGIN: 0cm 0cm 0pt; LAYOUT-GRID-MODE: char; mso-pagination: none" ><B 
+           style="mso-bidi-font-weight: normal" ><FONT size=2 ></FONT ></B >&nbsp;</P ></TD >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; BORDER-TOP: #e0dfe3; BORDER-LEFT: #e0dfe3; BORDER-BOTTOM: black 1pt solid; BACKGROUND-COLOR: transparent; mso-cell-special: placeholder" 
+         width=1 >
+           <P style="MARGIN: 0cm 0cm 0pt" ><FONT size=2 ></FONT >&nbsp;</P ></TD ></TR >
+         <TR style="mso-yfti-lastrow: yes" >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; PADDING-RIGHT: 2.8pt; BORDER-TOP: #e0dfe3; PADDING-LEFT: 2.8pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: black 1pt solid; WIDTH: 187.1pt; PADDING-TOP: 0cm; BORDER-BOTTOM: black 1pt solid; BACKGROUND-COLOR: transparent; mso-border-left-alt: solid black .5pt; mso-border-bottom-alt: solid black .5pt" 
+         vAlign=top width=249 >
+           <P 
+           style="MARGIN: 0cm 0cm 0pt; LAYOUT-GRID-MODE: char; mso-pagination: none" ><B 
+           style="mso-bidi-font-weight: normal" ><FONT size=2 >Платник&nbsp; 
+           </FONT ></B ></P ></TD >
+         <TD 
+         style="BORDER-RIGHT: black 1pt solid; PADDING-RIGHT: 2.8pt; BORDER-TOP: black 1pt solid; PADDING-LEFT: 2.8pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: black 1pt solid; WIDTH: 177.95pt; PADDING-TOP: 0cm; BORDER-BOTTOM: black 1pt solid; BACKGROUND-COLOR: transparent; mso-border-alt: solid black .5pt" 
+         vAlign=top width=237 colSpan=7 >
+           <P 
+           style="MARGIN: 0cm 0cm 0pt; LAYOUT-GRID-MODE: char; mso-pagination: none" ><B 
+           style="mso-bidi-font-weight: normal" ><FONT 
+         size=2 >Доповнення</FONT ></B ></P ></TD ></TR >
+         <TR height=0 >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; BORDER-TOP: #e0dfe3; BORDER-LEFT: #e0dfe3; BORDER-BOTTOM: #e0dfe3; BACKGROUND-COLOR: transparent" 
+         width=249 ><FONT size=2 ></FONT ></TD >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; BORDER-TOP: #e0dfe3; BORDER-LEFT: #e0dfe3; BORDER-BOTTOM: #e0dfe3; BACKGROUND-COLOR: transparent" 
+         width=38 ><FONT size=2 ></FONT ></TD >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; BORDER-TOP: #e0dfe3; BORDER-LEFT: #e0dfe3; BORDER-BOTTOM: #e0dfe3; BACKGROUND-COLOR: transparent" 
+         width=3 ><FONT size=2 ></FONT ></TD >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; BORDER-TOP: #e0dfe3; BORDER-LEFT: #e0dfe3; BORDER-BOTTOM: #e0dfe3; BACKGROUND-COLOR: transparent" 
+         width=44 ><FONT size=2 ></FONT ></TD >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; BORDER-TOP: #e0dfe3; BORDER-LEFT: #e0dfe3; BORDER-BOTTOM: #e0dfe3; BACKGROUND-COLOR: transparent" 
+         width=47 ><FONT size=2 ></FONT ></TD >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; BORDER-TOP: #e0dfe3; BORDER-LEFT: #e0dfe3; BORDER-BOTTOM: #e0dfe3; BACKGROUND-COLOR: transparent" 
+         width=47 ><FONT size=2 ></FONT ></TD >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; BORDER-TOP: #e0dfe3; BORDER-LEFT: #e0dfe3; BORDER-BOTTOM: #e0dfe3; BACKGROUND-COLOR: transparent" 
+         width=57 ><FONT size=2 ></FONT ></TD >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; BORDER-TOP: #e0dfe3; BORDER-LEFT: #e0dfe3; BORDER-BOTTOM: #e0dfe3; BACKGROUND-COLOR: transparent" 
+         width=1 ><FONT size=2 ></FONT ></TD ></TR ></TBODY ></TABLE ></P >
+         <P style="MARGIN: 0cm 0cm 0pt; mso-pagination: none" ><B 
+         style="mso-bidi-font-weight: normal" ><FONT size=2 ></FONT ></B >&nbsp;</P >
+         <P >
+         <TABLE 
+         style="BORDER-COLLAPSE: collapse; mso-table-layout-alt: fixed; mso-padding-alt: 0cm 5.4pt 0cm 5.4pt" 
+         cellSpacing=0 cellPadding=0 border=0 >
+          <TBODY >
+          <TR >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; PADDING-RIGHT: 5.4pt; BORDER-TOP: black 1pt solid; PADDING-LEFT: 5.4pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: black 1pt solid; WIDTH: 166.55pt; PADDING-TOP: 0cm; BORDER-BOTTOM: #e0dfe3; BACKGROUND-COLOR: transparent; mso-border-top-alt: solid black .5pt; mso-border-left-alt: solid black .5pt" 
+         vAlign=top width=222 >
+           <P 
+           style="MARGIN: 0cm 0cm 0pt; LAYOUT-GRID-MODE: char; TEXT-ALIGN: center; mso-pagination: none" 
+           align=center ><I style="mso-bidi-font-style: normal" ><FONT 
+           size=2 >Найменування</FONT ></I ></P ></TD >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; PADDING-RIGHT: 5.4pt; BORDER-TOP: black 1pt solid; PADDING-LEFT: 5.4pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: black 1pt solid; WIDTH: 42.5pt; PADDING-TOP: 0cm; BORDER-BOTTOM: #e0dfe3; BACKGROUND-COLOR: transparent; mso-border-top-alt: solid black .5pt; mso-border-left-alt: solid black .5pt" 
+         vAlign=top width=57 >
+           <P 
+           style="MARGIN: 0cm 0cm 0pt; LAYOUT-GRID-MODE: char; TEXT-ALIGN: center; mso-pagination: none" 
+           align=center ><I style="mso-bidi-font-style: normal" ><FONT size=2 >Од. 
+           вим.</FONT ></I ></P ></TD >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; PADDING-RIGHT: 5.4pt; BORDER-TOP: black 1pt solid; PADDING-LEFT: 5.4pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: black 1pt solid; WIDTH: 42.55pt; PADDING-TOP: 0cm; BORDER-BOTTOM: #e0dfe3; BACKGROUND-COLOR: transparent; mso-border-top-alt: solid black .5pt; mso-border-left-alt: solid black .5pt" 
+         vAlign=top width=57 >
+           <P 
+           style="MARGIN: 0cm 0cm 0pt; LAYOUT-GRID-MODE: char; TEXT-ALIGN: center; mso-pagination: none" 
+           align=center ><I style="mso-bidi-font-style: normal" ><FONT 
+           size=2 >К-сть</FONT ></I ></P ></TD >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; PADDING-RIGHT: 5.4pt; BORDER-TOP: black 1pt solid; PADDING-LEFT: 5.4pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: black 1pt solid; WIDTH: 49.6pt; PADDING-TOP: 0cm; BORDER-BOTTOM: #e0dfe3; BACKGROUND-COLOR: transparent; mso-border-top-alt: solid black .5pt; mso-border-left-alt: solid black .5pt" 
+         vAlign=top width=66 >
+           <P 
+           style="MARGIN: 0cm 0cm 0pt; LAYOUT-GRID-MODE: char; TEXT-ALIGN: center; mso-pagination: none" 
+           align=center ><I style="mso-bidi-font-style: normal" ><FONT 
+           size=2 >Ціна</FONT ></I ></P ></TD >
+         <TD 
+         style="BORDER-RIGHT: black 1pt solid; PADDING-RIGHT: 5.4pt; BORDER-TOP: black 1pt solid; PADDING-LEFT: 5.4pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: black 1pt solid; WIDTH: 64.55pt; PADDING-TOP: 0cm; BORDER-BOTTOM: #e0dfe3; BACKGROUND-COLOR: transparent; mso-border-top-alt: solid black .5pt; mso-border-left-alt: solid black .5pt; mso-border-right-alt: solid black .5pt" 
+         vAlign=top width=86 >
+           <P 
+           style="MARGIN: 0cm 0cm 0pt; LAYOUT-GRID-MODE: char; TEXT-ALIGN: center; mso-pagination: none" 
+           align=center ><I style="mso-bidi-font-style: normal" ><FONT 
+           size=2 >Сума</FONT ></I ></P ></TD ></TR >
+           <SHOPLIST>
+          <TR >
+          <TD style="BORDER-RIGHT: #e0dfe3; PADDING-RIGHT: 5.4pt; BORDER-TOP: black 1pt solid; PADDING-LEFT: 5.4pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: black 1pt solid; WIDTH: 166.55pt; PADDING-TOP: 0cm; BORDER-BOTTOM: black 1pt solid; BACKGROUND-COLOR: transparent; mso-border-top-alt: solid black .5pt; mso-border-left-alt: solid black .5pt; mso-border-bottom-alt: solid black .5pt" 
+         vAlign=top width=222 >&nbsp;[SHOPLIST.NAME]</TD >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; PADDING-RIGHT: 5.4pt; BORDER-TOP: black 1pt solid; PADDING-LEFT: 5.4pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: black 1pt solid; WIDTH: 42.5pt; PADDING-TOP: 0cm; BORDER-BOTTOM: black 1pt solid; BACKGROUND-COLOR: transparent; mso-border-top-alt: solid black .5pt; mso-border-left-alt: solid black .5pt; mso-border-bottom-alt: solid black .5pt" 
+         vAlign=top width=57 >&nbsp;  </TD >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; PADDING-RIGHT: 5.4pt; BORDER-TOP: black 1pt solid; PADDING-LEFT: 5.4pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: black 1pt solid; WIDTH: 42.55pt; PADDING-TOP: 0cm; BORDER-BOTTOM: black 1pt solid; BACKGROUND-COLOR: transparent; mso-border-top-alt: solid black .5pt; mso-border-left-alt: solid black .5pt; mso-border-bottom-alt: solid black .5pt" 
+         vAlign=top width=57 >&nbsp;[SHOPLIST.COUNT]</TD >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; PADDING-RIGHT: 5.4pt; BORDER-TOP: black 1pt solid; PADDING-LEFT: 5.4pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: black 1pt solid; WIDTH: 49.6pt; PADDING-TOP: 0cm; BORDER-BOTTOM: black 1pt solid; BACKGROUND-COLOR: transparent; mso-border-top-alt: solid black .5pt; mso-border-left-alt: solid black .5pt; mso-border-bottom-alt: solid black .5pt" 
+         vAlign=top width=66 >&nbsp;[SHOPLIST.PRICE]</TD >
+        
+         <TD 
+         style="BORDER-RIGHT: black 1pt solid; PADDING-RIGHT: 5.4pt; BORDER-TOP: black 1pt solid; PADDING-LEFT: 5.4pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: black 1pt solid; WIDTH: 64.55pt; PADDING-TOP: 0cm; BORDER-BOTTOM: black 1pt solid; BACKGROUND-COLOR: transparent; mso-border-alt: solid black .5pt" 
+         vAlign=top width=86 >[SHOPLIST.SUMMA]&nbsp;</TD ></TR >
+         </SHOPLIST> 
+         <TR >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; PADDING-RIGHT: 5.4pt; BORDER-TOP: #e0dfe3; PADDING-LEFT: 5.4pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: black 1pt solid; WIDTH: 301.2pt; PADDING-TOP: 0cm; BORDER-BOTTOM: black 1pt solid; BACKGROUND-COLOR: transparent; mso-border-left-alt: solid black .5pt; mso-border-bottom-alt: solid black .5pt" 
+         vAlign=top width=402 colSpan=4 >
+           <P 
+           style="MARGIN: 0cm 0cm 0pt; LAYOUT-GRID-MODE: char; mso-pagination: none" ><B 
+           style="mso-bidi-font-weight: normal" ><FONT size=2 >Всього</FONT ></B ></P ></TD >
+         <TD 
+         style="BORDER-RIGHT: black 1pt solid; PADDING-RIGHT: 5.4pt; BORDER-TOP: #e0dfe3; PADDING-LEFT: 5.4pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: black 1pt solid; WIDTH: 64.55pt; PADDING-TOP: 0cm; BORDER-BOTTOM: black 1pt solid; BACKGROUND-COLOR: transparent; mso-border-left-alt: solid black .5pt; mso-border-bottom-alt: solid black .5pt; mso-border-right-alt: solid black .5pt" 
+         vAlign=top width=86 >
+           <P 
+           style="MARGIN: 0cm 0cm 0pt; LAYOUT-GRID-MODE: char; mso-pagination: none" ><FONT 
+           size=2 >[ORDER_SUMMA]</FONT >&nbsp;</P ></TD ></TR >
+         <TR >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; PADDING-RIGHT: 5.4pt; BORDER-TOP: #e0dfe3; PADDING-LEFT: 5.4pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: black 1pt solid; WIDTH: 301.2pt; PADDING-TOP: 0cm; BORDER-BOTTOM: black 1pt solid; BACKGROUND-COLOR: transparent; mso-border-left-alt: solid black .5pt; mso-border-bottom-alt: solid black .5pt" 
+         vAlign=top width=402 colSpan=4 >
+           <P 
+           style="MARGIN: 0cm 0cm 0pt; LAYOUT-GRID-MODE: char; mso-pagination: none" ><B 
+           style="mso-bidi-font-weight: normal" ><FONT size=2 >Податок на додану 
+           вартість (ПДВ)</FONT ></B ></P ></TD >
+         <TD 
+         style="BORDER-RIGHT: black 1pt solid; PADDING-RIGHT: 5.4pt; BORDER-TOP: #e0dfe3; PADDING-LEFT: 5.4pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: black 1pt solid; WIDTH: 64.55pt; PADDING-TOP: 0cm; BORDER-BOTTOM: black 1pt solid; BACKGROUND-COLOR: transparent; mso-border-left-alt: solid black .5pt; mso-border-bottom-alt: solid black .5pt; mso-border-right-alt: solid black .5pt" 
+         vAlign=top width=86 >
+           <P 
+           style="MARGIN: 0cm 0cm 0pt; LAYOUT-GRID-MODE: char; mso-pagination: none" ><FONT 
+           size=2 ></FONT >&nbsp;</P ></TD ></TR >
+         <TR style="mso-yfti-lastrow: yes" >
+         <TD 
+         style="BORDER-RIGHT: #e0dfe3; PADDING-RIGHT: 5.4pt; BORDER-TOP: #e0dfe3; PADDING-LEFT: 5.4pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: black 1pt solid; WIDTH: 301.2pt; PADDING-TOP: 0cm; BORDER-BOTTOM: black 1pt solid; BACKGROUND-COLOR: transparent; mso-border-left-alt: solid black .5pt; mso-border-bottom-alt: solid black .5pt" 
+         vAlign=top width=402 colSpan=4 >
+           <P 
+           style="MARGIN: 0cm 0cm 0pt; LAYOUT-GRID-MODE: char; mso-pagination: none" ><B 
+           style="mso-bidi-font-weight: normal" ><FONT size=2 >Загальна сума з 
+           ПДВ</FONT ></B ></P ></TD >
+         <TD 
+         style="BORDER-RIGHT: black 1pt solid; PADDING-RIGHT: 5.4pt; BORDER-TOP: #e0dfe3; PADDING-LEFT: 5.4pt; PADDING-BOTTOM: 0cm; BORDER-LEFT: black 1pt solid; WIDTH: 64.55pt; PADDING-TOP: 0cm; BORDER-BOTTOM: black 1pt solid; BACKGROUND-COLOR: transparent; mso-border-left-alt: solid black .5pt; mso-border-bottom-alt: solid black .5pt; mso-border-right-alt: solid black .5pt" 
+         vAlign=top width=86 >
+           <P 
+           style="MARGIN: 0cm 0cm 0pt; LAYOUT-GRID-MODE: char; mso-pagination: none" ><FONT 
+           size=2 ></FONT >&nbsp;</P ></TD ></TR ></TBODY ></TABLE ></P >
+         <P style="MARGIN: 0cm 0cm 0pt -2cm; mso-pagination: none" ><B 
+         style="mso-bidi-font-weight: normal" ><FONT size=2 ></FONT ></B >&nbsp;</P >
+         <P style="MARGIN: 0cm 0cm 0pt; mso-pagination: none" ><B 
+         style="mso-bidi-font-weight: normal" ><FONT size=2 >Загальна сума, що підлягає 
+         оплаті ________________________________________________&nbsp; </FONT ></B ></P >
+         <P style="MARGIN: 0cm 0cm 0pt; mso-pagination: none" ><B 
+         style="mso-bidi-font-weight: normal" ><FONT size=2 ></FONT ></B >&nbsp;</P >
+         <P style="MARGIN: 0cm 0cm 0pt; mso-pagination: none" ><B 
+         style="mso-bidi-font-weight: normal" ><FONT 
+         size=2 >___________________________________________________________ грн. 
+         ____________ коп.</FONT ></B ></P >
+         <P style="MARGIN: 0cm 0cm 0pt; mso-pagination: none" ><B 
+         style="mso-bidi-font-weight: normal" ><FONT size=2 ></FONT ></B >&nbsp;</P >
+         <P style="MARGIN: 0cm 0cm 0pt; mso-pagination: none" ><B 
+         style="mso-bidi-font-weight: normal" ><FONT 
+         size=2 >Директор ______________________<SPAN 
+         style="mso-tab-count: 2" >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+         Гол. бухгалтер __________________________ </FONT ></SPAN ></B ></P >
+         </center>
+       result: 
+       active: 'N'
+     10:
+       id: 10
+       lang: ukr
+       logoimg: payment_webm.jpg
+       name_payment: WebMoney
+       startform: |
+         Оплата через систему интернет-платежей Web Money (Веб Мани). Вам необходимо иметь свой собственный счет (кошелек) в системе интернет платежей WebMoney (<a href="www.webmoney.ru" target=_blank>www.webmoney.ru</a>) При оформлении заказа на нашем сайте Вы можете выбрать "оплата Web Money" и оплата пройдёт в автоматическом режиме.
+         Примечание: в момент оплаты кошелёк должен быть запущен на Вашем компьютере.
+       type: 'e'
+       blank: |
+         <H3 class=contentTitle>Оплата заказа: - WebMoney</H3>
+         <form name=frm method=post>Выберите вид валюты для оплаты:
+         <select onchange="document.frm.submit();" name="valuts">
+         <option>    -----
+         <option value="wm_z" [SELECTED:wm_z]>WMZ
+         <option value="wm_r" [SELECTED:wm_r]>WMR
+         <option value="wm_e" [SELECTED:wm_e]>WME
+         <option value="wm_u" [SELECTED:wm_u]>WMU
+         </select>
+         <input type=hidden name=FORMA_PAYEE value="4">
+         <input type=hidden name=ORDER_PAYEE value="[ORDER.ID]">
+         </form><br><br>
+         Сумма к оплате: [ORDER_SUMMA]<br><br>Для выполения прямого платежа на кошелек продавца нажмите кнопку "Продолжить оплату"
+         и пройдите авторизацию в системе. Вы увидите все детали платежа на экране и
+         сможете подтвердить или отменить платеж. Для выполнения платежа вы должны быть
+         зарегистрированы в системе <a href="http://www.webmoney.ru/" target=_blank>WebMoney Transfer</a><br><br><br>
+         [SETCURRENCY:[IF(RUR=wm_r,USD=wm_z,EUR=wm_e,UKH=wm_u:USD)]]
+         <form method="POST" action="https://merchant.webmoney.ru/lmi/payment.asp" target=_blank>
+         <input type="hidden" name="LMI_MODE" value="1">
+         <input type="hidden" name="LMI_PAYEE_PURSE" value="[PAYMENT.[POST.VALUTS:wm_z]]">
+         <input type="hidden" name="LMI_PAYMENT_AMOUNT" value="[ORDER.SUMMA]">
+         <input type="hidden" name="LMI_PAYMENT_NO" value="Заказ:[ORDER.ID]">
+         <input type="hidden" name="LMI_PAYMENT_DESC" value="Заказ:[ORDER.ID] / Договор: [USER.ID]">
+         <input type="hidden" name="LMI_SUCCESS_METHOD" value="1">
+         <input type="hidden" name="LMI_RESULT_URL" value="http://[THISNAMESITE]/modules/shop_payee_order/result.php">
+         <input type="hidden" name="LMI_SUCCESS_URL" value="http://[THISNAMESITE]/modules/shop_payee_order/success.php">
+         <input type="hidden" name="LMI_FAIL_URL" value="http://[THISNAMESITE]/modules/shop_payee_order/fail.php">
+         <input type="hidden" name="LMI_SIM_MODE" value="0">
+         <input type="hidden" name="PAGEPAYEE" value="http://[THISNAMESITE]/[PAGENAME]?razdel=[RAZDEL]>sub=3">
+         <input type="submit" class="buttonSend" value="Продолжить оплату">
+         </form>
+       result: |
+         SE_PAYEXECUTE(
+         SAMETEXT("MD5("[POST.LMI_PAYEE_PURSE][POST.LMI_PAYMENT_AMOUNT][POST.LMI_PAYMENT_NO][POST.LMI_MODE][POST.LMI_SYS_INVS_NO][POST.LMI_SYS_TRANS_NO][POST.LMI_SYS_TRANS_DATE][POST.LMI_SECRET_KEY][POST.LMI_PAYER_PURSE][POST.LMI_PAYER_WM]")","[POST.LMI_HASH]"),
+         [POST.LMI_PAYMENT_AMOUNT],
+         [POST.LMI_SYS_INVS_NO],
+         [POST.LMI_PAYEE_PURSE])
+       success: |
+         <ACCESS>
+         <INPUT type=hidden name="LMI_SYS_INVS_NO" value="[POST.LMI_SYS_INVS_NO]" >
+         <INPUT type=hidden name="LMI_SYS_TRANS_DATE" value="[POST.LMI_SYS_TRANS_DATE]" >
+         <INPUT type=hidden name="LMI_SYS_TRANS_NO" value="[POST.LMI_SYS_TRANS_NO]" >
+         </ACCESS>
+         <H4>Оплата  проведена успешно</H4>
+         <br>
+         Ваш заказ  № [ORDER.ID] оплачен
+         <table class=tableTable border=0>
+         <TBODY class=tableBody>
+         <tr><td> 
+         Номер счета WebMoney Transfer:</td><td> [POST.LMI_SYS_INVS_NO]</td></tr>
+         <tr><td>Номер платежа в WebMoney:</td><td> [POST.LMI_SYS_TRANS_NO]</td></tr> 
+         <tr><td>Дата и время  платежа:</td><td> [POST.LMI_SYS_TRANS_DATE]</td></tr> 
+         </TBODY>
+         </table>
+       fail: |
+         <ACCESS>
+         </ACCESS>
+         <H4>Ошибка платежа WebMoney</H4><BR>
+         Оплата заказа № [ORDER.ID] не проведена<BR>
+         <BR>
+       active: 'N'
+

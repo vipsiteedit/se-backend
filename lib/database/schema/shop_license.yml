@@ -1,0 +1,33 @@
+shop_license:
+   tableName: shop_license
+   tableType:
+     engine: innoDB
+     charset: utf8
+   actAs: [Timestampable]
+   columns:
+     id:
+       type: integer
+       notnull: true
+       primary: true
+       unsigned: true
+       sequence: shop_license_id
+     id_price:
+       type: integer
+       index: true
+       unsigned: true
+     id_order:
+       type: integer
+       index: true
+       unsigned: true
+     serial:
+       type: string(255)
+     regkey:
+       type: text
+     datereg:
+       type: date
+   relations:
+     shop_price:
+       local: id_price
+       foreign: id
+       onDelete: CASCADE
+       onUpdate: CASCADE

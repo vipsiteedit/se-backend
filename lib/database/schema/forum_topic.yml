@@ -1,0 +1,49 @@
+forum_topic:
+   tableName: forum_topic
+   tableType:
+     engine: MyISAM
+     charset: utf8
+   actAs: [Timestampable]
+   columns:
+     id:
+       type: integer
+       notnull: true
+       primary: true
+       sequence: forum_topic_id
+     id_forums:
+       type: integer
+       notnull: true
+     name:
+       type: string(255)
+       notnull: true
+     priority:
+       type: integer
+       notnull: true
+     email:
+       type: string(50)
+       notnull: true
+     views:
+       type: integer
+       notnull: true
+     date_time:
+       type: integer
+       notnull: true
+     id_users:
+       type: integer
+       notnull: true
+     date_time_new:
+       type: integer
+       notnull: true
+     id_user_new:
+       type: integer
+       notnull: true
+     enable:
+       type: enum
+       values: ['N','Y']
+       notnull: true
+       default: 'Y'
+     visible:
+       type: enum
+       values: ['N','Y']
+       notnull: true
+       default: 'Y'

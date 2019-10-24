@@ -1,0 +1,20 @@
+access:
+   tableName: access
+   tableType:
+     engine: MyISAM
+     charset: utf8
+   actAs: [Timestampable]
+   columns:
+     id:
+       type: integer
+       notnull: true
+       primary: true
+       unsigned: true
+       sequence: access_id
+     accesstitle:
+       type: string(125)
+     groupname:
+       type: string(40)
+     accesslevel:
+       type: integer
+       default: 1

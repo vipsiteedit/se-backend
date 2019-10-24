@@ -1,0 +1,32 @@
+user_rekv:
+   tableName: user_rekv
+   tableType:
+     engine: innoDB
+     charset: utf8
+   actAs: [Timestampable]
+   columns:
+     id:
+       type: integer
+       notnull: true
+       primary: true
+       unsigned: true
+       sequence: user_rekv_id
+     id_author:
+       type: integer
+       unsigned: true
+       index: true
+     lang:
+       type: char(3)
+       index: true
+       default: 'rus'
+     rekv_code:
+       type: string(40)
+       index: true
+     value:
+       type: string(255)
+   relations:
+     se_user:
+       local: id_author
+       foreign: id
+       onDelete: CASCADE
+       onUpdate: CASCADE

@@ -1,0 +1,101 @@
+country:
+   tableName: country
+   tableType:
+     engine: innoDB
+     charset: utf8
+   actAs: [Timestampable]
+   columns:
+     id:
+       type: integer
+       notnull: true
+       unsigned: true
+       primary: true
+       sequence: country_id
+     name:
+       type: string(40)
+       notnull: true
+   values:
+     1:
+       id: 1
+       name: Азербайджан
+     2:
+       id: 2
+       name: Армения
+     3:
+       id: 3
+       name: Беларусь
+     4:
+       id: 4
+       name: Грузия
+     5:
+       id: 5
+       name: Казахстан
+     6:
+       id: 6
+       name: Кыргызстан
+     7:
+       id: 7
+       name: Латвия
+     8:
+       id: 8
+       name: Литва
+     9:
+       id: 9
+       name: Молдавия
+     10:
+       id: 10
+       name: Россия
+     11:
+       id: 11
+       name: США и Канада
+     12:
+       id: 12
+       name: Таджикистан
+     13:
+       id: 13
+       name: Туркменистан
+     14:
+       id: 14
+       name: Узбекистан
+     15:
+       id: 15
+       name: Украина
+     16:
+       id: 16
+       name: Эстония
+     17:
+       id: 22
+       name: СНГ
+     18:
+       id: 28
+       name: Испания
+     19:
+       id: 29
+       name: Китай
+     20:
+       id: 30
+       name: Молдавия
+     21:
+       id: 31
+       name: Беларуссия
+     22:
+       id: 32
+       name: Киргизстан
+     23:
+       id: 33
+       name: Португалия
+     24:
+       id: 34
+       name: Великобритания
+     25:
+       id: 35
+       name: Таиланд
+     26:
+       id: 36
+       name: Израиль
+     27:
+       id: 37
+       name: Китайская народная республика
+     28:
+       id: 38
+       name: Болгария

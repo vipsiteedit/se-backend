@@ -1,0 +1,32 @@
+shop_manager:
+   tableName: shop_manager
+   tableType:
+     engine: innoDB
+     charset: utf8
+   actAs: [Timestampable]
+   columns:
+     id:
+       type: integer
+       notnull: true
+       primary: true
+       unsigned: true
+       sequence: shop_manager_id
+     id_admin:
+       type: integer
+       index: true
+       unsigned: true
+     id_group:
+       type: integer
+       unsigned: true
+       index: true
+   relations:
+     shop_admin:
+       local: id_admin
+       foreign: id
+       onDelete: CASCADE
+       onUpdate: CASCADE
+     shop_group:
+       local: id_group
+       foreign: id
+       onDelete: CASCADE
+       onUpdate: CASCADE

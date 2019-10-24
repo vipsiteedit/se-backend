@@ -1,0 +1,66 @@
+person:
+   tableName: person
+   tableType:
+     engine: innoDB
+     charset: utf8
+   actAs: [Timestampable]
+   columns:
+     id:
+       type: integer
+       unsigned: true
+       primary: true
+     id_up:
+       type: integer
+       unsigned: true
+       index: true
+     last_name: string(40)
+     first_name: string(50)
+     sec_name: string(40)
+     sex:
+       type: enum
+       values: ['M','F','N']
+       notnull: true
+       default: 'N'
+     birth_date:
+       type: date
+       default: NULL
+     nick: string(25)
+     doc_ser: string(10)
+     doc_num: string(20)
+     doc_registr: string(255)
+     email: string(125)
+     post_index: string(20)
+     country_id:
+       type: integer
+       unsigned: true
+     state_id:
+       type: integer
+       unsigned: true
+     town_id:
+       type: integer
+       unsigned: true
+     overcity: string(255)
+     addr: string(255)
+     phone: string(125)
+     icq: string(20)
+     reginfo: string(255)
+     manager_id:
+       type: integer
+       unsigned: true
+       index: true
+     loyalty: smallint
+     note: text
+     discount:
+       type: float(5,2)
+     reg_date: datetime
+     enable:
+       type: enum
+       values: ['Y','N']
+       notnull: true
+       default: 'N'
+   relations:
+     se_user:
+       local: id
+       foreign: id
+       onDelete: CASCADE
+       onUpdate: CASCADE

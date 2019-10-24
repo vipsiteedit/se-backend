@@ -1,0 +1,8 @@
+#Миграция таблиц
+shop_group_translate:
+   tableName1: shop_group_translate
+   charset1: utf8
+   tableName2: shop_group
+   charset2: cp1251
+   columns:
+     group_id: id

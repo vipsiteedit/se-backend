@@ -1,0 +1,1 @@
+a:4:{s:2:"id";a:2:{s:4:"type";s:3:"int";s:8:"unsigned";s:9:" unsigned";}s:4:"name";a:1:{s:4:"type";s:12:"varchar(255)";}s:10:"updated_at";a:3:{s:4:"type";s:9:"timestamp";s:8:"unsigned";s:27:"on update CURRENT_TIMESTAMP";s:7:"default";s:19:"0000-00-00 00:00:00";}s:10:"created_at";a:2:{s:4:"type";s:9:"timestamp";s:7:"default";s:19:"0000-00-00 00:00:00";}}

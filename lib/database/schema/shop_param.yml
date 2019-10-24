@@ -1,0 +1,17 @@
+shop_param:
+   tableName: shop_param
+   tableType:
+     engine: innoDB
+     charset: utf8
+   actAs: [Timestampable]
+   columns:
+     id:
+       type: integer
+       unsigned: true
+       notnull: true
+       primary: true
+       sequence: shop_param_id
+     nameparam:
+       type: string(125)
+       notnull: true
+       unique: true

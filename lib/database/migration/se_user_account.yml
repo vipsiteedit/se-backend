@@ -1,0 +1,9 @@
+#Миграция таблиц
+seUserAccount:
+   tableName1: se_user_account
+   charset1: utf8
+   tableName2: shop_payee
+   charset2: utf8
+   columns:
+     user_id: id_author
+     order_id: id_order

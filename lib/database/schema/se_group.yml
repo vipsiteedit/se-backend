@@ -1,0 +1,30 @@
+seGroup:
+   tableName: se_group
+   tableType:
+     engine: innoDB
+     charset: utf8
+   actAs: [Timestampable]
+   columns:
+     id:
+       type: integer
+       unsigned: true
+       primary: true
+       sequence: se_group_id
+     level: 
+       type: tinyint
+       default: 1
+     name: string(40)
+     title: string(255)
+   values:
+     1:
+       id: 1
+       level: 1
+       title: User
+     2:
+       id: 2
+       level: 2
+       title: Super User
+     3:
+       id: 3
+       level: 3
+       title: Admin

@@ -1,0 +1,51 @@
+shop_special:
+   tableName: shop_special
+   tableType:
+     engine: innoDB
+     charset: utf8
+   actAs: [Timestampable]
+   columns:
+     id:
+       type: integer
+       notnull: true
+       primary: true
+       unsigned: true
+       sequence: shop_special_id
+     id_group:
+       type: integer
+       unsigned: true
+       index: true
+     id_price:
+       type: integer
+       index: true
+       unsigned: true
+     newprice:
+       type: float(10,2)
+     newproc:
+       type: float(6,2)
+     curr:
+       type: char(3)
+     date_added:
+       type: datetime
+     last_modified:
+       type: datetime
+     expires_date:
+       type: datetime
+     status:
+       type: enum
+       values: ['Y','N']
+   indexes:
+     uniprice:
+       type: unique
+       fields: [id_group,id_price]
+   relations:
+     shop_group:
+       local: id_group
+       foreign: id
+       onDelete: CASCADE
+       onUpdate: CASCADE
+     shop_price:
+       local: id_price
+       foreign: id
+       onDelete: CASCADE
+       onUpdate: CASCADE
