@@ -17,26 +17,25 @@ news_category:
        index: true
      ident:
        type: string(40)
-       index: true
      title:
        type: string(125)
      lang:
        type: char(3)
-       index: true
        default: rus
      sort:
        type: integer
-       index: true
        default: 1
    relations:
      news_category:
        local: parent_id
        foreign: id
-       onDelete: CASCADE
-       onUpdate: CASCADE
+       onDelete: CACADE
+       onUpdate: CACADE
    values:
      1:
        id: 1
+       parent_id: 
        ident: news
-       title: 'Новости'
-       lang: 'rus'
+       title: Новости
+       lang: rus
+       sort: 1

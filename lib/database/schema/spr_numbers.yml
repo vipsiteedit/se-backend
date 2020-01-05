@@ -7,10 +7,8 @@ spr_numbers:
    columns:
      id:
        type: integer
-       notnull: true
-       primary: true
        unsigned: true
-       sequence: spr_numbers_id
+       notnull: true
      lang:
        type: char(3)
        notnull: true
@@ -37,131 +35,131 @@ spr_numbers:
        type: string(20)
      nine:
        type: string(20)
+   relations:
    values:
      1:
        id: 1
-       lang: 'rus'
-       registr: 'edin'
-       zero: ''
-       one: 'один'
-       two: 'два'
-       three: 'три'
-       four: 'четыре'
-       five: 'пять'
-       six: 'шесть'
-       seven: 'семь'
-       eight: 'восемь'
-       nine: 'девять'
+       lang: rus
+       registr: edin
+       zero: 
+       one: один
+       two: два
+       three: три
+       four: четыре
+       five: пять
+       six: шесть
+       seven: семь
+       eight: восемь
+       nine: девять
      2:
        id: 2
-       lang: 'rus'
-       registr: 'des'
-       zero: 'десять'
-       one: 'одиннадцать'
-       two: 'двенадцать'
-       three: 'тринадцать'
-       four: 'четырнадцать'
-       five: 'пятнадцать'
-       six: 'шестнадцать'
-       seven: 'семнадцать'
-       eight: 'восемнадцать'
-       nine: 'девятнадцать'
+       lang: rus
+       registr: des
+       zero: десять
+       one: одиннадцать
+       two: двенадцать
+       three: тринадцать
+       four: четырнадцать
+       five: пятьнадцать
+       six: шестьнадцать
+       seven: семьнадцать
+       eight: восемьнадцать
+       nine: девятьнадцать
      3:
        id: 3
-       lang: 'rus'
-       registr: 'dec'
-       zero: ''
-       one: ''
-       two: 'двадцать'
-       three: 'тридцать'
-       four: 'сорок'
-       five: 'пятьдесят'
-       six: 'шестьдесят'
-       seven: 'семьдесят'
-       eight: 'восемьдесят'
-       nine: 'девяносто'
+       lang: rus
+       registr: dec
+       zero: 
+       one: 
+       two: двадцать
+       three: тридцать
+       four: сорок
+       five: пятьдесят
+       six: шестьдесят
+       seven: семьдесят
+       eight: восемьдесят
+       nine: девяносто
      4:
        id: 4
-       lang: 'rus'
-       registr: 'sot'
-       zero: ''
-       one: 'сто'
-       two: 'двести'
-       three: 'триста'
-       four: 'четыреста'
-       five: 'пятьсот'
-       six: 'шестьсот'
-       seven: 'семьсот'
-       eight: 'восемьсот'
-       nine: 'девятьсот'
+       lang: rus
+       registr: sot
+       zero: 
+       one: сто
+       two: двести
+       three: триста
+       four: четыреста
+       five: пятьсот
+       six: шестьсот
+       seven: семьсот
+       eight: восемьсот
+       nine: девятьсот
      5:
        id: 5
-       lang: 'rus'
-       registr: 'mel'
-       zero: ''
-       one: 'одна'
-       two: 'двe'
-       three: 'три'
-       four: 'четыре'
-       five: 'пять'
-       six: 'шесть'
-       seven: 'семь'
-       eight: 'восемь'
-       nine: 'девять'
+       lang: rus
+       registr: mel
+       zero: 
+       one: одна
+       two: двe
+       three: три
+       four: четыре
+       five: пять
+       six: шесть
+       seven: семь
+       eight: восемь
+       nine: девять
      6:
        id: 6
-       lang: 'rus'
-       registr: 'thou'
-       zero: 'тысяч'
-       one: 'тысяча'
-       two: 'тысячи'
-       three: 'тысячи'
-       four: 'тысячи'
-       five: 'тысяч'
-       six: 'тысяч'
-       seven: 'тысяч'
-       eight: 'тысяч'
-       nine: 'тысяч'
+       lang: rus
+       registr: thou
+       zero: тысяч
+       one: тысяча
+       two: тысячи
+       three: тысячи
+       four: тысячи
+       five: тысяч
+       six: тысяч
+       seven: тысяч
+       eight: тысяч
+       nine: тысяч
      7:
        id: 7
-       lang: 'rus'
-       registr: 'mill'
-       zero: 'миллионов'
-       one: 'миллион'
-       two: 'миллиона'
-       three: 'миллиона'
-       four: 'миллиона'
-       five: 'миллионов'
-       six: 'миллионов'
-       seven: 'миллионов'
-       eight: 'миллионов'
-       nine: 'миллионов'
+       lang: rus
+       registr: mill
+       zero: миллионов
+       one: миллион
+       two: миллиона
+       three: миллиона
+       four: миллиона
+       five: миллионов
+       six: миллионов
+       seven: миллионов
+       eight: миллионов
+       nine: миллионов
      8:
        id: 8
-       lang: 'rus'
-       registr: 'wh'
-       zero: 'руб.'
-       one: 'руб.'
-       two: 'руб.'
-       three: 'руб.'
-       four: 'руб.'
-       five: 'руб.'
-       six: 'руб.'
-       seven: 'руб.'
-       eight: 'руб.'
-       nine: 'руб.'
+       lang: rus
+       registr: wh
+       zero: руб.
+       one: руб.
+       two: руб.
+       three: руб.
+       four: руб.
+       five: руб.
+       six: руб.
+       seven: руб.
+       eight: руб.
+       nine: руб.
      9:
        id: 9
-       lang: 'rus'
-       registr: 'fr'
-       zero: 'коп.'
-       one: 'коп.'
-       two: 'коп.'
-       three: 'коп.'
-       four: 'коп.'
-       five: 'коп.'
-       six: 'коп.'
-       seven: 'коп.'
-       eight: 'коп.'
-       nine: 'коп.'
-
+       lang: rus
+       registr: fr
+       zero: коп.
+       one: коп.
+       two: коп.
+       three: коп.
+       four: коп.
+       five: коп.
+       six: коп.
+       seven: коп.
+       eight: коп.
+       nine: коп.

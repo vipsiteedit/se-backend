@@ -1,8 +1,0 @@
-#Миграция таблиц
-sePerson:
-   tableName1: user_urid
-   charset1: utf8
-   tableName2: user_urid_tmp
-   charset2: cp1251
-   columns:
-     id: id_author

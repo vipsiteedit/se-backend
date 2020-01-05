@@ -7,10 +7,16 @@ shop_deliverytype:
    columns:
      id:
        type: integer
+       unsigned: true
        notnull: true
        primary: true
-       unsigned: true
        sequence: shop_deliverytype_id
+     id_parent:
+       type: integer
+       unsigned: true
+       index: true
+     code:
+       type: string(125)
      lang:
        type: char(3)
        notnull: true
@@ -19,19 +25,34 @@ shop_deliverytype:
        type: string(125)
        notnull: true
      time:
-       type: integer
+       type: string(10)
        notnull: true
-       unsigned: true
      price:
        type: float(10,2)
        notnull: true
-       default: 0.00
      curr:
        type: char(3)
        notnull: true
        default: RUR
      note:
        type: text
+     max_volume:
+       type: integer
+       unsigned: true
+     max_weight:
+       type: float(10,3)
+       unsigned: true
+     week:
+       type: char(7)
+       default: 1111111
+     time_from:
+       type: time
+     time_to:
+       type: time
+     need_address:
+       type: enum
+       values: ['Y','N']
+       default: 'Y'
      volume:
        type: integer
        unsigned: true
@@ -39,5 +60,21 @@ shop_deliverytype:
        type: integer
        unsigned: true
      forone:
-       type: enum('Y','N')
+       type: enum
+       values: ['Y','N']
        default: 'N'
+     city_from_delivery:
+       type: string(128)
+     status:
+       type: enum
+       values: ['Y','N']
+       default: 'Y'
+     sort:
+       type: integer
+   relations:
+     shop_deliverytype:
+       local: id_parent
+       foreign: id
+       onDelete: CACADE
+       onUpdate: CACADE
+   values:

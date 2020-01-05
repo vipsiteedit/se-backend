@@ -7,17 +7,13 @@ shop_license:
    columns:
      id:
        type: integer
-       notnull: true
-       primary: true
        unsigned: true
-       sequence: shop_license_id
+       notnull: true
      id_price:
        type: integer
-       index: true
        unsigned: true
      id_order:
        type: integer
-       index: true
        unsigned: true
      serial:
        type: string(255)
@@ -26,8 +22,4 @@ shop_license:
      datereg:
        type: date
    relations:
-     shop_price:
-       local: id_price
-       foreign: id
-       onDelete: CASCADE
-       onUpdate: CASCADE
+   values:

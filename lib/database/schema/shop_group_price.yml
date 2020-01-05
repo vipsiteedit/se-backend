@@ -10,7 +10,7 @@ shop_group_price:
        unsigned: true
        notnull: true
        primary: true
-       sequence: shop_accomp_id
+       sequence: shop_group_price_id
      group_id:
        type: integer
        unsigned: true
@@ -21,18 +21,15 @@ shop_group_price:
        unsigned: true
        notnull: true
        index: true
-   indexes:
-     uprice:
-       type: unique
-       fields: ['group_id','price_id']
    relations:
-     shop_price:
-       local: price_id
-       foreign: id
-       onDelete: CASCADE
-       onUpdate: CASCADE
      shop_group:
        local: group_id
        foreign: id
-       onDelete: CASCADE
-       onUpdate: CASCADE
+       onDelete: CACADE
+       onUpdate: CACADE
+     shop_price:
+       local: price_id
+       foreign: id
+       onDelete: CACADE
+       onUpdate: CACADE
+   values:

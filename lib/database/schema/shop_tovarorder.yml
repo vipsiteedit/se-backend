@@ -28,16 +28,19 @@ shop_tovarorder:
        type: float(10,2)
        unsigned: true
        notnull: true
-       default: 0.00
+     price_purchase:
+       type: decimal(10,2)
+       unsigned: true
      discount:
        type: float(10,2)
        unsigned: true
        notnull: true
-       default: 0.00
      count:
-       type: integer
+       type: float(10,3)
        unsigned: true
        notnull: true
+     modifications:
+       type: string(255)
      license:
        type: text
      commentary:
@@ -48,5 +51,11 @@ shop_tovarorder:
      shop_order:
        local: id_order
        foreign: id
-       onDelete: CASCADE
-       onUpdate: CASCADE
+       onDelete: CACADE
+       onUpdate: CACADE
+     shop_price:
+       local: id_price
+       foreign: id
+       onDelete: CACADE
+       onUpdate: CACADE
+   values:

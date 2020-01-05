@@ -18,34 +18,50 @@ shop_price:
        type: integer
        unsigned: true
        index: true
-     id_analog:
-       type: string(40)
-       default: NULL
      code:
-       type: string(40)
+       type: string(255)
+       notnull: true
        unique: true
      article:
        type: string(40)
-       index: true
      name:
        type: string(125)
      price:
        type: float(10,2)
-       default: 0.00
-     img:
-       type: string(40)
-     note:
-       type: text
-     text:
-       type: text
-     presence_count:
-       type: integer
-       default: -1
      price_opt:
        type: float(10,2)
        notnull: true
      price_opt_corp:
        type: float(10,2)
+       notnull: true
+     price_purchase:
+       type: decimal(10,2)
+       unsigned: true
+     img:
+       type: string(255)
+     img_alt:
+       type: string(255)
+     note:
+       type: text
+     text:
+       type: text
+     title:
+       type: string(255)
+     keywords:
+       type: string(255)
+     description:
+       type: text
+     page_title:
+       type: string(255)
+     presence_count:
+       type: float(10,3)
+       default: -1.000
+     step_count:
+       type: float(10,3)
+       notnull: true
+       default: 1.000
+     min_count:
+       type: float(10,3)
        notnull: true
      bonus:
        type: float(10,2)
@@ -53,13 +69,19 @@ shop_price:
      curr:
        type: char(3)
        notnull: true
-       default: 'RUR'
+       default: RUB
      presence:
        type: string(125)
      nds:
        type: float(5,2)
      manufacturer:
        type: string(125)
+     id_brand:
+       type: integer
+       unsigned: true
+     id_type:
+       type: integer
+       unsigned: true
      date_manufactured:
        type: date
      max_discount:
@@ -67,10 +89,10 @@ shop_price:
      measure:
        type: string(50)
      volume:
-       type: integer
+       type: decimal(10,3)
        unsigned: true
      weight:
-       type: integer
+       type: decimal(10,3)
        unsigned: true
      id_action:
        type: integer
@@ -101,14 +123,58 @@ shop_price:
        values: ['Y','N']
        notnull: true
        default: 'N'
+     special_offer:
+       type: enum
+       values: ['Y','N']
+       default: 'N'
      enabled:
        type: enum
        values: ['Y','N']
        notnull: true
        default: 'Y'
+     is_show_feature:
+       type: integer
+       notnull: true
+       default: 1
+     rate:
+       type: decimal(10,2)
+     votes:
+       type: integer
+       notnull: true
+     unsold:
+       type: enum
+       values: ['Y','N']
+       notnull: true
+       default: 'N'
+     vizits:
+       type: integer
+       unsigned: true
+       notnull: true
+     is_market:
+       type: integer
+       notnull: true
+       default: 1
+     market_category:
+       type: integer
+       unsigned: true
+     market_available:
+       type: integer
+       notnull: true
+       default: 1
+     sort:
+       type: integer
+       unsigned: true
+       index: true
+     id_exchange:
+       type: string(50)
+       unique: true
+     signal_dt:
+       type: string(10)
+     delivery_time:
+       type: string(80)
    relations:
      shop_group:
        local: id_group
        foreign: id
-       onDelete: CASCADE
-       onUpdate: CASCADE
+       onDelete: CACADE
+       onUpdate: CACADE

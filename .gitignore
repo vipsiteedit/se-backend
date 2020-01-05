@@ -1,2 +1,7 @@
 /admin/
 .idea
+/system/config_db.php
+/rss/
+/system/logs
+/vendor
+/cachedb

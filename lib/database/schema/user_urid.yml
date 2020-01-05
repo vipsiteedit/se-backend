@@ -7,8 +7,9 @@ user_urid:
    columns:
      id:
        type: integer
-       notnull: true
        unsigned: true
+       notnull: true
+       primary: true
      company:
        type: string(250)
      director:
@@ -31,5 +32,17 @@ user_urid:
      se_user:
        local: id
        foreign: id
-       onDelete: CASCADE
-       onUpdate: CASCADE
+       onDelete: CACADE
+       onUpdate: CACADE
+   values:
+     1:
+       id: 1
+       company: 
+       director: 
+       posthead: 
+       bookkeeper: 
+       postbookk: 
+       uradres: 
+       fizadres: 
+       tel: 
+       fax: 

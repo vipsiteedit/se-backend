@@ -7,22 +7,18 @@ shop_special:
    columns:
      id:
        type: integer
-       notnull: true
-       primary: true
        unsigned: true
-       sequence: shop_special_id
+       notnull: true
      id_group:
        type: integer
        unsigned: true
-       index: true
      id_price:
        type: integer
-       index: true
        unsigned: true
      newprice:
        type: float(10,2)
      newproc:
-       type: float(6,2)
+       type: float(6,4)
      curr:
        type: char(3)
      date_added:
@@ -34,18 +30,5 @@ shop_special:
      status:
        type: enum
        values: ['Y','N']
-   indexes:
-     uniprice:
-       type: unique
-       fields: [id_group,id_price]
    relations:
-     shop_group:
-       local: id_group
-       foreign: id
-       onDelete: CASCADE
-       onUpdate: CASCADE
-     shop_price:
-       local: id_price
-       foreign: id
-       onDelete: CASCADE
-       onUpdate: CASCADE
+   values:

@@ -15,10 +15,10 @@ se_account_operation:
        type: integer
        unsigned: true
        notnull: true
+       index: true
      lang:
        type: char(3)
        notnull: true
-       index: true
      name:
        type: string(40)
        notnull: true
@@ -26,45 +26,45 @@ se_account_operation:
      1:
        id: 1
        operation_id: 0
-       lang: 'rus'
+       lang: rus
        name: Баланс
      2:
        id: 2
        operation_id: 1
-       lang: 'rus'
+       lang: rus
        name: Приход
      3:
        id: 3
        operation_id: 2
-       lang: 'rus'
+       lang: rus
        name: Расход
      4:
        id: 4
        operation_id: 3
-       lang: 'rus'
+       lang: rus
        name: Премия
      5:
        id: 5
        operation_id: 4
-       lang: 'rus'
+       lang: rus
        name: Комиссионные
      6:
        id: 6
        operation_id: 5
-       lang: 'rus'
+       lang: rus
        name: Возврат средств
      7:
        id: 7
        operation_id: 6
-       lang: 'rus'
+       lang: rus
        name: Списание
      8:
        id: 8
        operation_id: 7
-       lang: 'rus'
+       lang: rus
        name: Перевод
      9:
        id: 9
        operation_id: 8
-       lang: 'rus'
+       lang: rus
        name: Перенос

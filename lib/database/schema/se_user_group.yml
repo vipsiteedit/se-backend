@@ -1,4 +1,4 @@
-seUserGroup:
+se_user_group:
    tableName: se_user_group
    tableType:
      engine: innoDB
@@ -8,9 +8,14 @@ seUserGroup:
      id:
        type: integer
        unsigned: true
+       notnull: true
        primary: true
        sequence: se_user_group_id
      user_id:
+       type: integer
+       unsigned: true
+       index: true
+     company_id:
        type: integer
        unsigned: true
        index: true
@@ -22,10 +27,21 @@ seUserGroup:
      se_user:
        local: user_id
        foreign: id
-       onDelete: CASCADE
-       onUpdate: CASCADE
+       onDelete: CACADE
+       onUpdate: CACADE
      se_group:
        local: group_id
        foreign: id
-       onDelete: CASCADE
-       onUpdate: CASCADE
+       onDelete: CACADE
+       onUpdate: CACADE
+     company:
+       local: company_id
+       foreign: id
+       onDelete: CACADE
+       onUpdate: CACADE
+   values:
+     1:
+       id: 273
+       user_id: 1
+       company_id: 
+       group_id: 9

@@ -9,8 +9,7 @@ shop_manufacturer:
        type: integer
        unsigned: true
        notnull: true
-       primary: true
-       sequence: shop_manufacturer_id
      name:
        type: string(255)
        notnull: true
+   values:

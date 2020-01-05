@@ -1,8 +1,0 @@
-#Миграция таблиц
-news:
-   tableName1: news
-   charset1: utf8
-   tableName2: news_tmp
-   charset2: cp1251
-   columns:
-     news_date: date

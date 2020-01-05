@@ -11,27 +11,31 @@ shop_order:
        notnull: true
        primary: true
        sequence: shop_order_id
+     manager_id:
+       type: integer
+       unsigned: true
      id_author:
        type: integer
        unsigned: true
-       index: true
+     id_company:
+       type: integer
+       unsigned: true
      date_order:
        type: date
-       index: true
+       notnull: true
+       default: 0000-00-00
      discount:
        type: float(10,2)
        unsigned: true
        notnull: true
-       default: 0.00
      curr:
        type: string(3)
        notnull: true
-       default: 'RUR'
+       default: RUB
      status:
        type: enum
-       values: ['Y','N','K','P']
+       values: ['Y','N','K','P','W','T','A','D']
        notnull: true
-       index: true
        default: 'N'
      date_payee:
        type: date
@@ -54,20 +58,22 @@ shop_order:
      delivery_payee:
        type: float(10,2)
        unsigned: true
+       notnull: true
+       default: 0.00
      delivery_type:
        type: integer
        unsigned: true
      delivery_status:
        type: enum
-       values: ['N','Y','P']
-       notnull: true
+       values: ['N','Y','P','M']
        default: 'N'
      delivery_date:
        type: date
      id_admin:
        type: integer
+       unsigned: true
      date_credit:
-       type: date
+       type: datetime
      inpayee:
        type: enum
        values: ['N','Y']
@@ -76,9 +82,9 @@ shop_order:
        type: enum
        values: ['N','Y']
        default: 'N'
-   relations:
-     se_user:
-       local: id_author
-       foreign: id
-       onDelete: CASCADE
-       onUpdate: CASCADE
+     id_main:
+       type: integer
+       unsigned: true
+       default: 1
+     managers:
+       type: text

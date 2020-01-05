@@ -19,36 +19,34 @@ money:
      name:
        type: char(3)
        notnull: true
-       index: true
      date_replace:
        type: date
        notnull: true
-       index: true
      kurs:
-       type: float(10,6)
+       type: float(20,6)
        notnull: true
+     base_currency:
+       type: char(3)
+       notnull: true
+       default: RUB
    relations:
      money_title:
        local: money_title_id
        foreign: id
-       onDelete: CASCADE
-       onUpdate: CASCADE
+       onDelete: CACADE
+       onUpdate: CACADE
    values:
      1:
        id: 1
        money_title_id: 1
-       name: 'RUR'
-       date_replace: 2000-01-01
-       kurs: 1
+       name: RUB
+       date_replace: 0000-00-00
+       kurs: 1.000000
+       base_currency: RUB
      2:
        id: 2
        money_title_id: 2
-       name: 'USD'
-       date_replace: 2000-01-01
-       kurs: 30
-     3:
-       id: 3
-       money_title_id: 3
-       name: 'EUR'
-       date_replace: 2000-01-01
-       kurs: 42
+       name: USD
+       date_replace: 0000-00-00
+       kurs: 1.000000
+       base_currency: RUB

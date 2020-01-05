@@ -15,10 +15,11 @@ shop_mail_group:
        type: char(3)
        notnull: true
        index: true
-       default: 'rus'
+       default: rus
      name:
        type: string(255)
        notnull: true
+   relations:
    values:
      1:
        id: 1

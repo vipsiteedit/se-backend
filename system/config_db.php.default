@@ -1,7 +1,0 @@
-<?php
-$CONFIG["DBName"] = "b_name";
-$CONFIG["HostName"] = "localhost";
-$CONFIG["DBUserName"] = "root";
-$CONFIG["DBPassword"] = "";
-$CONFIG["DBDsn"] = "mysql";
-?>

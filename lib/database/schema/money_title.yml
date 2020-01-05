@@ -28,29 +28,27 @@ money_title:
        type: string(10)
      cbr_kod:
        type: string(20)
-   indexes:
-     langname:
-       type: unique
-       fields: ['lang','name']
+     minsum:
+       type: float(10,2)
+       notnull: true
+       default: 0.01
+   relations:
    values:
      1:
        id: 1
-       lang: 'rus;
-       name: 'RUR'
-       title: 'Российский рубль'
-       name_flang: 'р.'
+       lang: rus
+       name: RUB
+       title: Российский рубль
+       name_front: 
+       name_flang: р.
+       cbr_kod: 
+       minsum: 0.01
      2:
        id: 2
-       lang: 'rus;
-       name: 'USD'
-       title: 'Доллар США'
-       name_front: '$'
+       lang: rus
+       name: USD
+       title: Доллар США
+       name_front: $
+       name_flang: 
        cbr_kod: R01235
-     3:
-       id: 3
-       lang: 'rus;
-       name: 'EUR'
-       title: 'Евро'
-       name_front: '&euro;'
-       cbr_kod: R01239
-
+       minsum: 0.01

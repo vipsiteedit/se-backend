@@ -16,39 +16,40 @@ shop_group:
        unsigned: true
        index: true
      code_gr:
-       type: string(40)
+       type: string(255)
        notnull: true
        unique: true
      position:
        type: integer
-       unsigned: true
-       notnull: true
        index: true
      id_main:
        type: integer
        unsigned: true
-       notnull: true
-       default: 1
      name:
        type: string(125)
        notnull: true
      lang:
        type: char(3)
        notnull: true
-       index: true
        default: rus
      page:
        type: string(30)
      picture:
        type: string(255)
+     picture_alt:
+       type: string(255)
      commentary:
        type: text
-     title: string(255)
-     keywords: string(255)
+     footertext:
+       type: mediumtext
+     title:
+       type: string(255)
+     keywords:
+       type: string(255)
      description:
        type: text
-     footertext:
-       type: text
+     page_title:
+       type: string(255)
      discount:
        type: enum
        values: ['Y','N']
@@ -62,21 +63,30 @@ shop_group:
      typegroup:
        type: enum
        values: ['g','s']
-       default: 'g'
+       default: g
      scount:
        type: integer
        unsigned: true
      active:
        type: enum
        values: ['Y','N']
+       index: true
        default: 'Y'
      visits:
        type: integer
        unsigned: true
        notnull: true
+     filter:
+       type: integer
+       notnull: true
+     compare:
+       type: integer
+       notnull: true
+     id_modification_group_def:
+       type: integer
+       unsigned: true
+     is_delete:
+       type: integer
+       index: true
    relations:
-     shop_group:
-       local: upid
-       foreign: id
-       onDelete: CASCADE
-       onUpdate: CASCADE
+   values:

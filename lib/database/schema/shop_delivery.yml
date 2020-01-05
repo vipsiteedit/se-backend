@@ -7,11 +7,18 @@ shop_delivery:
    columns:
      id:
        type: integer
+       unsigned: true
        notnull: true
        primary: true
-       unsigned: true
        sequence: shop_delivery_id
+     name_recipient:
+       type: string(150)
+       notnull: true
      id_order:
+       type: integer
+       unsigned: true
+       index: true
+     id_subdelivery:
        type: integer
        unsigned: true
        index: true
@@ -24,10 +31,14 @@ shop_delivery:
      address:
        type: string(255)
      postindex:
-       type: char(20)
+       type: string(255)
+     id_city:
+       type: integer
+       index: true
    relations:
      shop_order:
        local: id_order
        foreign: id
-       onDelete: CASCADE
-       onUpdate: CASCADE
+       onDelete: CACADE
+       onUpdate: CACADE
+   values:

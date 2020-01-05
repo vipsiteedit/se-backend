@@ -7,31 +7,32 @@ se_user_account:
    columns:
      id:
        type: integer
+       unsigned: true
        notnull: true
        primary: true
-       unsigned: true
-       sequence: user_account_id
+       sequence: se_user_account_id
      user_id:
        type: integer
-       index: true
        unsigned: true
+       index: true
+     company_id:
+       type: integer
+       unsigned: true
+       index: true
      order_id:
        type: integer
-       index: true
        unsigned: true
+       index: true
      account:
        type: string(40)
      date_payee:
        type: datetime
      in_payee:
        type: float(10,4)
-       default: 0.0000
      out_payee:
        type: float(10,4)
-       default: 0.0000
      entbalanse:
        type: float(10,4)
-       default: 0.0000
      curr:
        type: char(3)
        default: RUR
@@ -44,5 +45,16 @@ se_user_account:
      se_user:
        local: user_id
        foreign: id
-       onDelete: CASCADE
-       onUpdate: CASCADE
+       onDelete: CACADE
+       onUpdate: CACADE
+     company:
+       local: company_id
+       foreign: id
+       onDelete: CACADE
+       onUpdate: CACADE
+     shop_order:
+       local: order_id
+       foreign: id
+       onDelete: CACADE
+       onUpdate: CACADE
+   values:

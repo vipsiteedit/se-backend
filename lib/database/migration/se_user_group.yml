@@ -1,9 +1,0 @@
-#Миграция таблиц
-seUser:
-   tableName1: se_user_group
-   charset1: utf8
-   tableName2: author
-   charset2: cp1251
-   columns:
-     user_id: id
-     group_id: a_group

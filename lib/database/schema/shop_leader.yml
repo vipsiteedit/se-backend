@@ -7,9 +7,9 @@ shop_leader:
    columns:
      id:
        type: integer
+       unsigned: true
        notnull: true
        primary: true
-       unsigned: true
        sequence: shop_leader_id
      lang:
        type: char(3)
@@ -18,24 +18,21 @@ shop_leader:
        default: rus
      id_group:
        type: integer
-       index: true
        unsigned: true
+       index: true
      id_price:
        type: integer
-       index: true
        unsigned: true
-   indexes:
-     ungrprice:
-       type: unique
-       fields: ['id_group','id_price']   
+       index: true
    relations:
      shop_group:
        local: id_group
        foreign: id
-       onDelete: CASCADE
-       onUpdate: CASCADE
+       onDelete: CACADE
+       onUpdate: CACADE
      shop_price:
        local: id_price
        foreign: id
-       onDelete: CASCADE
-       onUpdate: CASCADE
+       onDelete: CACADE
+       onUpdate: CACADE
+   values:

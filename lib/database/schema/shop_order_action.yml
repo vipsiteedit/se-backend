@@ -30,3 +30,10 @@ shop_order_action:
        default: 'N'
      logaction:
        type: text
+   relations:
+     shop_order:
+       local: id_order
+       foreign: id
+       onDelete: CACADE
+       onUpdate: CACADE
+   values:

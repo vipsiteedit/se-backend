@@ -23,16 +23,26 @@ shop_comm:
        type: string(125)
      commentary:
        type: text
-       notnull: true
+     response:
+       type: text
      date:
        type: date
        notnull: true
      mark:
        type: integer
        notnull: true
+     showing:
+       type: enum
+       values: ['Y','N']
+       default: 'N'
+     is_active:
+       type: enum
+       values: ['Y','N']
+       default: 'N'
    relations:
      shop_price:
        local: id_price
        foreign: id
-       onDelete: CASCADE
-       onUpdate: CASCADE
+       onDelete: CACADE
+       onUpdate: CACADE
+   values:
