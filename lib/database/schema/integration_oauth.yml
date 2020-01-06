@@ -26,6 +26,6 @@ integration_oauth:
      integration:
        local: id_integration
        foreign: id
-       onDelete: CACADE
-       onUpdate: CACADE
+       onDelete: CASCADE
+       onUpdate: CASCADE
    values:

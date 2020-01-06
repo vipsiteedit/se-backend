@@ -35,4 +35,10 @@ shop_delivery_param:
        type: enum
        values: ['a','s','d']
        default: a
+   relations:
+     shop_deliverytype:
+       local: id_delivery
+       foreign: id
+       onDelete: CASCADE
+       onUpdate: CASCADE           
    values:

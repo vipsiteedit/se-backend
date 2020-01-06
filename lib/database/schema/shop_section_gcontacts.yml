@@ -25,11 +25,11 @@ shop_section_gcontacts:
      shop_section_item:
        local: id_item
        foreign: id
-       onDelete: CACADE
-       onUpdate: CACADE
+       onDelete: CASCADE
+       onUpdate: CASCADE
      shop_contacts:
        local: id_gcontact
        foreign: id
-       onDelete: CACADE
-       onUpdate: CACADE
+       onDelete: CASCADE
+       onUpdate: CASCADE
    values:

@@ -29,6 +29,6 @@ shop_geo_pages:
      shop_contacts:
        local: id_contact
        foreign: id
-       onDelete: CACADE
-       onUpdate: CACADE
+       onDelete: CASCADE
+       onUpdate: CASCADE
    values:

@@ -26,7 +26,6 @@ shop_measure_volume:
        notnull: true
      precision:
        type: integer
-   relations:
    values:
      1:
        id: 1

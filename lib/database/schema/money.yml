@@ -33,8 +33,8 @@ money:
      money_title:
        local: money_title_id
        foreign: id
-       onDelete: CACADE
-       onUpdate: CACADE
+       onDelete: CASCADE
+       onUpdate: CASCADE
    values:
      1:
        id: 1

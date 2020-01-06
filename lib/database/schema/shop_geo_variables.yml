@@ -27,11 +27,11 @@ shop_geo_variables:
      shop_contacts:
        local: id_contact
        foreign: id
-       onDelete: CACADE
-       onUpdate: CACADE
+       onDelete: CASCADE
+       onUpdate: CASCADE
      shop_variables:
        local: id_variable
        foreign: id
-       onDelete: CACADE
-       onUpdate: CACADE
+       onDelete: CASCADE
+       onUpdate: CASCADE
    values:

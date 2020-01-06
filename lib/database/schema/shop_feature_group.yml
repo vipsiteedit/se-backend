@@ -31,6 +31,6 @@ shop_feature_group:
      main:
        local: id_main
        foreign: id
-       onDelete: CACADE
-       onUpdate: CACADE
+       onDelete: CASCADE
+       onUpdate: CASCADE
    values:

@@ -176,5 +176,5 @@ shop_price:
      shop_group:
        local: id_group
        foreign: id
-       onDelete: CACADE
-       onUpdate: CACADE
+       onDelete: SET NULL
+       onUpdate: CASCADE

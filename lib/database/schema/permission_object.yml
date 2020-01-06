@@ -18,7 +18,6 @@ permission_object:
      name:
        type: string(255)
        notnull: true
-   relations:
    values:
      1:
        id: 1

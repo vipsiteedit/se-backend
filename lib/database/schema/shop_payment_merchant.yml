@@ -41,5 +41,4 @@ shop_payment_merchant:
      date_payee:
        type: datetime
        notnull: true
-   relations:
    values:

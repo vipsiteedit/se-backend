@@ -20,4 +20,10 @@ shop_delivery_settings:
        type: string(255)
      value:
        type: text
+   relations:
+     shop_deliverytype:
+       local: id_delivery
+       foreign: id
+       onDelete: CASCADE
+       onUpdate: CASCADE           
    values:

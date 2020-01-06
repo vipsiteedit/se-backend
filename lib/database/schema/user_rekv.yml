@@ -27,8 +27,8 @@ user_rekv:
      se_user:
        local: id_author
        foreign: id
-       onDelete: CACADE
-       onUpdate: CACADE
+       onDelete: CASCADE
+       onUpdate: CASCADE
    values:
      1:
        id: 1

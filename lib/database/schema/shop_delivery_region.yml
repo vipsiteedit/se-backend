@@ -26,7 +26,7 @@ shop_delivery_region:
      shop_deliverytype:
        local: id_delivery
        foreign: id
-       onDelete: CACADE
-       onUpdate: CACADE
+       onDelete: CASCADE
+       onUpdate: CASCADE
    values:
 

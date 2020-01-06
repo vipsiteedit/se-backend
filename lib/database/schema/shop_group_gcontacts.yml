@@ -1,5 +1,5 @@
-shop_group_userfields:
-   tableName: shop_group_userfields
+shop_group_gcontacts:
+   tableName: shop_group_gcontacts
    tableType:
      engine: innoDB
      charset: utf8
@@ -10,27 +10,25 @@ shop_group_userfields:
        unsigned: true
        notnull: true
        primary: true
-       sequence: shop_group_userfields_id
-     id_shopgroup:
+       sequence: news_gcontacts_id
+     id_group:
        type: integer
        unsigned: true
        notnull: true
        index: true
-     id_userfield:
+     id_gcontact:
        type: integer
        unsigned: true
        notnull: true
        index: true
-     value:
-       type: text
    relations:
-     shop_group:
-       local: id_shopgroup
+     shop_contacts:
+       local: id_gcontact
        foreign: id
        onDelete: CASCADE
        onUpdate: CASCADE
-     shop_userfields:
-       local: id_userfield
+     shop_group:
+       local: id_group
        foreign: id
        onDelete: CASCADE
        onUpdate: CASCADE

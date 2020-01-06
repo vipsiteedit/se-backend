@@ -18,5 +18,5 @@ shop_stat_info:
      shop_stat_session:
        local: id_session
        foreign: id
-       onDelete: CACADE
-       onUpdate: CACADE
+       onDelete: CASCADE
+       onUpdate: CASCADE

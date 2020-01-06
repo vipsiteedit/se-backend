@@ -34,8 +34,8 @@ shop_mail:
      shop_mail_group:
        local: shop_mail_group_id
        foreign: id
-       onDelete: CACADE
-       onUpdate: CACADE
+       onDelete: CASCADE
+       onUpdate: CASCADE
    values:
      1:
        id: 1

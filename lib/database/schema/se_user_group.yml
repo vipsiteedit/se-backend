@@ -27,21 +27,21 @@ se_user_group:
      se_user:
        local: user_id
        foreign: id
-       onDelete: CACADE
-       onUpdate: CACADE
+       onDelete: CASCADE
+       onUpdate: CASCADE
      se_group:
        local: group_id
        foreign: id
-       onDelete: CACADE
-       onUpdate: CACADE
+       onDelete: CASCADE
+       onUpdate: CASCADE
      company:
        local: company_id
        foreign: id
-       onDelete: CACADE
-       onUpdate: CACADE
+       onDelete: CASCADE
+       onUpdate: CASCADE
    values:
      1:
-       id: 273
+       id: 1
        user_id: 1
        company_id: 
        group_id: 9

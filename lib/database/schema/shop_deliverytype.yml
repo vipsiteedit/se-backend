@@ -75,6 +75,6 @@ shop_deliverytype:
      shop_deliverytype:
        local: id_parent
        foreign: id
-       onDelete: CACADE
-       onUpdate: CACADE
+       onDelete: CASCADE
+       onUpdate: CASCADE
    values:

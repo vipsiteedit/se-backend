@@ -28,6 +28,6 @@ shop_atol_operation:
      shop_order:
        local: id_order
        foreign: id
-       onDelete: CACADE
-       onUpdate: CACADE
+       onDelete: CASCADE
+       onUpdate: CASCADE
    values:

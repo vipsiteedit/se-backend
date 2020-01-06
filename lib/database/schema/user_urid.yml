@@ -32,8 +32,8 @@ user_urid:
      se_user:
        local: id
        foreign: id
-       onDelete: CACADE
-       onUpdate: CACADE
+       onDelete: CASCADE
+       onUpdate: CASCADE
    values:
      1:
        id: 1

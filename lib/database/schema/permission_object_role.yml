@@ -29,13 +29,13 @@ permission_object_role:
      permission_object:
        local: id_object
        foreign: id
-       onDelete: CACADE
-       onUpdate: CACADE
+       onDelete: CASCADE
+       onUpdate: CASCADE
      permission_role:
        local: id_role
        foreign: id
-       onDelete: CACADE
-       onUpdate: CACADE
+       onDelete: CASCADE
+       onUpdate: CASCADE
    values:
      1:
        id: 1

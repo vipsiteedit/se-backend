@@ -88,5 +88,4 @@ shop_group:
      is_delete:
        type: integer
        index: true
-   relations:
    values:

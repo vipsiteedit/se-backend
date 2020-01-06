@@ -31,5 +31,5 @@ shop_img:
      shop_price:
        local: id_price
        foreign: id
-       onDelete: CACADE
-       onUpdate: CACADE
+       onDelete: CASCADE
+       onUpdate: CASCADE

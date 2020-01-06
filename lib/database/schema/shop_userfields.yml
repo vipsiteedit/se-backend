@@ -59,6 +59,6 @@ shop_userfields:
      shop_userfield_groups:
        local: id_group
        foreign: id
-       onDelete: CACADE
-       onUpdate: CACADE
+       onDelete: CASCADE
+       onUpdate: CASCADE
    values:

@@ -47,5 +47,5 @@ shop_option_value:
      shop_option:
        local: id_option
        foreign: id
-       onDelete: CACADE
-       onUpdate: CACADE
+       onDelete: CASCADE
+       onUpdate: CASCADE

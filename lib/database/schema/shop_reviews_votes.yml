@@ -22,4 +22,9 @@ shop_reviews_votes:
        notnull: true
        default: 1
    relations:
+     se_user:
+       local: id_user
+       foreign: id
+       onDelete: CASCADE
+       onUpdate: CASCADE
    values:

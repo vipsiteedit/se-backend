@@ -25,7 +25,6 @@ shop_measure_weight:
        notnull: true
      precision:
        type: integer
-   relations:
    values:
      1:
        id: 1

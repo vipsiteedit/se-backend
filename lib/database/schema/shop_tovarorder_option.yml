@@ -36,6 +36,6 @@ shop_tovarorder_option:
      shop_tovarorder:
        local: id_tovarorder
        foreign: id
-       onDelete: CACADE
-       onUpdate: CACADE
+       onDelete: CASCADE
+       onUpdate: CASCADE
    values:

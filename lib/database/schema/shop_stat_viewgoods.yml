@@ -19,11 +19,11 @@ shop_stat_viewgoods:
      shop_stat_session:
        local: id_session
        foreign: id
-       onDelete: CACADE
-       onUpdate: CACADE
+       onDelete: CASCADE
+       onUpdate: CASCADE
      shop_price:
        local: id_product
        foreign: id
-       onDelete: CACADE
-       onUpdate: CACADE
+       onDelete: CASCADE
+       onUpdate: CASCADE
    values:

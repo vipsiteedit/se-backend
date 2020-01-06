@@ -325,8 +325,8 @@ function se_db_to_yaml($table, $ymlfile, $link = 'db_link')
             $yaml .= "     {$reference['REFERENCED_TABLE_NAME']}:\n";
             $yaml .= "       local: {$reference['COLUMN_NAME']}\n";
             $yaml .= "       foreign: {$reference['REFERENCED_COLUMN_NAME']}\n";
-            $yaml .= "       onDelete: CACADE\n";
-            $yaml .= "       onUpdate: CACADE\n";
+            $yaml .= "       onDelete: CASCADE\n";
+            $yaml .= "       onUpdate: CASCADE\n";
         }
     }
     

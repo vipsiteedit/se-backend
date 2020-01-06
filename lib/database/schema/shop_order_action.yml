@@ -34,6 +34,6 @@ shop_order_action:
      shop_order:
        local: id_order
        foreign: id
-       onDelete: CACADE
-       onUpdate: CACADE
+       onDelete: CASCADE
+       onUpdate: CASCADE
    values:

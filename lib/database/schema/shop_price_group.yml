@@ -30,5 +30,5 @@ shop_price_group:
      shop_group:
        local: id_group
        foreign: id
-       onDelete: CACADE
-       onUpdate: CACADE
+       onDelete: CASCADE
+       onUpdate: CASCADE

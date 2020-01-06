@@ -30,7 +30,7 @@ news_img:
      news:
        local: id_news
        foreign: id
-       onDelete: CACADE
-       onUpdate: CACADE
+       onDelete: CASCADE
+       onUpdate: CASCADE
    values:
 

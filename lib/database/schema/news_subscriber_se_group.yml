@@ -23,6 +23,6 @@ news_subscriber_se_group:
      news:
        local: id_news
        foreign: id
-       onDelete: CACADE
-       onUpdate: CACADE
+       onDelete: CASCADE
+       onUpdate: CASCADE
    values:

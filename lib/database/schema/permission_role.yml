@@ -16,7 +16,6 @@ permission_role:
        notnull: true
      description:
        type: string(255)
-   relations:
    values:
      1:
        id: 1

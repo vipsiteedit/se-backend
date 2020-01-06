@@ -31,6 +31,6 @@ shop_section_page:
      shop_section:
        local: id_section
        foreign: id
-       onDelete: CACADE
-       onUpdate: CACADE
+       onDelete: CASCADE
+       onUpdate: CASCADE
 

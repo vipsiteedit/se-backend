@@ -56,6 +56,6 @@ news:
      news_category:
        local: id_category
        foreign: id
-       onDelete: CACADE
-       onUpdate: CACADE
+       onDelete: CASCADE
+       onUpdate: CASCADE
    values:

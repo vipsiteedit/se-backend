@@ -22,4 +22,14 @@ shop_rating:
        unsigned: true
        notnull: true
    relations:
+     shop_price:
+       local: id_price
+       foreign: id
+       onDelete: CASCADE
+       onUpdate: CASCADE
+     se_user:
+       local: id_user
+       foreign: id
+       onDelete: CASCADE
+       onUpdate: CASCADE
    values:
