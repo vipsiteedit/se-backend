@@ -1,4 +1,4 @@
-#! /usr/local/bin/php5.4
+#! /usr/bin/php7.3
 <?php
 
 function install_schema()
@@ -9,7 +9,7 @@ function install_schema()
     include($root . 'system/config_db.php');
     se_db_dsn('mysql');
     se_db_connect($CONFIG);
-    
+
     $tables = seYAML::Load('tables.yml');
     $dir = 'schema';
     //if (chdir($dir)) {
@@ -25,6 +25,7 @@ function install_schema()
 
     echo "\n\n";	
     for($j = $i; $j >= 0; $j--) {
+        if (empty($tablelist[$j])) continue;
         $table = $tablelist[$j];
         echo "DROP TABLE `{$table}_tmp`\n";
         se_db_query("DROP TABLE `{$table}_tmp`");

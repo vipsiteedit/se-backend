@@ -1,5 +1,5 @@
 <?php
-/** Конвертор Yaml в SQL запросы */
+/** пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ Yaml пїЅ SQL пїЅпїЅпїЅпїЅпїЅпїЅпїЅ */
 
 function se_yaml_to_sql($ymlfile, $outpath = '', $foreign_keys = true, $add_values = false)
 {
@@ -12,23 +12,22 @@ function se_yaml_to_sql($ymlfile, $outpath = '', $foreign_keys = true, $add_valu
     $res_sql = '';
     $ymlres = seYAML::Load($ymlfile);
     $table = array();
-    
+
     foreach($ymlres as $classname=>$value) {
         $sql = '';
         $tablename = $value['tableName'];
         $tabletype = $value['tableType'];
-        // связывание таблиц
-        $relations = $value['relations'];
-        $actAs = $value['actAs'];
-        $valueinsert = $value['values'];
-        $indexes = $value['indexes'];
-        
+        $relations = !empty($value['relations']) ? $value['relations'] : array();
+        $actAs = !empty($value['actAs']) ? $value['actAs'] : array();
+        $valueinsert = !empty($value['values']) ? $value['values'] : array();
+        $indexes = !empty($value['indexes']) ? $value['indexes'] : array();
+
         $sequence = '';
         $primary = '';
         $unique = '';
         $indexkey = array();
         if ($tablename != '') {
-            if ($value['tableDrop'])
+            if (!empty($value['tableDrop']))
                 $sql .= "DROP TABLE IF EXISTS `{$tablename}`;\n\n";
 
             $sql .= "CREATE TABLE IF NOT EXISTS `{$tablename}` ( ";
@@ -37,25 +36,27 @@ function se_yaml_to_sql($ymlfile, $outpath = '', $foreign_keys = true, $add_valu
                 $default = $notnull = $sequence = '';
                 if (is_array($valfield)) { 
                     $type = $valfield['type'];
-                    if ($valfield['index'])
+                    if (!empty($valfield['index']))
                         $indexkey[] = array('field'=>$field, 'type'=>'index');
 
-                    if ($valfield['unique'])
+                    if (!empty($valfield['unique']))
                         $indexkey[] = array('field'=>$field, 'type'=>'unique');
 
-                    
+
                     if (!empty($valfield['primary'])) {
-                        $primary = $field; 	$notnull = ' NOT NULL';
+                        $primary = $field; $notnull = ' NOT NULL';
                         if (strpos($type, 'integer')!==false) {
                             $unsigned = ' unsigned';
                         }
                     }
-                    if ($valfield['unsigned']) $unsigned = ' unsigned';
+                    if (!empty($valfield['unsigned'])) $unsigned = ' unsigned';
                     if (!empty($valfield['notnull']) && $valfield['notnull']=='true') $notnull = ' NOT NULL';
                     if (!empty($valfield['default'])) $default = " default '{$valfield['default']}'";
                     if (!empty($valfield['sequence'])) $sequence = ' auto_increment';
-                } else $type = $valfield;
-                
+                } else {
+                    $type = $valfield;
+                }
+
                 if (strpos($type, 'string(')!==false) {
                     $stype = explode('(', $type);
                     list($countchar) = explode(')', $stype[1]);
@@ -65,7 +66,7 @@ function se_yaml_to_sql($ymlfile, $outpath = '', $foreign_keys = true, $add_valu
                     $type = 'date';
                 }
 
-                
+
                 $type = str_replace(array('integer', 'string', 'integer(2)', 'integer(4)'), 
                     array('int', 'varchar', 'int', 'bigint'), $type);
 
@@ -132,11 +133,11 @@ function se_yaml_to_sql($ymlfile, $outpath = '', $foreign_keys = true, $add_valu
 
             if (!empty($indexkey)) {
                 foreach($indexkey as $index) {
-                    // Определяем Индексы
+                    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
                     if ($index['type'] == 'index') {
                         $sql .="\n KEY `{$index['field']}` (`{$index['field']}`),";
                     }
-                    // Определяем уникальные Индексы
+                    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
                     if ($index['type'] == 'unique') {
                         $sql .="\n UNIQUE KEY `{$index['field']}` (`{$index['field']}`),";
                     }
@@ -144,11 +145,11 @@ function se_yaml_to_sql($ymlfile, $outpath = '', $foreign_keys = true, $add_valu
             }
             if (!empty($indexes)){
                 foreach($indexes as $name=>$index) {
-                    // Определяем Индексы
+                    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
                     if ($index['type'] == 'index') {
                         $sql .="\n KEY `{$name}` (";
                     }
-                    // Определяем уникальные Индексы
+                    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
                     if ($index['type'] == 'unique') {
                         $sql .="\n UNIQUE KEY `{$name}` (";
                     }
@@ -180,11 +181,11 @@ function se_yaml_to_sql($ymlfile, $outpath = '', $foreign_keys = true, $add_valu
                 if (!empty($valuefield['onUpdate']))
                     $sql .= " ON UPDATE {$valuefield['onUpdate']}";
                 $sql .= ";\n###\n";
-                // Связи
+                // пїЅпїЅпїЅпїЅпїЅ
                 $i ++; 	
             }
         
-            // Если есть данные по умолчанию - внедряем их
+            // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ
             if (!empty($valueinsert) && $add_values) {
                 foreach($valueinsert as $valuenext) {
                     $sql .= "\n\nINSERT INTO `{$tablename}`(";
@@ -218,6 +219,7 @@ function se_yaml_to_sql($ymlfile, $outpath = '', $foreign_keys = true, $add_valu
                 fclose($fp);
                 
                 $path_table = dirname(__file__) . '/../tables/';
+                if (!is_dir($path_table)) mkdir($path_table);
 
                 $fp = fopen($path_table . $tablename.'.ser', "w+");
                 fwrite($fp, serialize($table));
@@ -388,18 +390,15 @@ function se_table_migration($migration_table, $link = 'db_link')
     $sfile = substr(dirname(__file__), 0, -7) . '/schema/'.$migration_table.'.yml';
 
     if (!file_exists($sfile)) return;
-    
+
     $schema = seYAML::Load($sfile);
     $schemafields = array();
-    
-    
-    
-    
+
     foreach($schema as $value) {
         foreach($value['columns'] as $field=>$valfield) {
             $schemafields[] = $field;
             $fields[$field] = $field;
-            if ($valfield['notnull'] == 'true') {
+            if (!empty($valfield['notnull'])) {
                 $notnull[$field] = true;
             }
         }
@@ -418,7 +417,7 @@ function se_table_migration($migration_table, $link = 'db_link')
     }
 
     $qtable = mysqli_query($$link, "SHOW TABLE STATUS WHERE `ENGINE`='innoDB' AND `NAME`='{$migration_table}'");
-    
+
     if (empty($table) || $migration_table . '_tmp'==$table || $migration_table==$table) {
         if (!empty($qtable)) {
             if (mysqli_num_rows($qtable) == 0) {
@@ -434,32 +433,28 @@ function se_table_migration($migration_table, $link = 'db_link')
                 }
             } else return;
         }
-    
     } else {
-        if (!empty($qtable) && mysqli_num_rows($qtable) > 0) return;
+        if (!empty($qtable) && mysqli_num_rows($qtable) > 0) 
+            return;
     }
 
-    
     //echo "create table " . $migration_table . "\n";
     mysqli_query($$link, "DROP TABLE IF EXISTS `$migration_table`");
 
-    // Читаем из временной таблицы
     $sql = "SELECT * FROM `$table`";
     if ($result = mysqli_query($$link, $sql)) {
-        // Если данные есть в старых таблицах, то переносим в новую
         $add_value =  (mysqli_num_rows($result) == 0);
     } else {
         $add_value = true;
     }
 
-    // Если данных нет, то устанавливаем данные по умолчанию
     $sql = se_yaml_to_sql($sfile,'sql/', true, $add_value);
-    $sqlarr = explode("\n###\n", $sql);
-    foreach($sqlarr as $sql)
+    $sqlArr = explode("\n###\n", $sql);
+    foreach($sqlArr as $sql)
     {
-        //echo $sql ."\n";
-        mysqli_query($$link, $sql);
-        //echo mysql_error()."\n\n";
+        if (!empty($sql)) {
+            mysqli_query($$link, $sql);
+        }
     }
 
     if (!empty($result))
