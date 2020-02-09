@@ -26,28 +26,33 @@ shop_modifications:
      value:
        type: float(10,2)
        notnull: true
+       default: 0.00
      value_opt:
        type: float(10,2)
        notnull: true
+       default: 0.00
      value_opt_corp:
        type: float(10,2)
        notnull: true
+       default: 0.00
      value_purchase:
        type: decimal(10,2)
-       unsigned: true
        notnull: true
        default: 0.00
      count:
        type: float(10,3)
+       default: null
      description:
        type: mediumtext
-       notnull: true
+       default: null
      sort:
        type: integer
        notnull: true
+       default: 0
      default:
-       type: integer
+       type: boolean
        notnull: true
+       default: 0
      id_exchange:
        type: string(80)
    relations:

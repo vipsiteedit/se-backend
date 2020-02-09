@@ -33,6 +33,7 @@ shop_feature:
      sort:
        type: integer
        notnull: true
+       default: 0
      seo:
        type: integer
        notnull: true

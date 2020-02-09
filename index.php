@@ -1,12 +1,6 @@
 <?php
-error_reporting(0);
 
-date_default_timezone_set('Europe/Moscow');
-define('SE_INDEX_INCLUDED', true);
-session_start();
-
-require 'system/main/init.php';
-require_once 'system/main/reindex.php';
+require 'system/main/inc.php';
 
 if (isRequest('reindex') || !is_dir(getcwd() . '/projects/' . SE_DIR . 'searchdata')) {
     reindexsite();

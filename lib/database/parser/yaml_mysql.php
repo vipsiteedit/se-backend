@@ -51,7 +51,13 @@ function se_yaml_to_sql($ymlfile, $outpath = '', $foreign_keys = true, $add_valu
                     }
                     if (!empty($valfield['unsigned'])) $unsigned = ' unsigned';
                     if (!empty($valfield['notnull']) && $valfield['notnull']=='true') $notnull = ' NOT NULL';
-                    if (!empty($valfield['default'])) $default = " default '{$valfield['default']}'";
+                    if (!empty($valfield['default'])) {
+                        if (strtoupper($valfield['default']) == 'NULL' || strtoupper($valfield['default'])=='CURRENT_TIMESTAMP') {
+                            $default = " default {$valfield['default']}";
+                        } else {
+                            $default = " default '{$valfield['default']}'";
+                        }
+                    }
                     if (!empty($valfield['sequence'])) $sequence = ' auto_increment';
                 } else {
                     $type = $valfield;

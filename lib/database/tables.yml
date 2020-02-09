@@ -130,3 +130,5 @@ tables:
   138: user_urid
   139: word_exclude
   140: shop_group_gcontacts
+  141: shop_price_userfields
+  142: shop_contacts_geo

@@ -1,5 +1,5 @@
-shop_img:
-   tableName: shop_img
+shop_price_userfields:
+   tableName: shop_price_userfields
    tableType:
      engine: innoDB
      charset: utf8
@@ -10,28 +10,28 @@ shop_img:
        unsigned: true
        notnull: true
        primary: true
-       sequence: shop_img_id
+       sequence: shop_price_userfields_id
      id_price:
        type: integer
        unsigned: true
+       notnull: true
        index: true
-     picture:
-       type: string(255)
-     picture_alt:
-       type: string(255)
-     title:
-       type: string(255)
-     sort:
+     id_userfield:
        type: integer
+       unsigned: true
        notnull: true
-       default: 0
-     default:
-       type: integer
-       notnull: true
-       default: 0
+       index: true
+     value:
+       type: string(255)
    relations:
      shop_price:
        local: id_price
        foreign: id
        onDelete: CASCADE
        onUpdate: CASCADE
+     shop_userfields:
+       local: id_userfield
+       foreign: id
+       onDelete: CASCADE
+       onUpdate: CASCADE
+   values:

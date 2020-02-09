@@ -76,12 +76,15 @@ shop_group:
        type: integer
        unsigned: true
        notnull: true
+       default: 0
      filter:
        type: integer
        notnull: true
+       default: 0
      compare:
        type: integer
        notnull: true
+       default: 0
      id_modification_group_def:
        type: integer
        unsigned: true

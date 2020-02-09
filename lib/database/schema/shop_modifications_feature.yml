@@ -30,13 +30,17 @@ shop_modifications_feature:
        index: true
      value_number:
        type: float
+       default: null
      value_bool:
        type: integer
+       default: null
      value_string:
        type: string(255)
+       default: null
      sort:
        type: integer
        notnull: true
+       default: 0
      is_mod:
        type: integer
        notnull: true
