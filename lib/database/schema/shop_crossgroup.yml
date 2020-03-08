@@ -19,6 +19,6 @@ shop_crossgroup:
      shop_group:
        local: group_id
        foreign: id
-       onDelete: CACADE
-       onUpdate: CACADE
+       onDelete: CASCADE
+       onUpdate: CASCADE
    values:

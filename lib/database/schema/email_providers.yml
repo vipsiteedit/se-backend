@@ -25,5 +25,5 @@ email_providers:
        id: 1
        name: sendpulse
        url: https://login.sendpulse.com
-       settings: {"ID":{"type":"string","value":""}, "SECRET":{"type":"string","value":""}}
+       settings: '{"ID":{"type":"string","value":""}, "SECRET":{"type":"string","value":""}}'
        is_active: 1
