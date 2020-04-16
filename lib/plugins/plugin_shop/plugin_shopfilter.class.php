@@ -4,9 +4,10 @@ class plugin_shopfilter {
     
     private $group;
     private $selected_filter = array();
+	private $idf = '';
     
     public function __construct($basegroup = '', $id_group = 0) {
-		if (empty($id_group)) {
+        if (empty($id_group)) {
 			$group = plugin_shopgroups::getInstance();
 			$id_group = $group->getGroupId((string)$basegroup);
 		}	
@@ -16,13 +17,20 @@ class plugin_shopfilter {
 			if (is_array($get))
 				$this->selected_filter = $_GET['f'];   
 		}
+		if (isset($_GET['idf'])) {
+			$this->idf = $_GET['idf'];
+		}
+		$this->createCacheDb();
     }
     
     public function existFilters() {
         $filters = array();
 		if (!empty($this->group)) {
 			$sgf = new seTable('shop_group_filter', 'sgf');
-			$sgf->select('sgf.id_feature, sgf.default_filter, sgf.expanded, sf.type, sf.name, sf.measure');
+			$sgf->select('sgf.id_feature, sgf.default_filter, sgf.expanded, sf.type, sf.name, sf.measure, 
+			(SELECT max(sfvl.created_at) FROM shop_feature_value_list sfvl WHERE sfvl.id_feature=sgf.id_feature) `upd1`,
+			(SELECT max(`smf`.created_at) FROM shop_modifications_feature `smf` WHERE `smf`.id_feature=sgf.id_feature) `upd2`
+			');
             $sgf->leftJoin('shop_feature sf', 'sf.id=sgf.id_feature');
 			$sgf->where('sgf.id_group=?', $this->group);
 			$sgf->andwhere('(sgf.id_feature IS NOT NULL OR sgf.default_filter IS NOT NULL)');
@@ -31,6 +39,7 @@ class plugin_shopfilter {
             
 			if (!empty($list)) {
 				foreach($list as $val) {
+					//if (trim($val['name'])=='') continue;
 					$key = (!empty($val['id_feature'])) ? $val['id_feature'] : $val['default_filter'];
                     if (!empty($val['id_feature'])) {
                         $key = (int)$val['id_feature'];
@@ -152,61 +161,100 @@ class plugin_shopfilter {
     public function getFilterValues($tree_group = null, $flLive = false)
     {
         $filter_list = $this->existFilters();
+        
         if (empty($filter_list)) return;
         
         $filters = array();
         
         list($join, $where) = $this->getSQLFiltered();
-		
+        $request = '';
+		foreach($where as $wh) {
+			$request .= '&&' . $wh;
+		}
+		$request = md5($request);
         foreach ($filter_list as $key => $feature) {
+			$start = microtime(true);
             if (is_numeric($key)) {
                 
                 if ($feature['type'] == 'list' || $feature['type'] == 'colorlist') {
-                    $sf = new seTable('shop_modifications_feature', 'smf');
-                 
-                    $sf->select('sfvl.value, sfvl.id, sfvl.color, sfvl.image');
-                    $sf->innerJoin('shop_feature_value_list sfvl', 'sfvl.id = smf.id_value');
-                    $sf->innerJoin('shop_price sp', 'smf.id_price = sp.id');
-                    $sf->innerJoin('shop_price_group spg', 'sp.id=spg.id_price');
-                    $sf->innerJoin('shop_group_tree sgt', 'spg.id_group=sgt.id_child');
-                    
-                    $sf->where('sp.enabled="Y"');
-                    $sf->andWhere('sgt.id_parent=?', $this->group);
-                    $sf->andWhere('smf.id_feature=?', $key);
-					if (!empty($join)) {
-						foreach($join as $it) {
-							if ($it['type'] == 'inner')
-								$sf->innerJoin($it['table'], $it['on']);
-							else
-								$sf->leftJoin($it['table'], $it['on']);
-						}
-					}
-					if (!empty($where)) {
-						foreach($where as $wh) {
-							$sf->andWhere($wh);
-						}
-					}
-										
-                    $sf->groupBy('sfvl.id');
-                    $sf->orderBy('sfvl.sort');
-                    
-                    $list = $sf->getList();
-                    
-                    if ($list) {
-                        $feature_image_dir = '/images/' . se_getLang() . '/shopfeature/';
-                        $feature['values'] = array();
-                        foreach ($list as $val) {
-                            $check = (bool)isset($this->selected_filter[$key]) && is_array($this->selected_filter[$key]) && in_array($val['id'], $this->selected_filter[$key]);
-							$feature['values'][$val['id']] = array('value' => $val['value'], 'check' => $check); 
+                    //$cache = $this->getCache($key, $request, $feature);
+                    if (!empty($cache)) {
+                        $filters[$key] = $cache;
+                    } else {
+                        $sf = new seTable('shop_modifications_feature', 'smf');
+                        
+                        $sf->select('sfvl.value, sfvl.id, sfvl.color, sfvl.image');
+                        $sf->innerJoin('shop_feature_value_list sfvl', 'sfvl.id = smf.id_value');
+                        $sf->innerJoin('shop_price sp', 'smf.id_price = sp.id');
+                        $sf->innerJoin('shop_price_group spg', 'sp.id=spg.id_price');
+                        $sf->innerJoin('shop_group_tree sgt', 'spg.id_group=sgt.id_child');
+                        
+                        $sf->where('sp.enabled="Y"');
+                        $sf->andWhere('sgt.id_parent=?', $this->group);
+                        $sf->andWhere('smf.id_feature=?', $key);
+                        
+                        // Исключаем обрабатку чекбоксов списка в текущей группе
+                        //if (trim($this->idf) !== trim($key)) {
+                            if (!empty($join)) {
+                                foreach($join as $it) {
+                                    if ($it['type'] == 'inner')
+                                        $sf->innerJoin($it['table'], $it['on']);
+                                    else
+                                        $sf->leftJoin($it['table'], $it['on']);
+                                }
+                            }
+                            if (!empty($where)) {
+                                foreach($where as $wh) {
+                                if (strpos($wh, '.id_feature='.$this->idf.' ') === false 
+                                || trim($this->idf) !== trim($key))
+                                    $sf->andWhere($wh);
+                                }
+                            }
+                        //}
+                        
+                        $sf->groupBy('sfvl.id');
+                        // сортировка по полю sort
+                        $sf->orderBy('sfvl.sort'); 
+                        // сортировка по значению через БД
+                        // $sf->orderBy('cast(sfvl.value as signed), sfvl.value, sfvl.sort');
+                        // $sf->orderBy('sfvl.value + 0, sfvl.value, sfvl.sort');
 
-							if ($feature['type'] == 'colorlist') {
-								if (!empty($val['image']) && file_exists(SE_ROOT . $feature_image_dir . $val['image']))
-									$feature['values'][$val['id']]['image'] = $feature_image_dir . $val['image'];
-								else
-									$feature['values'][$val['id']]['color'] = $val['color'];
-							}
+                        $list = $sf->getList();
+                        echo se_db_error();
+                        
+                        // natural сортировка символьно-числовая
+                        unset($tp_list,$tp_list_temp,$tp_list_test,$rnd);
+
+                        foreach ($list as $tp_val) {
+                            $rnd = '_'.rand(); // на всякий случай если будут одинаковые значения параметров
+                            $tp_list[$tp_val['value'].$rnd] = $tp_val;
+                            $tp_list_temp[] = $tp_val['value'].$rnd;
                         }
-                        $filters[$key] = $feature;
+                        //natcasesort($tp_list_temp);
+                        foreach ($tp_list_temp as $tp_k => $tp_v) {
+                            $tp_list_test[] = $tp_list[$tp_v];
+                        }
+                        $list = $tp_list_test;
+                        //////////////////
+
+						if ($list) {
+							$feature_image_dir = '/images/' . se_getLang() . '/shopfeature/';
+							$feature['values'] = array();
+							foreach ($list as $val) {
+								$check = (bool)isset($this->selected_filter[$key]) && is_array($this->selected_filter[$key]) && in_array($val['id'], $this->selected_filter[$key]);
+								
+								$feature['values'][$val['id']] = array('value' => $val['value'], 'check' => $check); 
+
+								if ($feature['type'] == 'colorlist') {
+									if (!empty($val['image']) && file_exists(SE_ROOT . $feature_image_dir . $val['image']))
+										$feature['values'][$val['id']]['image'] = $feature_image_dir . $val['image'];
+									else
+										$feature['values'][$val['id']]['color'] = $val['color'];
+								}
+							}
+							$this->setCache($key, $request, $feature);
+							$filters[$key] = $feature;
+						}
                     }
                 }
                 elseif ($feature['type'] == 'number') {
@@ -220,20 +268,26 @@ class plugin_shopfilter {
                     $sf->where('sp.enabled="Y"');
                     $sf->andWhere('sgt.id_parent=?', $this->group);
                     $sf->andWhere('smf.id_feature=?', $key);
-					if (!empty($join)) {
-						foreach($join as $it) {
-							if ($it['type'] == 'inner')
-								$sf->innerJoin($it['table'], $it['on']);
-							else
-								$sf->leftJoin($it['table'], $it['on']);
-						}
-					}
-					if (!empty($where)) {
-						foreach($where as $wh) {
-							$sf->andWhere($wh);
-						}
-					}
                     
+                    // Обрабатываем фильтр кроме этой группы
+                    //if (trim($this->idf) !== trim($key)) {
+                        if (!empty($join)) {
+                            foreach($join as $it) {
+                                if ($it['type'] == 'inner')
+                                    $sf->innerJoin($it['table'], $it['on']);
+                                else
+                                    $sf->leftJoin($it['table'], $it['on']);
+                            }
+                        }
+                        if (!empty($where)) {
+                            foreach($where as $wh) {
+                            if (strpos($wh, '.id_feature='.$this->idf. ' ') === false
+                            || trim($this->idf) !== trim($key))
+                                $sf->andWhere($wh);
+                            }
+                        }
+                    //}
+                
                     if ($sf->fetchOne()) {
                         $feature['type'] = 'range';
                         $feature['min'] = $sf->min_value;
@@ -260,20 +314,26 @@ class plugin_shopfilter {
                     $sf->where('sp.enabled="Y"');
                     $sf->andWhere('sgt.id_parent=?', $this->group);
                     $sf->andWhere('smf.id_feature=?', $key);
-					if (!empty($join)) {
-						foreach($join as $it) {
-							if ($it['type'] == 'inner')
-								$sf->innerJoin($it['table'], $it['on']);
-							else
-								$sf->leftJoin($it['table'], $it['on']);
-						}
-					}
-					if (!empty($where)) {
-						foreach($where as $wh) {
-							$sf->andWhere($wh);
-						}
-					}
                     
+                    // обрабатываем фильтр кроме текущей группы
+                    //if (trim($this->idf) !== trim($key)) {
+                        if (!empty($join)) {
+                            foreach($join as $it) {
+                                if ($it['type'] == 'inner')
+                                    $sf->innerJoin($it['table'], $it['on']);
+                                else
+                                    $sf->leftJoin($it['table'], $it['on']);
+                            }
+                        }
+                        if (!empty($where)) {
+                            foreach($where as $wh) {
+                            if (strpos($wh, '.id_feature='.$this->idf. ' ') === false
+                            || trim($this->idf) !== trim($key))
+                                $sf->andWhere($wh);
+                            }
+                        }
+                    //}
+                        
                     if ($sf->fetchOne()) {
                         $feature['check'] = false;  
                         if (isset($this->selected_filter[$key])) {
@@ -295,23 +355,27 @@ class plugin_shopfilter {
                     $sp->innerJoin('shop_group_tree sgt', 'spg.id_group=sgt.id_child');
                     $sp->where('sp.enabled="Y"');
                     $sp->andWhere('sgt.id_parent=?', $this->group);
-					if (!empty($join)) {
-						foreach($join as $it) {
-							if ($it['type'] == 'inner')
-								$sp->innerJoin($it['table'], $it['on']);
-							else
-								$sp->leftJoin($it['table'], $it['on']);
-						}
-					}
-					if (!empty($where)) {
-						foreach($where as $wh) {
-							$sp->andWhere($wh);
-						}
-					}
                     
+                    // Обрабатываем фильтр кроме текущей группы брендов
+                    if (trim($this->idf) !== trim($key)) {
+                        if (!empty($join)) {
+                            foreach($join as $it) {
+                                if ($it['type'] == 'inner')
+                                    $sp->innerJoin($it['table'], $it['on']);
+                                else
+                                    $sp->leftJoin($it['table'], $it['on']);
+                            }
+                        }
+                        if (!empty($where)) {
+                            foreach($where as $wh) {
+                                $sp->andWhere($wh);
+                            }
+                        }
+                    }
                     
                     $sp->groupBy('sb.id');
                     $sp->orderBy('sb.name', 0);
+					
                     $list = $sp->getList();
                     
                     if ($list) {
@@ -337,6 +401,7 @@ class plugin_shopfilter {
                     
                 }
                 elseif ($key == 'price') {
+                    
                     $pspc = plugin_shop_price_cache::getInstance();
                     $shop_price = new seTable('shop_price', 'sp');
                     $shop_price->select('
@@ -348,24 +413,8 @@ class plugin_shopfilter {
                     $shop_price->innerJoin('shop_group_tree sgt', 'spg.id_group=sgt.id_child');
                     $shop_price->where('sp.enabled = "Y"');
                     $shop_price->andWhere('sgt.id_parent=?', $this->group);
-
-					/*if (!empty($join)) {
-						foreach($join as $it) {
-							if ($it['table'] == 'shop_price_cache spc') continue;
-							if ($it['type'] == 'inner')
-								$shop_price->innerJoin($it['table'], $it['on']);
-							else
-								$shop_price->leftJoin($it['table'], $it['on']);
-						}
-					}
-					if (!empty($where)) {
-						foreach($where as $wh) {
-							$shop_price->andWhere($wh);
-						}
-					}
-					*/
-                    //echo $shop_price->getSql();
-                    if ($l = $shop_price->fetchOne()) {
+                    
+                    if ($shop_price->fetchOne()) {
                         $base_curr = se_baseCurrency();
                         $current_curr = se_getMoney(); 
                         
@@ -402,10 +451,64 @@ class plugin_shopfilter {
                 else
                     $filters[$key]['expanded'] = 1;
             }
+			if (isset($_GET['test'])) {
+				echo $key . ' '.$feature['name'] .': '.  (microtime(true) - $start). "<br>";
+			}
         }
-        
-        
-        
         return $filters;
     }
+	
+	private function getCache($id_feature, $request, $feature)
+	{
+		if ($feature['upd1'] > $feature['upd2']) $feature['upd2'] = $feature['upd1'];
+		se_db_query("DELETE FROM shop_filters_cache WHERE id_feature={$feature['id_feature']} AND created_at<'{$feature['upd1']}'");
+		
+		$tab = new seTable('shop_filters_cache');
+		$tab->select('cache');
+		$tab->where('id_group=?', intval($this->group));
+		$tab->andwhere('id_feature=?', $id_feature);
+		$tab->andwhere("request='?'", $request);
+		$result  = $tab->fetchOne();
+		if (!empty($result['cache'])) {
+			return json_decode($result['cache'], true);
+		}
+		return array();
+	}
+	
+	private function setCache($id_feature, $request, $list = array())
+	{
+		if (empty($list) || !count($list)) return;
+		$cache = json_encode($list);		
+		$tab = new seTable('shop_filters_cache');
+		$tab->where('id_group=?', intval($this->group));
+		$tab->andwhere('id_feature=?', $id_feature);
+		$tab->andwhere("request='?'", $request);
+		$tab->fetchOne();
+		$tab->id_group = intval($this->group);
+		$tab->id_feature = $id_feature;
+		$tab->request = $request;
+		$tab->cache = $cache;
+		return $tab->save();
+	}
+	
+	private function createCacheDb() 
+	{
+		$sql = "CREATE TABLE IF NOT EXISTS `shop_filters_cache` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_group` int(10) UNSIGNED NOT NULL,
+  `id_feature` int(10) UNSIGNED NOT NULL,
+  `request` varchar(255) NOT NULL,
+  `cache` text NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `id_group` (`id_group`),
+  KEY `id_feature` (`id_feature`),
+  KEY `request` (`request`),
+  KEY `created_at` (`created_at`),
+  CONSTRAINT `shop_filters_cache_ibfk_1` FOREIGN KEY (`id_group`) REFERENCES `shop_group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `shop_filters_cache_ibfk_2` FOREIGN KEY (`id_feature`) REFERENCES `shop_feature` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+		se_db_query($sql);
+	}
 }
