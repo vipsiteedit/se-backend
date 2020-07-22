@@ -7,7 +7,4 @@ order allow,deny
 deny from all
 </Files>
 
-RewriteEngine On
-RewriteBase /admin/
-RewriteCond %{DOCUMENT_ROOT}/admin/$1 !-f 
-RewriteRule ^(config\.json)$  host.php
+RewriteEngine Off
