@@ -55,7 +55,7 @@ $fl_messerr = false;
 check_session(false);
 
 if (!file_exists('projects/' . SE_DIR . 'project.xml')) {
-    header('Location: http://e-stile.ru/newsite.html', 302);
+    header('Location: https://sites4all.ru', 302);
     exit();
 }
 
