@@ -28,17 +28,13 @@ function append_simplexml(&$simplexml_to, &$simplexml_from)
 }
 
 function add_simplexml_from_array(&$simplexml, $namevar, $arraylist)
-{	
-	$child = $simplexml->addChild(strval($namevar));
+{
+    $child = $simplexml->addChild(strval($namevar));
     foreach ($arraylist as $field => $value) {
         if (is_array($value)) {
-			//print_r($value);
-            $child->addChild($field . '.count', count($value));
+            $child->addChild($field . 'count', count($value));
             foreach ($value as $item) {
-				//print_r($item);
-				$ch = $simplexml->$namevar;
-				//add_simplexml_from_array($child, strval($field), $item);
-                add_simplexml_from_array($ch, strval($field), $item);
+                add_simplexml_from_array($child, strval($field), $item);
             }
         } else if (is_string($field)) {
             $child->addChild(strval($field), str_replace('&', '&amp;', $value));
