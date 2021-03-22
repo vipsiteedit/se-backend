@@ -300,18 +300,21 @@ function ThumbCreate($dest, $source, $res = 's', $size = 0, $x1 = 0, $y1 = 0, $w
         if ($dest == '') header("Content-type: " . $f_getimagesize['mime']);
 
         switch ($ext) {
-            case "gif": {
-                @imagegif($d_im, $dest);
-                break;
-            }
-            case "png": {
-                @imagepng($d_im, $dest);
-                break;
-            }
-            default: {
-                @imagejpeg($d_im, $dest, $quality);
-                break;
-            }
+            case "gif":
+                {
+                    @imagegif($d_im, $dest);
+                    break;
+                }
+            case "png":
+                {
+                    @imagepng($d_im, $dest);
+                    break;
+                }
+            default:
+                {
+                    @imagejpeg($d_im, $dest, $quality);
+                    break;
+                }
         }
         imagedestroy($d_im);
         imagedestroy($img);
@@ -376,92 +379,102 @@ function drawWatermark($image, $watermark, $padding = 0, $opacity = 1)
     return true;
 }
 
-function se_getDImage($img, $size = 200, $res='s', $water='', $color = 0x0000FF, $pos = 'center', $defimage = '', $waterquality = 50, $mode = 'check'){
-	$water = trim($water);
-	$res = ($res == 'w' || $res == 'h' || $res == 'm') ? $res : 's';
-	if ($water && getExtFile($img) == 'gif') $water = '';
-	
-	if (empty($size)) $size = 200;
-	$wat = ($water) ? 'w' : '';
-	$ext = getExtFile($img);
-	
-	$image = $img;
-	
-	$dest = md5($img).'_'.$wat.$res.$size.'.'.$ext;
-	$root = $_SERVER['DOCUMENT_ROOT'];
-	if (substr($root, -1) != '/') $root .= '/';
-	$path =  'images/prev/';
-	
-	if (substr($img, 0, 1) == '/') $img = substr($img, 1);
+function se_getDImage($img, $size = 200, $res = 's', $water = '', $color = 0x0000FF, $pos = 'center', $defimage = '', $waterquality = 50, $mode = 'check')
+{
+    $water = trim($water);
+    $res = ($res == 'w' || $res == 'h' || $res == 'm') ? $res : 's';
+    if ($water && getExtFile($img) == 'gif') $water = '';
 
-	if (!is_dir($root.$path)){
-		mkdir($root.$path);
-	}
+    if (empty($size)) $size = 200;
+    $wat = ($water) ? 'w' : '';
+    $ext = getExtFile($img);
 
-	if (strpos($img , '://') === false){
-		$img = $root . str_replace('//', '/',  $img);
-	}
-	
-	if (!$defimage) {
-		$defimage = '/lib/plugins/plugin_shop/no_foto.gif';
-	}
-	
-	if (file_exists($img)) {
-	    if (file_exists($root . $path . $dest) && filemtime($img) > filemtime($root . $path . $dest)){
-			$flist = glob($root . $path . md5($image). '*.*');
-			if (!empty($flist)){
-				foreach($flist as  $f){
-					if ($f != $path . $dest) unlink($f);
-				}
-			}
-	    }
-		if (!file_exists($root . $path . $dest)){
-			if ($mode == 'check') {
-				$_SESSION['get_images'][(string)$dest] = array(
-					'image' => (string)$image,
-					'size' => (string)$size,
-					'res' => (string)$res,
-					'water' => (string)$water,
-					'pos' => (string)$pos,
-					'quality' => (string)$waterquality
-				);
-				return '/lib/image.php?get_image='.$dest;
-			}
-			else {
-				if (trim($water)== '' ) {
-					thumbCreate($root . $path . $dest, $img, $res, $size, 0, 0, 0, 0, 75);
-				} else {
-					if (file_exists($root. $water)) {
-						$watermark = $root. $water;
-						$watermarktype = 'image';
-					} else {
-						$watermarktype = 'text';
-						$watermark = $water;
-					}
-					/*if (class_exists('Imagick') && $watermarktype == 'image'){
-						thumbCreate($root . $path . $dest, $img, $res, $size, 0, 0, 0, 0, 75);
-						$image = new Imagick($root . $path . $dest);
-						$watermark = new Imagick($watermark);
-						drawWatermark($image, $watermark, 5, 1);
-						$image->writeImage($path . $dest);
-					} else 
-					*/
-					$imgobj = new plugin_imagewatermark($path . $dest);
-					$imgobj->execute($img, $watermark, $watermarktype, 0x0000FF, $waterquality , $path . $dest, $size, $res, $pos);
-					unset($imgobj);
-				}
-			}
-		}
-		if (file_exists($root . $path . $dest)){
-			return '/'.$path . $dest;
-		}
-		else {
-			return $defimage;
-		}
-	} 
-	else {
-		return $defimage;
-	}
+    $image = $img;
+
+    $dest = md5($img) . '_' . $wat . $res . $size;
+    $destW = $dest . '.webp';
+    $dest .= '.' . $ext;
+    $root = $_SERVER['DOCUMENT_ROOT'];
+    if (substr($root, -1) != '/') $root .= '/';
+    $path = 'images/prev/';
+
+    if (substr($img, 0, 1) == '/') $img = substr($img, 1);
+
+    if (!is_dir($root . $path)) {
+        mkdir($root . $path);
+    }
+
+    if (strpos($img, '://') === false) {
+        $img = $root . str_replace('//', '/', $img);
+    }
+
+    if (!$defimage) {
+        $defimage = '/lib/plugins/plugin_shop/no_foto.gif';
+    }
+
+    if (file_exists($img)) {
+        if (file_exists($root . $path . $dest) && filemtime($img) > filemtime($root . $path . $dest)) {
+            $flist = glob($root . $path . md5($image) . '*.*');
+            if (!empty($flist)) {
+                foreach ($flist as $f) {
+                    if ($f != $path . $dest) unlink($f);
+                }
+            }
+        }
+        if (!file_exists($root . $path . $dest)) {
+            if ($mode == 'check') {
+                $_SESSION['get_images'][(string)$dest] = array(
+                    'image' => (string)$image,
+                    'size' => (string)$size,
+                    'res' => (string)$res,
+                    'water' => (string)$water,
+                    'pos' => (string)$pos,
+                    'quality' => (string)$waterquality
+                );
+                return '/lib/image.php?get_image=' . $dest;
+            } else {
+                if (trim($water) == '') {
+                    thumbCreate($root . $path . $dest, $img, $res, $size, 0, 0, 0, 0, 75);
+                } else {
+                    if (file_exists($root . $water)) {
+                        $watermark = $root . $water;
+                        $watermarktype = 'image';
+                    } else {
+                        $watermarktype = 'text';
+                        $watermark = $water;
+                    }
+                    /*if (class_exists('Imagick') && $watermarktype == 'image'){
+                        thumbCreate($root . $path . $dest, $img, $res, $size, 0, 0, 0, 0, 75);
+                        $image = new Imagick($root . $path . $dest);
+                        $watermark = new Imagick($watermark);
+                        drawWatermark($image, $watermark, 5, 1);
+                        $image->writeImage($path . $dest);
+                    } else
+                    */
+                    $imgobj = new plugin_imagewatermark($path . $dest);
+                    $imgobj->execute($img, $watermark, $watermarktype, 0x0000FF, $waterquality, $path . $dest, $size, $res, $pos);
+                    unset($imgobj);
+                }
+            }
+        }
+        // Будем проверять еще WEBP
+        $webpsupport = (strpos($_SERVER['HTTP_ACCEPT'], 'image/webp') !== false);
+        if ($webpsupport) {
+            if (!file_exists($root . $path . $destW)) {
+                convert_webp($root . $path . $dest, '', $level = 80);
+                return '/' . $path . $destW;
+            }
+            if (file_exists($root . $path . $destW))
+                return '/' . $path . $destW;
+        }
+        if (file_exists($root . $path . $dest)) {
+            return '/' . $path . $dest;
+        } else {
+            return $defimage;
+        }
+    } else {
+        return $defimage;
+    }
 }
 
 function convert_webp($source, $pathout = '', $level = 90)
@@ -479,8 +492,12 @@ function convert_webp($source, $pathout = '', $level = 90)
     $name = pathinfo($name, PATHINFO_FILENAME);
     $cmd = '';
     switch ($type) {
-        case 2 : $cmd = "cwebp -q {$level} '{$source}' -o '{$outpath}/{$name}.webp'"; break;
-        case 3 : $cmd = "cwebp -lossless '{$source}' -o '{$outpath}/{$name}.webp'"; break;
+        case 2 :
+            $cmd = "cwebp -q {$level} '{$source}' -o '{$outpath}/{$name}.webp'";
+            break;
+        case 3 :
+            $cmd = "cwebp -lossless '{$source}' -o '{$outpath}/{$name}.webp'";
+            break;
     }
     if ($cmd) exec($cmd);
 }

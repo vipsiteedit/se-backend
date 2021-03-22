@@ -41,7 +41,14 @@ class plugin_news
         $this->UpdateDB();
         
         $this->checkCache();
-        $this->id_gcontact = intval($_SESSION['user_region']['id_contact']);
+        $this->id_gcontact = intval($_SESSION['user_region']['id_city']);
+        if ($this->id_gcontact > 0) {
+            $gc = new seTable('shop_contacts_geo');
+            $gc->select('id_contact');
+            $gc->where('id_city = ?', $this->id_gcontact);
+            $gc->fetchOne();
+            $this->id_gcontact = $gc->id_contact;
+        }
     }
     
     public function UpdateDB()
