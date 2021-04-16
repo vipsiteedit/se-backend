@@ -177,7 +177,7 @@ class seData
         return $urlname;
     }
 
-    public function objectLink($sect_id, $object)
+    private function objectLink($sect_id, $object)
     {
         if ($sect_id < 100000)
             $pagelink = $this->pagename;
@@ -410,7 +410,23 @@ class seData
         if (file_exists(SE_SAFE . 'projects/' . SE_DIR . $folder . 'project.xml')) {
             $this->prj = simplexml_load_file(SE_SAFE . 'projects/' . SE_DIR . $folder . 'project.xml');
             $this->startpage = (!empty($this->prj->vars->startpage)) ? strval($this->prj->vars->startpage) : 'home';
-            define('SE_STARTPAGE', $this->startpage);
+            if (SE_DB_ENABLE && file_exists(SE_LIBS . 'plugins/plugin_geo/plugin_geovalues.class.php')) {
+				$gval = plugin_geovalues::getInstance();
+				if (method_exists($gval, 'getAltPageName') && $gval->getAltPageName('home')) {
+					$this->startpage = $gval->getAltPageName('home');
+				}
+				if (empty($this->pagename)) $this->pagename = $this->startpage;
+				if (method_exists($gval, 'getAltDesign') && $gval->getAltDesign($this->pagename)) {
+					$this->skin = $gval->getAltDesign($this->pagename);
+				}
+				if (method_exists($gval, 'getAltPageName') && $gval->getAltPageName($this->pagename)) {
+					$this->pagename = $gval->getAltPageName($this->pagename);
+				}
+			}
+			
+			
+			
+			define('SE_STARTPAGE', $this->startpage);
             if (strval($this->prj->vars->language) == '') {
                 $this->prj->vars->language = 'rus';
             }
@@ -464,12 +480,12 @@ class seData
         }
 
         if (!empty($this->prj->bootstraptools) || !empty($this->prj->adaptive)) {
-            $this->footer[] = "<script type=\"text/javascript\" src=\"/lib/js/jquery/jquery.min.js\"></script>";
+            $this->footer[] = "<script src=\"/lib/js/jquery/jquery.min.js\"></script>";
         }
         if ((!empty($this->prj->adaptive) && !isset($this->prj->bootstraptools)) || $this->prj->bootstraptools == 1) {
-            $this->headercss[] = '<link href="/lib/js/bootstrap/css/bootstrap.min.css" id="pageCSS" rel="stylesheet" type="text/css">';
-            $this->footer[] = "<script type=\"text/javascript\" src=\"/lib/js/bootstrap/bootstrap.min.js\"></script>";
-            $this->footer[] = "<script type=\"text/javascript\" src=\"/lib/js/bootstrap/bootstrap.init.js\"></script>";
+            $this->headercss[] = '<link href="/lib/js/bootstrap/css/bootstrap.min.css" id="pageCSS" rel="stylesheet">';
+            $this->footer[] = "<script src=\"/lib/js/bootstrap/bootstrap.min.js\"></script>";
+            $this->footer[] = "<script src=\"/lib/js/bootstrap/bootstrap.init.js\"></script>";
         }
 
         $_SESSION['editor_page'] = strval($this->pagename);
@@ -480,21 +496,25 @@ class seData
 
     private function initpage()
     {
-        $folder = $this->getWorkFolder('pages/' . $this->pagename . '.xml');
-        if (!file_exists(SE_SAFE . 'projects/' . SE_DIR . $folder . 'pages/' . $this->pagename . '.xml')) {
+        $pname = $this->pagename;
+		$folder = $this->getWorkFolder('pages/' . $pname . '.xml');
+        if (!file_exists(SE_SAFE . 'projects/' . SE_DIR . $folder . 'pages/' . $pname . '.xml')) {
             $this->go404();
         } else {
-            $this->lastmodif = filemtime(SE_SAFE . 'projects/' . SE_DIR . $folder . 'pages/' . $this->pagename . '.xml');
+            $this->lastmodif = filemtime(SE_SAFE . 'projects/' . SE_DIR . $folder . 'pages/' . $pname . '.xml');
         }
         if ($this->pagename == '404') {
             header('HTTP/1.0 404 File not found');
         }
-        if (file_exists(SE_SAFE . 'projects/' . SE_DIR . $folder . 'pages/' . $this->pagename . '.xml')) {
-            $this->page = simplexml_load_file(SE_SAFE . 'projects/' . SE_DIR . $folder . 'pages/' . $this->pagename . '.xml');
-            $_SESSION['se']['page'] = strval($this->pagename);
+        if (file_exists(SE_SAFE . 'projects/' . SE_DIR . $folder . 'pages/' . $pname . '.xml')) {
+            $this->page = simplexml_load_file(SE_SAFE . 'projects/' . SE_DIR . $folder . 'pages/' . $pname . '.xml');
+            $_SESSION['se']['page'] = strval($pname);
         } else {
             $this->page = new SimpleXMLElement('<page></page>');
         }
+		if ($this->skin) {
+			$this->page->css = $this->skin;
+		}
         if ($this->page->css == '') $this->page->css = 'default';
         if (file_exists(SE_SAFE . 'projects/' . SE_DIR . 'cache/map_' . $this->page->css . '.json')) {
             $this->contarr = json_decode(file_get_contents(SE_SAFE . 'projects/' . SE_DIR . 'cache/map_' . $this->page->css . '.json'), true);
@@ -638,7 +658,7 @@ class seData
             $cssfolder = '/' . $cssfolder;
         }
         if (file_exists(getcwd() . $cssfolder . '/style.css') && intval($section->oncss)) {
-            $link = '<link href="' . $cssfolder . '/style.css" rel="stylesheet" type="text/css">';
+            $link = '<link href="' . $cssfolder . '/style.css" rel="stylesheet">';
         }
         return $link;
     }
@@ -842,7 +862,7 @@ class seData
                 $this->go301($url[0]);
             }
             foreach ($SE_REQUEST_NAME as $qname => $name) {
-                if (strval($uname) == strval($qname) || empty($arr) || isset($_GET[$uname])) {
+                if (strval($uname) == strval($qname) || !isset($arr) || isset($_GET[$uname])) { 
                     $find = true;
                     break;
                 }
@@ -1026,8 +1046,8 @@ class seData
 
     private function parseHeader($header, $in)
     {
-        $in = preg_replace("/\[js:([\w\d\.\/\-]+)\]/", "<script type=\"text/javascript\" src=\"/lib/js/$1\"></script>", $in);
-        $in = trim(preg_replace("/\[lnk:([\w\d\.\/\-]+)\]/", "<link rel=\"stylesheet\" type=\"text/css\" href=\"/lib/js/$1\">", $in));
+        $in = preg_replace("/\[js:([\w\d\.\/\-]+)\]/", "<script src=\"/lib/js/$1\"></script>", $in);
+        $in = trim(preg_replace("/\[lnk:([\w\d\.\/\-]+)\]/", "<link rel=\"stylesheet\" href=\"/lib/js/$1\">", $in));
         preg_match_all("/<style.+?<\/style>/usim", $in, $arrheaderstyle);
         preg_match_all("/<script.+?<\/script>/usim", $in, $arrheaderjs);
         preg_match_all("/<link.+?>/usim", $in, $arrheaderlink);
@@ -1062,15 +1082,15 @@ class seData
         if (!empty($section->type)) {
             $modulefolder = $this->getFolderModule(strval($section->type)) . '/' . strval($section->type);
         }
-        while ($modulefolder && preg_match("/\[include_js(\(.*?\))?\]/Usim", $text, $m)) {
+        while ($modulefolder && preg_match("/\[include_js(\(.*?\))?\]/isum", $text, $m)) {
             $jsfile = $modulefolder . '/' . $section->type . '.js';
             if (file_exists(getcwd() . $jsfile)) {
-                $s1 = "\r\n<script type=\"text/javascript\" src=\"{$jsfile}\"></script>";
-                $s1 .= "\r\n<script type=\"text/javascript\"> {$section->type}_execute(";
+                $s1 = "\r\n<script src=\"{$jsfile}\"></script>";
+                $s1 .= "\r\n<script> {$section->type}_execute(";
                 if (!empty($m[1])) $s1 .= utf8_substr($m[1], 1, -1);
                 $s1 .= ');</script>';
             } else {
-                $s1 = "\r\n<script type=\"text/javascript\" src=\"{$modulefolder}/engine.js\"></script>";
+                $s1 = "\r\n<script src=\"{$modulefolder}/engine.js\"></script>";
             }
             $text = str_replace($m[0], $s1, $text);
         }
@@ -1082,11 +1102,11 @@ class seData
         }
 
         while ($modulefolder && preg_match("/\[module_js:([^\]]*)\]/imu", $text, $m)) {
-            $s1 = "\r\n<script type=\"text/javascript\" src=\"{$modulefolder}/{$m[1]}\"></script>";
+            $s1 = "\r\n<script src=\"{$modulefolder}/{$m[1]}\"></script>";
             $text = str_replace($m[0], $s1, $text);
         }
 
-        while (preg_match("/<header:js>(.+?)<\/header:js>/Usim", $text, $m)) {
+        while (preg_match("/<header:js>(.+?)<\/header:js>/usim", $text, $m)) {
             if (!empty($modulefolder)) {
                 $m[1] = str_replace(array("[this_url_modul]", "[module_url]"), $modulefolder . '/', $m[1]);
             }
@@ -1094,7 +1114,7 @@ class seData
             $text = str_replace($m[0], '', $text);
         }
         // header css
-        while (preg_match("/<header:css>(.+?)<\/header:css>/Usim", $text, $m)) {
+        while (preg_match("/<header:css>(.+?)<\/header:css>/usim", $text, $m)) {
             if (!empty($modulefolder)) {
                 $m[1] = str_replace(array("[this_url_modul]", "[module_url]"), $modulefolder . '/', $m[1]);
             }
@@ -1103,7 +1123,7 @@ class seData
         }
 
         // footer css
-        while (preg_match("/<footer:css>(.+?)<\/footer:css>/Usim", $text, $m)) {
+        while (preg_match("/<footer:css>(.+?)<\/footer:css>/usim", $text, $m)) {
             if (!empty($modulefolder)) {
                 $m[1] = str_replace(array("[this_url_modul]", "[module_url]"), $modulefolder . '/', $m[1]);
             }
@@ -1111,7 +1131,7 @@ class seData
             $text = str_replace($m[0], '', $text);
         }
 
-        while (preg_match("/<footer:html>(.+?)<\/footer:html>/Usim", $text, $m)) {
+        while (preg_match("/<footer:html>(.+?)<\/footer:html>/usim", $text, $m)) {
             if (!empty($modulefolder)) {
                 $m[1] = str_replace(array("[this_url_modul]", "[module_url]"), $modulefolder . '/', $m[1]);
             }
@@ -1120,7 +1140,7 @@ class seData
         }
 
         // footer js
-        while (preg_match("/<footer:js>(.+?)<\/footer:js>/Usim", $text, $m)) {
+        while (preg_match("/<footer:js>(.+?)<\/footer:js>/usim", $text, $m)) {
             if (!empty($modulefolder)) {
                 $m[1] = str_replace(array("[this_url_modul]", "[module_url]"), $modulefolder . '/', $m[1]);
             }
@@ -1185,10 +1205,16 @@ class seData
         if (empty($startpage)) $startpage = 'home';
         $link = '';
         $level_arr = $this->getPathArray();
-
+        $level_num = 1;
         foreach ($this->pages as $page) {
             if (strval($page['name']) == $startpage) {
-                $link = ' <span itemscope itemtype="http://data-vocabulary.org/Breadcrumb"><a href="' . seMultiDir() . '/" itemprop="url"><span itemprop="title">' . $page->title . '</span></a></span> ';
+                $link = ' <span itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+                <a itemprop="item" href="' . seMultiDir() . '/">
+                <span itemprop="name">' . $page->title . '</span>
+                </a>
+                <meta itemprop="position" content="'.$level_num.'" />
+                </span> ';
+                $level_num ++;
                 break;
             }
         }
@@ -1199,7 +1225,11 @@ class seData
             $objects = $this->sections[strval($this->req->razdel)]->objects;
             foreach ($objects as $object) {
                 if ($object->id == intval($this->req->object)) {
-                    $linkTemplate = '<span class="space">' . $space . '</span> ' . '<span itemscope itemtype="http://data-vocabulary.org/Breadcrumb"><span class="endtitle" itemprop="title">' . $object->title . '</span></span> ';
+                    $linkTemplate = '<span class="space">' . $space . '</span> ' . '<span itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+                    <span class="endtitle" itemprop="name">' . $object->title . '</span>
+                    <meta itemprop="position" content="'.$level_num.'" />
+                    </span> ';
+                    $level_num ++;
                     break;
                 }
             }
@@ -1211,15 +1241,29 @@ class seData
             if ($line['name'] == $startpage) continue;
             if (empty($line['name'])) break;
             if (($linkTemplate == '') && ($getLastElement['title'] == $line['title'])) {
-                $link .= '<span class="space">' . $space . '</span> <span itemscope itemtype="http://data-vocabulary.org/Breadcrumb"><span itemprop="title">' . $line['title'] . '</span></span> ';
+                $link .= '<span class="space">' . $space . '</span> <span itemprop="itemListElement" itemscope  itemtype="http://schema.org/ListItem">
+                <span itemprop="name">' . $line['title'] . '</span>
+                <meta itemprop="position" content="'.$level_num.'" />
+                </span> ';
             } else {
-                $link .= '<span class="space">' . $space . '</span> <span itemscope itemtype="http://data-vocabulary.org/Breadcrumb"><a href="' . seMultiDir() . '/' . $line['name'] . SE_END . '" itemprop="url"><span itemprop="title">' . $line['title'] . '</span></a></span> ';
+                $link .= '<span class="space">' . $space . '</span> <span itemprop="itemListElement" itemscope  itemtype="http://schema.org/ListItem">
+                <a itemprop="item" href="' . seMultiDir() . '/' . $line['name'] . SE_END . '">
+                <span itemprop="name">' . $line['title'] . '</span>
+                </a>
+                <meta itemprop="position" content="'.$level_num.'" />
+                </span> ';
             }
+            $level_num ++;
         }
         $link .= $linkTemplate;
         if ($endtitle != '') {
-            $link .= '<span class="space">' . $space . '</span> <span itemscope itemtype="http://data-vocabulary.org/Breadcrumb"><span class="endtitle" itemprop="title">' . $endtitle . '</span></span>';
+            $link .= '<span class="space">' . $space . '</span> <span itemprop="itemListElement" itemscope  itemtype="http://schema.org/ListItem">
+            <span class="endtitle" itemprop="name">' . $endtitle . '</span>
+            <meta itemprop="position" content="'.$level_num.'" />
+            </span>';
         }
+        $link = '<span itemscope itemtype="http://schema.org/BreadcrumbList">' . $link . '</span>';
+        
         return $link;
     }
 
@@ -1347,7 +1391,7 @@ class seData
 
     public function setItemList($section, $nameobject, $itemarray)
     {
-        add_simplexml_from_array($section, $nameobject, $itemarray);
+		add_simplexml_from_array($section, $nameobject, $itemarray);
     }
 
     public function goSubName($section, $subname)
@@ -1654,8 +1698,8 @@ class seData
             $tpl = str_replace($m[0], $s1, $tpl);
         }
 
-        //$tpl = str_replace('[include_css]', '<link href="[module_url]css/style.css" rel="stylesheet" type="text/css">', $tpl);
-        //$tpl = str_replace('[include_js]', '<script type="text/javascript" src="[module_url]engine.js"></script>', $tpl);
+        //$tpl = str_replace('[include_css]', '<link href="[module_url]css/style.css" rel="stylesheet">', $tpl);
+        //$tpl = str_replace('[include_js]', '<script src="[module_url]engine.js"></script>', $tpl);
         $tpl = preg_replace("/<repeat:records>(.+?)<\/repeat:records>/imus",
             "<?php foreach(\$__data->limitObjects(\$section, \$section->objectcount) as \$record): ?>\n$1\n<?php endforeach; ?>", $tpl);
         $tpl = preg_replace("/<repeat:records\|desc>(.+?)<\/repeat:records>/imus",

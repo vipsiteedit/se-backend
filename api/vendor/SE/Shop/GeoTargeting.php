@@ -56,6 +56,30 @@ class GeoTargeting extends Base
         $sv->leftJoin('shop_geo_variables sgv', 'sv.id=sgv.id_variable AND sgv.id_contact='.intval($this->input['id']));
         return $sv->getList();
     }
+	
+	private function getPages()
+	{
+		try {
+			$sc = new DB('shop_geo_pages', 'sgp');
+			$sc->select('sgp.*');
+			$sc->where('sgp.id_contact=' . intval($this->input['id']));
+			return $sc->getList();
+		} catch (Exception $ex) {
+			DB::query("CREATE TABLE IF NOT EXISTS `shop_geo_pages` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `page` varchar(255) NOT NULL,
+  `altpage` varchar(255) NOT NULL DEFAULT '',
+  `skin` varchar(255) NOT NULL DEFAULT '',
+  `id_contact` int(10) UNSIGNED NOT NULL,
+  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `id_contact` (`id_contact`),
+  CONSTRAINT `shop_geo_pages_ibfk_1` FOREIGN KEY (`id_contact`) REFERENCES `shop_contacts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+			//$ex->getMessage();
+		}
+	}
 
     // добавить полученную информацию
     protected function getAddInfo()
@@ -67,7 +91,8 @@ class GeoTargeting extends Base
                 $result["city"] = $cities[$this->result["idCity"]];
         }
         $result["variables"] = $this->getVariables();
-        return $result;
+        $result["pages"] = $this->getPages();
+		return $result;
     }
 
     // создать Db гео-переменные
@@ -92,7 +117,7 @@ class GeoTargeting extends Base
     // сохранить добавленную информацию
     protected function saveAddInfo()
     {
-        return $this->saveContactGeo() && $this->saveVariables();
+        return $this->saveContactGeo() && $this->saveVariables() && $this->savePages();
     }
 
     // сохранить переменные
@@ -110,6 +135,23 @@ class GeoTargeting extends Base
             return true;
         } catch (Exception $e) {
             $this->error = "Не удаётся сохранить переменные геотаргетинга!";
+        }
+        return false;
+    }
+	private function savePages()
+	{
+        $data = $this->input;
+        unset($data["ids"]);
+        try {
+            foreach($data['pages'] as $page) {
+                $page["idContact"] = $data["id"];
+                $t = new DB('shop_geo_pages');
+                $t->setValuesFields($page);
+                $t->save();
+            }
+            return true;
+        } catch (Exception $e) {
+            $this->error = "Не удаётся сохранить страницы геотаргетинга!";
         }
         return false;
     }

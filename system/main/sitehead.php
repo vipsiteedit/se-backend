@@ -19,7 +19,7 @@ if (empty($se->prj->vars->documenttype) || 1 == $se->prj->vars->documenttype || 
 } else {
     echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">' . "\n";
 }
-echo '<html id="' . $se->getPageName() . '"><head><title>' . str_replace('"', '&quot;', strip_tags($titlepage)) . '</title>' . "\n";
+echo '<html lang="ru" id="' . $se->getPageName() . '"><head><title>' . str_replace('"', '&quot;', strip_tags($titlepage)) . '</title>' . "\n";
 
 //echo '<base href="'.$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'].'">' . "\n";
 echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">' . "\n";
@@ -34,28 +34,28 @@ if (class_exists('plugin_router'))
     echo plugin_router::getInstance()->showCanonical();
 
 foreach ($se->modulesCss as $css) {
-//    echo '<link href="' .$css.'" id="defaultCSS" rel="stylesheet" type="text/css">' . "\n";
+//    echo '<link href="' .$css.'" id="defaultCSS" rel="stylesheet">' . "\n";
 }
 if ($se->headercss) {
     echo join("\n", $se->headercss) . "\n";
 }
 
 if (file_exists(getcwd() . $skin . '/' . $se->page->css . '.css') && filesize(getcwd() . $skin . '/' . $se->page->css . '.css') > 0) {
-    echo '<link href="' . $skin . '/' . $se->page->css . '.css" id="defaultCSS" rel="stylesheet" type="text/css">' . "\n";
+    echo '<link href="' . $skin . '/' . $se->page->css . '.css" id="defaultCSS" rel="stylesheet">' . "\n";
 }
 
 if (file_exists(getcwd() . $skin . '/skin_' . $se->getPageName() . '.css') && filesize(getcwd() . $skin . '/skin_' . $se->getPageName() . '.css') > 0) {
-    echo '<link href="' . $skin . '/skin_' . $se->getPageName() . '.css" id="pageCSS" rel="stylesheet" type="text/css">' . "\n";
+    echo '<link href="' . $skin . '/skin_' . $se->getPageName() . '.css" id="pageCSS" rel="stylesheet">' . "\n";
 }
 
 /*
 if (file_exists(getcwd() . '/system/main/semenu.js')) {
-    $se->footer[] = '<script type="text/javascript" src="/system/main/semenu.js"></script>';
+    $se->footer[] = '<script src="/system/main/semenu.js"></script>';
 }
 */
 
 if (strval($se->page->style) != "")
-    echo '<style type="text/css">' . $se->page->style . '</style>';
+    echo '<style>' . $se->page->style . '</style>';
 if (strval($se->page->head) != "")
     echo replace_link(str_replace('&#10;', "\n", $se->page->head)) . "\n";
 
@@ -69,9 +69,7 @@ if (!empty($se->page->vars->localjavascripthead)) {
     echo "\n";
 }
 
-if (strval($se->page->style) != "") {
-    echo '<style type="text/css">' . $se->page->style . '</style>';
-}
+
 if (!empty($se->header)) {
     echo replace_link(str_replace('&#10;', "\n", join("\n", $se->header)));
     echo "\n";
