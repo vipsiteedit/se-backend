@@ -477,7 +477,7 @@ class plugin_news
             $news->andWhere("nc.ident IN ('?')", $code);
 		if (self::$options['lang'])
 			$news->andWhere("nc.lang = '?'", self::$options['lang']);	
-        $news->andWhere("((SELECT COUNT(ngc1.id) FROM news_gcontacts ngc1 WHERE `ngc1`.id_news=`n`.id) < 1 OR ngc.id_gcontact=?)", $this->id_gcontact);
+        $news->andWhere("((SELECT COUNT(ngc1.id) FROM news_gcontacts ngc1 WHERE `ngc1`.id_news=`n`.id) < 1 OR ngc.id_gcontact=?)", intval($this->id_gcontact));
         $news->groupBy('n.id');
         $news->orderBy('sort', 0);
         $news->addOrderBy('news_date', 1);
