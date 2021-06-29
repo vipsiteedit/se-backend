@@ -464,8 +464,7 @@ function se_getDImage($img, $size = 200, $res = 's', $water = '', $color = 0x000
                 convert_webp($root . $path . $dest, '', $level = 80);
                 return '/' . $path . $destW;
             }
-            if (file_exists($root . $path . $destW))
-                return '/' . $path . $destW;
+            return '/' . $path . $destW;
         }
         if (file_exists($root . $path . $dest)) {
             return '/' . $path . $dest;

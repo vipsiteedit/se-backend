@@ -93,11 +93,15 @@ class seUser extends seBaseUser {
                 $this->username     =   $username;
                 $this->password     =   $password;
                 $this->is_active    =   'Y';
-                if ($id_num = $this->save()){
+                $id_num = $this->save();
+                echo se_db_error();
+                if ($id_num){
                     $this->setAccess(array(array(1, $namegroup)));
                     $person = $this->getPerson();
                     $person->id         = $id_num;
-                    $person->id_up      = $parent_id;
+                    if ($parent_id) {
+                        $person->id_up      = $parent_id;
+                    }
                     $person->last_name  = $req['last_name'];
                     $person->first_name = $req['first_name'];
                     $person->sec_name     =   $req['sec_name'];
@@ -122,8 +126,11 @@ class seUser extends seBaseUser {
 					if (!empty($req['subscriber_news']))
 						$person->subscriber_news = $req['subscriber_news'];
                     $person->reg_date   = date("Y-m-d H:i:s");
+
                     if ($person->save()) {
                     	return $id_num;
+            	    } else {
+            	      echo se_db_error();
             	    }
             	}
             }

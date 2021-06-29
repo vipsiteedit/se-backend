@@ -3283,6 +3283,22 @@ LOCK TABLES `shop_price_param` WRITE;
 /*!40000 ALTER TABLE `shop_price_param` ENABLE KEYS */;
 UNLOCK TABLES;
 
+DROP TABLE IF EXISTS `shop_price_userfields`;
+CREATE TABLE IF NOT EXISTS `shop_price_userfields` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_price` int(10) UNSIGNED NOT NULL,
+  `id_userfield` int(10) UNSIGNED NOT NULL,
+  `value` varchar(255) DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `id_order` (`id_price`),
+  KEY `id_userfield` (`id_userfield`),
+  CONSTRAINT `shop_price_userfields_ibfk_1` FOREIGN KEY (`id_price`) REFERENCES `shop_price` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `shop_price_userfields_ibfk_2` FOREIGN KEY (`id_userfield`) REFERENCES `shop_userfields` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
 --
 -- Table structure for table `shop_product_option`
 --
