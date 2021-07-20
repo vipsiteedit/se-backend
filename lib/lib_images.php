@@ -423,7 +423,7 @@ function se_getDImage($img, $size = 200, $res = 's', $water = '', $color = 0x000
         }
         if (!file_exists($root . $path . $dest)) {
             if ($mode == 'check') {
-                $_SESSION['get_images'][(string)$dest] = array(
+                $_SESSION['get_images'][(string)$dest] = $conf_image = array(
                     'image' => (string)$image,
                     'size' => (string)$size,
                     'res' => (string)$res,
@@ -431,6 +431,7 @@ function se_getDImage($img, $size = 200, $res = 's', $water = '', $color = 0x000
                     'pos' => (string)$pos,
                     'quality' => (string)$waterquality
                 );
+                file_put_contents($root . $path . $dest . '.conf', json_encode($conf_image));
                 return '/lib/image.php?get_image=' . $dest;
             } else {
                 if (trim($water) == '') {
