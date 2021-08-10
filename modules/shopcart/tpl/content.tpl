@@ -1,4 +1,3 @@
-<footer:js>[include_js()]</footer:js>
 <header:js>
 [lnk:rouble/rouble.css]
 </header:js>
