@@ -1,56 +1,15 @@
 <?php
-class SimpleXMLElementExtended extends SimpleXMLElement
-{
-    /**
-    * Add value as CData to a given XML node
-    *
-    * @param SimpleXMLElement $node SimpleXMLElement object representing the child XML node
-    * @param string $value A text to add as CData
-    * @return void
-    */
-    private function addCDataToNode(SimpleXMLElement $node, $value = '')
-    {
-        if ($domElement = dom_import_simplexml($node))
-        {
-            $domOwner = $domElement->ownerDocument;
-            $domElement->appendChild($domOwner->createCDATASection("{$value}"));
-        }
-    }
-
-    /**
-    * Add child node with value as CData
-    *
-    * @param string $name The child XML node name to add
-    * @param string $value A text to add as CData
-    * @return SimpleXMLElement
-    */
-    public function addChildWithCData($name = '', $value = '')
-    {
-        $newChild = parent::addChild($name);
-        if ($value) $this->addCDataToNode($newChild, "{$value}");
-        return $newChild;
-    }
-
-    /**
-    * Add value as CData to the current XML node 
-    *
-    * @param string $value A text to add as CData
-    * @return void
-    */
-    public function addCData($value = '')
-    {
-        $this->addCDataToNode($this, "{$value}");
-    }
-}
 
 class yandex_market {
-
-    public function __construct($auto_create = false) {
+    private $domain;
+    
+    public function __construct($domain = false, $auto_create = false, $file_market = 'market_new.yml') {
+        $this->domain = $domain;
         $this->updateDB();
-		if ($auto_create)
-			$this->createFileMarket();
+        if ($auto_create)
+            $this->createFileMarket($file_market);
     }
-	
+
 	public function updateDB() {
 		//для параметров поле is_market
 		//для товаров поле market_category
@@ -130,36 +89,6 @@ class yandex_market {
 			file_put_contents(SE_ROOT . '/system/logs/market_2.upd', date('Y-m-d H:i:s'));
 		}
 	}
-    
-    private function marketStripTags($text)
-    {
-        $text = str_replace('&nbsp;', ' ', $text);
-        
-        $text = strip_tags($text, '<h3><ul><li><br><p>');
-        
-        //добавить диапазон \x80-\x9F если будут проблемы с ним, оставить только основные печатные - '/[^[:print:]]/'
-        $text = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $text);
-        
-        return $text;
-    }
-
-    private function UpFistParagraf($text, $char = '. ')
-    {
-        $words = explode($char, $text);
-        $text = '';
-        $cnt = count($words);
-        foreach($words as $word) {
-            if (!empty($text)) $text .= $char;
-            $text .= ucfirst(strtolower($word));
-        }
-        $text = str_replace('&nbsp;', ' ', $text);
-        while(strpos($text, '  ')!==false)
-            $text = str_replace('  ', ' ', $text);
-        while(strpos($text, '<br><br>')!==false)
-            $text = str_replace('<br><br>', '<br>', $text);
-        return $text;
-
-    }
 
     private function createFileMarket($filename = 'market_new.yml') {
         if (!SE_DB_ENABLE) return;
@@ -237,12 +166,17 @@ class yandex_market {
 		$is_store = $this->getBool($is_store);
 		$is_pickup = $this->getBool($is_pickup);
 		$is_delivery = $this->getBool($is_delivery);
-
+		if ($this->domain) $line['domain'] = $this->domain;
+		
         if (empty($line['domain'])){
             $shopurl = _HTTP_ . $_SERVER['HTTP_HOST'];
         } else {
-            $line['domain'] = preg_replace("/.*:\\/\\//", '', $line['domain']);
-            $shopurl = _HTTP_ . $line['domain'];
+            if (strpos($line['domain'], '://')===false) {
+				$line['domain'] = preg_replace("/.*:\\/\\//", '', $line['domain']);
+				$shopurl = _HTTP_ . $line['domain'];
+			} else {
+				$shopurl = $line['domain'];
+			}
             $hosts = (file_exists('hostname.dat')) ? file('hostname.dat') : array();
             foreach($hosts as $host){
                 list($dom, $prj) = explode("\t", $host);
@@ -263,15 +197,15 @@ class yandex_market {
 
         $text = '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE yml_catalog SYSTEM "shops.dtd"><yml_catalog></yml_catalog>';
 		
-		$yml = new SimpleXMLElementExtended($text);
+		$yml = new SimpleXMLElement($text);
 		$yml->addAttribute('date', date('Y-m-d H:i'));
 		
 		$shop = $yml->addChild('shop');
 		$shop->addChild('name', $name);
 		$shop->addChild('company', $company);
 		$shop->addChild('url', $shopurl);
-		$shop->addChild('platform', 'CMS SiteEdit');
-		$shop->addChild('version', '5.2');
+		//$shop->addChild('platform', 'CMS SiteEdit');
+		//$shop->addChild('version', '5.2');
 		$shop->addChild('email', $esupport);
 		
         //  валюта
@@ -290,14 +224,11 @@ class yandex_market {
 		
 		$pg = plugin_shopgroups::getInstance();
 		$groups = $pg->getAllGroups();
-        
-        $category_list = array();
 		
         foreach ($groups as $key => $group) {
 			if (is_numeric($key)) {
 				$category = $categories->addChild('category', $this->replace($group['name']));
 				$category->addAttribute('id', $group['id']);
-                $category_list[] = $group['id'];
 				if (!empty($group['parent'])) {
 					$category->addAttribute('parentId', $group['parent']);
 				}
@@ -327,6 +258,7 @@ class yandex_market {
         $shop_price->select("
 			sp.id, 
 			sp.code, 
+			sg.code_gr,
 			sp.price, 
 			sp.article, 
 			sp.curr, 
@@ -338,43 +270,25 @@ class yandex_market {
 			sp.text, 
 			sp.presence_count, 
 			sp.step_count, 
+			sg.lang, 
 			(SELECT GROUP_CONCAT(sha.id_acc) FROM shop_accomp sha WHERE sha.id_price=sp.id) as rec, 
 			(SELECT GROUP_CONCAT(shi.picture ORDER BY `default` DESC SEPARATOR '||') FROM shop_img shi WHERE shi.id_price=sp.id ORDER BY shi.`default` DESC, shi.sort ASC) as imgs, 
 			(SELECT b.name FROM shop_brand b WHERE b.id=sp.id_brand) as brand, 
-			sg.market_category,
+			sp.market_category,
 			(SELECT 1 FROM shop_modifications sm WHERE sm.id_price=sp.id LIMIT 1) AS modifications");
-        
         $shop_price->innerjoin('shop_group sg', 'sg.id=sp.id_group');
-        //$shop_price->innerjoin('shop_price_group spg','sp.id = spg.id_price');
         $shop_price->where('sp.`enabled`="Y"');
 		$shop_price->andWhere('sp.`name`<>""');
-		//$shop_price->andWhere('sg.lang="rus"');
+		$shop_price->andWhere('sg.lang="rus"');
 		$shop_price->andWhere('sp.is_market=1');
-        
-		if ($shop_price->isFindField('market_available')) {
-            $shop_price->addSelect('sp.market_available');
-            $check_available = true;
-            
-            if (!$show_modifications) {
-                $shop_price->andWhere('sp.price>0');
-                $shop_price->andWhere('(sp.presence_count!=0 OR sp.presence_count IS NULL OR NOT sp.market_available)');
-            }
-            else {
-                $shop_price->having('modifications > 0 OR (sp.price > 0 AND (sp.presence_count!=0 OR sp.presence_count IS NULL OR NOT sp.market_available))');
-            }
-        }
-        else {
-            if (!$show_modifications) {
-                $shop_price->andWhere('sp.price>0');
-                $shop_price->andWhere('(sp.presence_count!=0 OR sp.presence_count IS NULL)');
-            }
-            else {
-                $shop_price->having('modifications > 0 OR (sp.price > 0 AND (sp.presence_count!=0 OR sp.presence_count IS NULL))');
-            } 
-        }
-        $shop_price->groupBy('sp.id');
-		//$shop_price->orderBy('spg.is_main', 1);
-        $shop_price->addOrderBy('sp.name', 1);
+		if (!$show_modifications) {
+			$shop_price->andWhere('sp.price>0');
+			$shop_price->andWhere('(sp.presence_count!=0 OR sp.presence_count IS NULL)');
+		}
+		else {
+			$shop_price->having('modifications > 0 OR (sp.price > 0 AND (sp.presence_count!=0 OR sp.presence_count IS NULL))');
+		}
+		$shop_price->orderBy('sp.name', 1);
 		//echo $shop_price->getSql();
 		
         $pricelist = $shop_price->getList();
@@ -388,12 +302,7 @@ class yandex_market {
 		$mcategories = $this->getMarketCategories();
 		
         foreach ($pricelist as $product) {
-			
-            if (!in_array($product['id_group'], $category_list))
-                continue;
-            
-            if (empty($product['lang'])) 
-                $product['lang'] = 'rus';
+			if (empty($product['lang'])) $product['lang'] = 'rus';
 			
 			if ($show_features) {
 				$features = $this->getProductFeatures($product['id']);
@@ -402,9 +311,7 @@ class yandex_market {
 			$images = array_slice(explode('||', $product['imgs']), 0, 10);
 			
 			if (empty($product['note'])) $product['note'] = $product['text'];
-            
-			//$product['note'] = $this->replace(htmlspecialchars(strip_tags($product['note']), ENT_QUOTES));
-            $product['note'] = $this->marketStripTags($product['note']); 
+			$product['note'] = $this->replace(htmlspecialchars(strip_tags($product['note']), ENT_QUOTES));
 			
 			$product['name'] = $this->replace($product['name']);
 			$product['brand'] = $this->replace($product['brand']);
@@ -422,9 +329,6 @@ class yandex_market {
 				}
 			}
 			
-            if (!empty($check_available)) {
-                $available = $product['market_available'] ? 'true' : 'false';
-            }
 			
 			if ($show_modifications && $product['modifications']) {
 				$modifications = $this->getProductModifications($product['id']);
@@ -447,7 +351,7 @@ class yandex_market {
 						
 						$offer->addAttribute('group_id', $product['id']);
 
-						$offer->addChild('url', $shopurl  . '/' . $catpage . '/show/' . $product['code'] .  URL_END . '?m=' . $mod['id']);
+						$offer->addChild('url', $shopurl  . '/' . $catpage . '/'.$product['code_gr'] . '/' . $product['code'] .  URL_END . '?m=' . $mod['id']);
 
 						$offer->addChild('price', $price);
 						
@@ -456,7 +360,7 @@ class yandex_market {
 						if (!empty($oldprice))
 							$offer->addChild('oldprice', $oldprice);
 							
-						$offer->addChild('currencyId', $this->convert_curr($product['curr']));
+						$offer->addChild('currencyId', $this->convert_curr(se_BaseCurrency()));
 						$offer->addChild('categoryId', $product['id_group']);
 						
 						if (!empty($product['market_category']) && !empty($mcategories[$product['market_category']]))
@@ -464,7 +368,7 @@ class yandex_market {
 						
 						if (!empty($images)) {
 							foreach ($images as $val) {
-								$offer->addChild('picture', $shopurl . '/images/' . $product['lang'] . '/shopprice/' . urlencode($val));
+								$offer->addChild('picture', $shopurl . '/images/' . $product['lang'] . '/shopprice/' . $val);
 							}
 						}
 						
@@ -494,7 +398,7 @@ class yandex_market {
 						if (!empty($product['brand']))
 							$offer->addChild('vendor', $product['brand']);
 						if (!empty($product['note']))
-							$offer->addChildWithCData('description', $product['note']);
+							$offer->addChild('description', $product['note']);
 						if (!empty($sales_note))
 							$offer->addChild('sales_notes', $sales_note);
 						if (!empty($product['rec']))
@@ -534,7 +438,7 @@ class yandex_market {
 				$offer->addAttribute('id', $product['id']);
 				$offer->addAttribute('available', $available);	
 				
-				$offer->addChild('url', $shopurl  . '/' . $catpage . '/show/' . $product['code'] . URL_END);
+				$offer->addChild('url', $shopurl  . '/' . $catpage . '/'.$product['code_gr'].'/' . $product['code'] . URL_END);
 				$offer->addChild('price', $price);
 				
 				$offer->addChild('vendorCode', $product['article']);
@@ -542,7 +446,7 @@ class yandex_market {
 				if (!empty($oldprice))
 					$offer->addChild('oldprice', $oldprice);
 				
-				$offer->addChild('currencyId', $this->convert_curr($product['curr']));
+				$offer->addChild('currencyId', $this->convert_curr(se_BaseCurrency()));
 				$offer->addChild('categoryId', $product['id_group']);
 				
 				if (!empty($product['market_category']) && !empty($mcategories[$product['market_category']]))
@@ -551,7 +455,7 @@ class yandex_market {
 				if (!empty($images)) {
 					foreach ($images as $val) {
 					    if ($val) {
-                            $offer->addChild('picture', $shopurl . '/images/' . $product['lang'] . '/shopprice/' . urlencode($val));
+                            $offer->addChild('picture', $shopurl . '/images/' . $product['lang'] . '/shopprice/' . $val);
                         }
 					}
 				}
@@ -565,7 +469,7 @@ class yandex_market {
 					foreach ($delivery_opt[$product['id_group']] as $item) {
 						$delivery_option = $delivery_options->addChild('option');
 						$delivery_option->addAttribute('cost', $item['price']);
-						$delivery_option->addAttribute('days', $item['time']);
+						$delivery_option->addAttribute('days', $item['time']);// $item['time']
 					}
 				}
 				
@@ -582,7 +486,7 @@ class yandex_market {
 				if (!empty($product['brand']))
 					$offer->addChild('vendor', $product['brand']);
 				if (!empty($product['note']))
-					$offer->addChildWithCData('description', $product['note']);
+					$offer->addChild('description', $product['note']);
 				if (!empty($sales_note))
 					$offer->addChild('sales_notes', $sales_note);
 				if (!empty($product['rec']))
@@ -810,16 +714,12 @@ class yandex_market {
 	}
 	
 	private function shoppage($folder){
-        //  check business
-        if (!file_exists('system/business')){
-            return false;
-        }
         //  check pages
         $pages = simplexml_load_file('projects/' . $folder . 'pages.xml');
         foreach($pages->page as $page){
-            $pagecontent = simplexml_load_file('projects/' . $folder . 'pages/' . $page['name'] . '.xml');
+			$pagecontent = simplexml_load_file('projects/' . $folder . 'pages/' . $page['name'] . '.xml');
             foreach($pagecontent->sections as $section){
-                if (strpos($section->type, 'shop_vitrine') !== false) {
+                if (strpos($section->type, 'vitrine') !== false) {
                     return array('page' => $page['name'], 'id' => $section->id);
                 }
             }
