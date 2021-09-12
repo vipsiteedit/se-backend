@@ -167,7 +167,7 @@ class plugin_shopsections
 		if (is_null(self::$instance)) {
 			self::$instance = new self($opt);
 		}
-		self::checkSection();
+		self::checkSection($opt);
 		return self::$instance;
 	}
 
@@ -399,7 +399,7 @@ class plugin_shopsections
 		se_db_query($sql_delete);
 	}
 
-	private function checkSection($options = array())
+	private static function checkSection($options = array())
 	{
 		if (!empty($options))
 			self::$options = $options;
