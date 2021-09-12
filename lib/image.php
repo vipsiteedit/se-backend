@@ -34,7 +34,6 @@ if (isset($_GET['get_image'])) {
     if (file_exists($root . $file_image)) {
         header("HTTP/1.1 301 Moved Permanently");
         header("Location: " . $file_image);
-
     }
 
     exit;

@@ -11,9 +11,9 @@ require_once 'system/main/init.php';
 $serial = $_POST["serial"];
 $db_password = $_POST["db_password"];
 if ($serial != $CONFIG["DBSerial"] || $db_password != $CONFIG["DBPassword"]) {
-      header("HTTP/1.1 401 Unauthorized");
-      echo 'Для запрошенной операции необходима авторизация!';
-      exit;
+    header("HTTP/1.1 401 Unauthorized");
+    echo 'Для запрошенной операции необходима авторизация!';
+    exit;
 }
 
 $providerName = $_REQUEST["provider"];
@@ -25,7 +25,7 @@ if ($parameters)
 $provider = new seTable('email_providers', 'ep');
 $provider->where("name = '?'", $providerName);
 $provider->fetchOne();
-if (!$provider->isFind())  {
+if (!$provider->isFind()) {
     echo "Не найден указанный провайдер!";
     exit;
 }
@@ -34,21 +34,20 @@ $settings = json_decode($provider->settings, true);
 
 if ($providerName == "sendpulse") {
     $apiId = $settings["ID"]["value"];
-    $apiSecret = $settings["SECRET"]["value"];    
+    $apiSecret = $settings["SECRET"]["value"];
 
-    $SPApiProxy = new plugin_sendpulse($apiId, $apiSecret);    
+    $SPApiProxy = new plugin_sendpulse($apiId, $apiSecret);
 
     switch ($action) {
         case 'balance':
-            $result = $SPApiProxy->getBalance();                  
+            $result = $SPApiProxy->getBalance();
             echo $result->balance_currency;
-            break;     
-        case 'createBook':               
-            $result = $SPApiProxy->createAddressBook($parameters["name"]);                  
+            break;
+        case 'createBook':
+            $result = $SPApiProxy->createAddressBook($parameters["name"]);
             writeLog($result);
-            break;     
-        default:            
+            break;
+        default:
             break;
     }
-    
 }

@@ -143,7 +143,7 @@ class XSS
         return TRUE;
     }
 
-//					'a'                             => array('href','target'),
+    //					'a'                             => array('href','target'),
 
     private function config()
     {
@@ -234,7 +234,6 @@ class XSS
             $this->flag_entity_decode = FALSE;
             // normalize
             $str = $this->html_normalize($str);
-
         } while ($this->flag_entity_decode);
 
         // set properties
@@ -305,6 +304,8 @@ class XSS
         $tchar = ''; // char type
         $buf = ''; // buffer for html entity
         $i = $index; // start index
+        $condition = '';
+        $is_hex = false;
 
         // while not end
         while ($i < $length) {
@@ -313,7 +314,7 @@ class XSS
             $ch = substr($source, $i, 1);
 
             switch ($tchar) {
-                // start look for html entity
+                    // start look for html entity
                 case '&':
                     // is html entity
                     if ($ch == '#') {
@@ -325,8 +326,8 @@ class XSS
                         $index++;
                         return '&';
                     }
-                // continue look for html entity
-                // after &#
+                    // continue look for html entity
+                    // after &#
                 case '#':
 
                     // set default
@@ -353,9 +354,9 @@ class XSS
                         return '&';
                     }
                     break;
-                // continue look for html entity
-                // after &#x
-                // as hexidecimal number
+                    // continue look for html entity
+                    // after &#x
+                    // as hexidecimal number
                 case 'X':
 
                     $is_hex = TRUE;
@@ -377,7 +378,7 @@ class XSS
                         return '&';
                     }
                     break;
-                // skip leading zero
+                    // skip leading zero
                 case '0':
                     // up step
                     $i++;
@@ -402,8 +403,8 @@ class XSS
                         return $this->only_char($ch);
                     }
                     break;
-                // continue look for html entity
-                // as number
+                    // continue look for html entity
+                    // as number
                 case 'D':
 
                     // is number
@@ -423,7 +424,7 @@ class XSS
                         // return character
                         return $this->entity_decode($buf, $is_hex);
                     }
-                // is another character
+                    // is another character
                 default:
                     // continue look for html entity
                     if ($ch == '&') {
@@ -502,7 +503,7 @@ class XSS
 
             switch ($this->state) {
 
-                // read tag inner
+                    // read tag inner
                 case self::XSS_READ_INNER:
 
                     // try open a tag
@@ -517,7 +518,7 @@ class XSS
 
                     break;
 
-                // try read a tag
+                    // try read a tag
                 case self::XSS_READ_TAG:
 
                     switch ($tag_operation) {
@@ -590,17 +591,16 @@ class XSS
                                 throw new Exception("Bad autoclosed '$this->current_tag' tag segment");
 
                             break;
-
                     }
 
                     break;
 
-                // read tag inforamtion
+                    // read tag inforamtion
                 case self::XSS_READ_TAG_INFO:
 
                     switch ($attr_operation) {
 
-                        // try search attribute
+                            // try search attribute
                         case self::XSS_DATA:
 
                             if (preg_match('/[a-z]/i', $ch)) {
@@ -617,7 +617,7 @@ class XSS
 
                             break;
 
-                        // read attribute's name
+                            // read attribute's name
                         case self::XSS_ATTR_NAME:
 
                             if (preg_match('/[\w\-]/i', $ch)) {
@@ -628,7 +628,7 @@ class XSS
                                 break;
                             }
 
-                        // search name/value delimiter '='
+                            // search name/value delimiter '='
                         case self::XSS_ATTR_DELIM:
 
                             if ($ch == '=') {
@@ -647,7 +647,7 @@ class XSS
 
                             break;
 
-                        // select value's escaping
+                            // select value's escaping
                         case self::XSS_ATTR_VAL:
 
                             $this->cur_attr_val = '';
@@ -666,7 +666,7 @@ class XSS
 
                             break;
 
-                        // read quoted value
+                            // read quoted value
                         case self::XSS_ATTR_VAL_QUOTE:
 
                             if ($ch == '\\') {
@@ -690,7 +690,7 @@ class XSS
 
                             break;
 
-                        // read unquoted value
+                            // read unquoted value
                         case self::XSS_ATTR_VAL_BLANK:
 
                             if ($ch == '>') {
@@ -712,7 +712,6 @@ class XSS
 
                     break;
             }
-
         }
 
         // no more tags
@@ -852,7 +851,6 @@ class XSS
 
             // success exit
             return $result;
-
         } catch (Exception $e) {
             $this->last_error = $e->getMessage();
             // failure exit

@@ -11,14 +11,14 @@ require_once 'system/main/init.php';
 $serial = $_POST["serial"];
 $db_password = $_POST["db_password"];
 if ($serial != $CONFIG["DBSerial"] || $db_password != $CONFIG["DBPassword"]) {
-      header("HTTP/1.1 401 Unauthorized");
-      echo 'Для запрошенной операции необходима авторизация!';
-      exit;
+    header("HTTP/1.1 401 Unauthorized");
+    echo 'Для запрошенной операции необходима авторизация!';
+    exit;
 }
 
 $file_market = file_get_contents($_POST["url_yml"]);
 
-if(empty($file_market)) {
+if (empty($file_market)) {
     header("HTTP/1.1 500 Internal Server Error");
     echo "Отсутствуют данные для обработки";
     exit;

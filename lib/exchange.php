@@ -24,7 +24,7 @@ require_once SE_ROOT . 'lib/lib_exchange.php';
 function logExchange($text, $log_file = 'exchange.log', $mode = 'ab')
 {
     $text = date('[Y-m-d H:i:s]') . ' ' . $text . "\r\n";
-	$file = fopen(__DIR__ . '/' . $log_file, $mode);
+    $file = fopen(__DIR__ . '/' . $log_file, $mode);
     fwrite($file, $text);
     fclose($file);
 }
@@ -40,13 +40,13 @@ $password = urlencode($_SERVER['PHP_AUTH_PW']);
 
 $datadir = SE_ROOT . 'data';
 
-if (file_exists($datadir. '/config_1c.json')) {
-	$settings = json_decode(file_get_contents($datadir. '/config_1c.json'), true);	
-	if ($settings['login']!=$user || $settings['password'] != $password) {
-		$settings = array();
-		//unset($_SESSION['exchange_type_price']);
-		//$_SESSION['count_import_offers']['offers.xml'] = 0;
-	}
+if (file_exists($datadir . '/config_1c.json')) {
+    $settings = json_decode(file_get_contents($datadir . '/config_1c.json'), true);
+    if ($settings['login'] != $user || $settings['password'] != $password) {
+        $settings = array();
+        //unset($_SESSION['exchange_type_price']);
+        //$_SESSION['count_import_offers']['offers.xml'] = 0;
+    }
 }
 
 if (!empty($settings)) {
@@ -99,7 +99,7 @@ $date_export_orders = $settings['date_export_orders'];  //дата (дата д�
 $update_groups_exchange = array(                        //данные которые необходимо обновлять при импорте групп товаров
     'name' => ($settings['upd_name_group'] == 'Y'),
     'code' => ($settings['upd_code_group'] == 'Y'),
-	'upid' => ($settings['upd_upid_group'] == 'Y'),
+    'upid' => ($settings['upd_upid_group'] == 'Y'),
 );
 
 $update_offers_exchange = array(                        //данные которые необходимо обновлять при импорте ценовых предложений
@@ -144,7 +144,6 @@ if (isRequest('type') && getRequest('type') == 'sale') {
         }
         echo "zip=$zip_files\n";
         echo "file_limit=$limit_filesize\n";
-
     }
 
     if (getRequest('type') == 'sale' && getRequest('mode') == 'query') {
@@ -205,7 +204,6 @@ if (isRequest('type') && getRequest('type') == 'sale') {
     if (getRequest('type') == 'sale' && getRequest('mode') == 'success') {
 
         echo "success";
-
     }
     exit;
 }
@@ -278,7 +276,7 @@ if (isRequest('type') && getRequest('type') == 'catalog') {
                 $read_xml = new XMLReader;
                 $read_xml->open($exchange_dir . $filename);
 
-                while ($read_xml->read() && $read_xml->name !== 'Классификатор') ;
+                while ($read_xml->read() && $read_xml->name !== 'Классификатор');
 
                 $xml = new SimpleXMLElement($read_xml->readOuterXML());
                 $read_xml->close();
@@ -296,8 +294,7 @@ if (isRequest('type') && getRequest('type') == 'catalog') {
                         se_db_query('ALTER TABLE shop_feature_value_list ADD UNIQUE INDEX UK_shop_feature_value_list_id_ex (id_exchange)');
                     }
                     import_properties($xml, $manufacturer);
-                }
-                else {
+                } else {
                     check_brand_properties($xml, $manufacturer);
                 }
                 $_SESSION['exchange_import_groups'][$filename] = 'complete';
@@ -328,7 +325,7 @@ if (isRequest('type') && getRequest('type') == 'catalog') {
                 $read_xml = new XMLReader;
                 $read_xml->open($exchange_dir . $filename);
 
-                while ($read_xml->read() && $read_xml->name !== 'Товар') ;
+                while ($read_xml->read() && $read_xml->name !== 'Товар');
 
                 if (isset($_SESSION['count_import_product'][$filename]) && $_SESSION['count_import_product'][$filename] > 0) {
                     for ($i = 0; $i < $_SESSION['count_import_product'][$filename]; $i++) {
@@ -370,29 +367,29 @@ if (isRequest('type') && getRequest('type') == 'catalog') {
             }
 
             updImages52();
-			se_db_query('TRUNCATE shop_group_tree;');
+            se_db_query('TRUNCATE shop_group_tree;');
             unlink(SE_ROOT . 'system/logs/shop_group_tree.upd');
-			
-			plugin_shopgroups::getInstance();
+
+            plugin_shopgroups::getInstance();
 
             echo "success\n";
         } elseif (preg_match('/^offers(.*?)\.xml$/', $filename)) {
             if (file_exists($exchange_dir . $filename) && !isset($_SESSION['exchange_type_price'])) {
-				logExchange('start record prices');
+                logExchange('start record prices');
                 $read_xml = new XMLReader;
                 $read_xml->open($exchange_dir . $filename);
-                while ($read_xml->read() && $read_xml->name !== 'ТипЦены') ;
+                while ($read_xml->read() && $read_xml->name !== 'ТипЦены');
 
                 while ($read_xml->name == 'ТипЦены') {
                     $xml = new SimpleXMLElement($read_xml->readOuterXML());
-					$nameprice = trim((string)$xml->Наименование);
+                    $nameprice = trim((string)$xml->Наименование);
 
                     if (!isset($_SESSION['exchange_type_price']['main']) && isset($xml->Ид)) {
                         $_SESSION['exchange_type_price']['main'] = (string)$xml->Ид;
                     }
 
                     if ($nameprice == $type_price_main) {
-                       $_SESSION['exchange_type_price']['main'] = (string)$xml->Ид;
+                        $_SESSION['exchange_type_price']['main'] = (string)$xml->Ид;
                     }
                     if ($nameprice == $type_price_opt) {
                         $_SESSION['exchange_type_price']['opt'] = (string)$xml->Ид;
@@ -402,11 +399,11 @@ if (isRequest('type') && getRequest('type') == 'catalog') {
                     }
                     if ($nameprice == $type_price_bonus) {
                         $_SESSION['exchange_type_price']['bonus'] = (string)$xml->Ид;
-					}
+                    }
 
                     $read_xml->next('ТипЦены');
                 }
-				//print_r($_SESSION['exchange_type_price']);
+                //print_r($_SESSION['exchange_type_price']);
                 $read_xml->close();
                 unset($read_xml, $xml);
                 logExchange('comlete record prices');
@@ -415,7 +412,7 @@ if (isRequest('type') && getRequest('type') == 'catalog') {
                 logExchange('start import offers');
 
                 if (copy($exchange_dir . $filename, $last_dir . $filename)) {
-                    logExchange('copy last file offers ' . $filename . ' в '.$last_dir . $filename);
+                    logExchange('copy last file offers ' . $filename . ' в ' . $last_dir . $filename);
                 }
 
                 $feature = new seTable('shop_modifications');
@@ -435,17 +432,17 @@ if (isRequest('type') && getRequest('type') == 'catalog') {
                 $read_xml = new XMLReader;
                 $read_xml->open($exchange_dir . $filename);
 
-                while ($read_xml->read() && $read_xml->name !== 'КоммерческаяИнформация') ;
+                while ($read_xml->read() && $read_xml->name !== 'КоммерческаяИнформация');
                 $schema_version = $read_xml->getAttribute('ВерсияСхемы');
 
-                while ($read_xml->read() && $read_xml->name !== 'Предложение') ;
+                while ($read_xml->read() && $read_xml->name !== 'Предложение');
 
                 if (isset($_SESSION['count_import_offers'][$filename])) {
                     for ($i = 0; $i < $_SESSION['count_import_offers'][$filename]; $i++) {
                         $read_xml->next('Предложение');
                     }
                 } else {
-				
+
                     $_SESSION['exchange_products'] = json_decode(file_get_contents($last_dir . 'exchange_products.json'), 1);
                     $_SESSION['count_import_offers'][$filename] = 0;
                     if ($schema_version == '2.07' && !empty($_SESSION['exchange_products'])) {
@@ -478,7 +475,6 @@ if (isRequest('type') && getRequest('type') == 'catalog') {
                     }
 
                     $read_xml->next('Предложение');
-
                 }
                 $read_xml->close();
                 unset($read_xml, $xml);

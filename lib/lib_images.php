@@ -253,7 +253,6 @@ function ThumbCreate($dest, $source, $res = 's', $size = 0, $x1 = 0, $y1 = 0, $w
                 $hm = $hght = (int)($height / $ratio);
             }
         }
-
     } else {
         if (($width >= $height && $res == 's') || $res == 'w' || $res == 'm') {
             if (intval($size) > $width) $size = $width;
@@ -300,18 +299,15 @@ function ThumbCreate($dest, $source, $res = 's', $size = 0, $x1 = 0, $y1 = 0, $w
         if ($dest == '') header("Content-type: " . $f_getimagesize['mime']);
 
         switch ($ext) {
-            case "gif":
-                {
+            case "gif": {
                     @imagegif($d_im, $dest);
                     break;
                 }
-            case "png":
-                {
+            case "png": {
                     @imagepng($d_im, $dest);
                     break;
                 }
-            default:
-                {
+            default: {
                     @imagejpeg($d_im, $dest, $quality);
                     break;
                 }
@@ -363,7 +359,8 @@ function drawWatermark($image, $watermark, $padding = 0, $opacity = 1)
             $watermark_width,
             $watermark_height,
             $position[0],
-            $position[1])->getImageColors();
+            $position[1]
+        )->getImageColors();
         if ($min === null || $colors <= $min_colors) {
             $min = $position;
             $min_colors = $colors;
@@ -375,7 +372,8 @@ function drawWatermark($image, $watermark, $padding = 0, $opacity = 1)
         $watermark,
         Imagick::COMPOSITE_OVER,
         $min[0],
-        $min[1]);
+        $min[1]
+    );
     return true;
 }
 
@@ -492,10 +490,10 @@ function convert_webp($source, $pathout = '', $level = 90)
     $name = pathinfo($name, PATHINFO_FILENAME);
     $cmd = '';
     switch ($type) {
-        case 2 :
+        case 2:
             $cmd = "cwebp -q {$level} '{$source}' -o '{$outpath}/{$name}.webp'";
             break;
-        case 3 :
+        case 3:
             $cmd = "cwebp -lossless '{$source}' -o '{$outpath}/{$name}.webp'";
             break;
     }

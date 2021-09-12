@@ -29,11 +29,11 @@ function se_goto_subpage($razdel, $subname)
 function authorization()
 {
     global $mes_authorized,
-           $mes_login_back,
-           $mes_login_next,
-           $mes_login,
-           $mes_password,
-           $mes_noauthor;
+        $mes_login_back,
+        $mes_login_next,
+        $mes_login,
+        $mes_password,
+        $mes_noauthor;
 
     echo '<center>',
     '<div class="base_auth">',
@@ -104,9 +104,7 @@ function setimages($imgfile, $width, $flobj)
     }
 
     return $s;
-}
-
-;
+};
 
 function previmg($img)
 {
@@ -151,7 +149,7 @@ function SE_PARTSELECTOR($razdel, $count, $limit, $item, $sel)
 {
 
     if ($limit < 1) return;
-    $_page = '';//getRequest('page');
+    $_page = ''; //getRequest('page');
     if ($_page == '') {
         if (class_exists('seData')) {
             $__data = seData::getInstance();
@@ -285,7 +283,6 @@ function logic($val)
                 return true;
     }
     return false;
-
 }
 
 function conditions($strin)
@@ -373,9 +370,6 @@ function replace_link($stext)
     $stext = str_replace(array('&#124;', '&#10;', "\n\n"), array('|', "\n", "\n"), $stext);
     $stext = preg_replace("/([\"\'\(])(images|skin|files)\//", "$1/" . SE_DIR . "$2/", $stext);
 
-    if ((defined('IS_COMMERCE') && !IS_COMMERCE) && preg_match("/<a(.+?href=[\'\"]http[s]?:\/\/.+?[\"\'].+?)>/", $stext, $m)) {
-        $stext = str_replace($m[0], '<a rel="nofollow"' . str_replace('rel="nofollow"', '', $m[1]) . '>', $stext);
-    }
     while (preg_match("/\[%(site[\w\d]{1,})%\]/i", $stext, $mm)) {
         $val = (!empty($se->prj->vars->{$mm[1]})) ? strval($se->prj->vars->{$mm[1]}) : '';
         $stext = str_replace($mm[0], $val, $stext);
@@ -428,7 +422,7 @@ function skin_news($news, $id = 'news')
         $newstitle = explode(chr(8), $news);
 
     return '<h2 id="' . $id . 'Title">' . @$newstitle[0] . '</h2>'
-    . '<div id="' . $id . 'Text id="newstitle">' . @$newstitle[1] . '</div>';
+        . '<div id="' . $id . 'Text id="newstitle">' . @$newstitle[1] . '</div>';
 }
 
 function parseTemplateMenu($text, $items, $sub = '')
@@ -552,12 +546,7 @@ function replace_values($stext)
                     $res = seLogotype($se->prj->vars->sitelogotype);
                 elseif ($mm[2] == 'newsform')
                     $res = skin_news($se->prj->vars->newsform);
-                elseif ($mm[2] == 'reklamform') {
-                    if ($se->getServiceStatus('reclam')) {
-                        $res = join('', file(SE_DIR . 'skin/reclam.dat'));
-
-                    } else $res = skin_news($se->prj->vars->reklamform, 'reklam');
-                } else
+                else
                     $res = $se->prj->vars->$dataval;
             } else {
                 if (!empty($se->page->vars->$dataval))

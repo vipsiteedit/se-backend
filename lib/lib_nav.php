@@ -51,10 +51,11 @@ function se_buildParam($params = array())
     return empty($params) ? '' : '?' . http_build_query($params);
 }
 
-function parse_query($str) {
+function parse_query($str)
+{
     $pairs = explode('&', $str);
 
-    foreach($pairs as $pair) {
+    foreach ($pairs as $pair) {
         list($name, $value) = explode('=', $pair, 2);
         global $$name;
         $$name = $value;
@@ -77,7 +78,7 @@ function se_Navigator($count, $limit = 30, $sheet = 1, $section_id = false, $sel
         $listurl = $_SERVER['REQUEST_URI'];
 
     //$query_str = (!empty($query_str)) ? '' . htmlentities($query_str) : '';
-	
+
     //$listurl = from_Url($listurl);
 
     $startpage = 'home';
@@ -89,18 +90,18 @@ function se_Navigator($count, $limit = 30, $sheet = 1, $section_id = false, $sel
     //    $listurl['page'] = $startpage;
 
     //$urlpath = '';
-	parse_str($query_str, $output);
+    parse_str($query_str, $output);
     foreach ($output as $name => $value) {
         if (in_array($name, array('', 'db', 'sheet', 'razdel'))) {
-			unset($output[$name]);
+            unset($output[$name]);
         }
     }
-	$query_str = http_build_query($output); 
-    
-	if (substr($listurl, -1, 1) == '/') $listurl = substr($listurl, 0, -1);
-	$urlpath = $listurl;
-	
-	/*
+    $query_str = http_build_query($output);
+
+    if (substr($listurl, -1, 1) == '/') $listurl = substr($listurl, 0, -1);
+    $urlpath = $listurl;
+
+    /*
     $arr_params = explode('&', $params);
 
     $params = array();
@@ -112,10 +113,10 @@ function se_Navigator($count, $limit = 30, $sheet = 1, $section_id = false, $sel
         $params[$k] = $v;
     }
 	*/
-	
-	parse_str($query_str, $params);
-	
-	unset($params['sheet']);
+
+    parse_str($query_str, $params);
+
+    unset($params['sheet']);
 
     if (isRequest('sheet') && $sheet == 1) {
         seData::getInstance()->go301($urlpath . $get_query . URL_END . se_buildParam($params));
@@ -168,7 +169,6 @@ function se_Navigator($count, $limit = 30, $sheet = 1, $section_id = false, $sel
                 $ik = $ik - 2;
                 $r_nav[] = array('val' => '...');
                 $r_nav[] = array('val' => $cnpage, 'url' => $urlpath . $get_query . URL_END . se_buildParam($params));
-
             }
         }
 
@@ -198,10 +198,10 @@ function se_Navigator($count, $limit = 30, $sheet = 1, $section_id = false, $sel
             $nav['next'] = array('val' => '&raquo;', 'url' => $urlpath . $get_query . URL_END . se_buildParam($params));
         }
     }
-	
-	if (empty($nav)) {
-		return;
-	}
+
+    if (empty($nav)) {
+        return;
+    }
 
     if (intval(seData::getInstance()->prj->adaptive)) {
         return sePaginatorBootstrap($nav);

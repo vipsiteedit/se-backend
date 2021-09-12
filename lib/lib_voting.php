@@ -1,8 +1,9 @@
 <?php
-class voting {
+class voting
+{
     private $vot_flag = false;
     private $vot_act = false;
-    public $buttonstyle = ''; 
+    public $buttonstyle = '';
     public $idVoting = '';
     private $voting_e = 0;
     private $section = null;
@@ -14,52 +15,48 @@ class voting {
     public $summ;
     public $showhtml;
     private $textvoting;
-    
+
     public function __construct($section, $idVoting, $voting_e = 0, $width = 0, $textvoting = '')
     {
         $this->textvoting = $textvoting;
-        $this->width = intval($width); //ширина графика
-        if ($this->width < 150)
-        {
+        $this->width = intval($width); //пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        if ($this->width < 150) {
             $this->width = 150;
         }
-        if ($this->width > 1000)
-        {
+        if ($this->width > 1000) {
             $this->width = 1000;
         }
 
 
         $this->section = $section;
         $this->idVoting = $idVoting;
-        $this->voting_e =intval($voting_e);
-        if (isRequest('razdel')) $this->razdel = getRequest('razdel', 1); 
-        else 
+        $this->voting_e = intval($voting_e);
+        if (isRequest('razdel')) $this->razdel = getRequest('razdel', 1);
+        else
             $this->razdel = intval($this->section->id);
-        
 
-        //добавляем запись в файл IP
+
+        //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ IP
         if (!empty($idVoting)) {
             $idVmd5 = substr(md5(str_replace("/", "", $this->idVoting)), 0, 5);
-            $this->fnameip = "data/voting_".$idVmd5."_ip.dat";
-            $this->fnamedat = "data/voting_".$idVmd5."_stat.dat";
-        }
-        else
-        {
-            $this->fnameip = "data/voting_".$_page."_".$razdel."_ip.dat";
-            $this->fnamedat = "data/voting_".$_page."_". $razdel ."_stat.dat";
+            $this->fnameip = "data/voting_" . $idVmd5 . "_ip.dat";
+            $this->fnamedat = "data/voting_" . $idVmd5 . "_stat.dat";
+        } else {
+            $this->fnameip = "data/voting_" . $_page . "_" . $razdel . "_ip.dat";
+            $this->fnamedat = "data/voting_" . $_page . "_" . $razdel . "_stat.dat";
         }
         $this->showhtml = '';
         $this->start();
     }
-    
+
     public function start() // php0
     {
-        $razdel = intval($this->section->id);    
+        $razdel = intval($this->section->id);
 
         $this->vot_flag = true;
         $this->vot_act = false;
 
-        if ((isRequest('GoTo_SHOW') && $razdel == $this->razdel) || ($this->checkIP($razdel, $this->idVoting))) { //Если есть IP, выводим результат
+        if ((isRequest('GoTo_SHOW') && $razdel == $this->razdel) || ($this->checkIP($razdel, $this->idVoting))) { //пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ IP, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
             $this->showhtml = $this->GenHTML($width);
             $this->buttonstyle = "style='display:none;'";
@@ -67,8 +64,7 @@ class voting {
             return;
         }
 
-        if (isRequest('GoTo_VOTING') && $razdel == $this->razdel) 
-        {   //Если нажали "Голосовать"
+        if (isRequest('GoTo_VOTING') && $razdel == $this->razdel) {   //пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"
             $this->vot_act = true;
             $this->vot_flag = false;
             $this->buttonstyle = "style='display:none;'";
@@ -79,19 +75,17 @@ class voting {
     {
         $_page = getRequest('page');
         $razdel = intval($this->section->id);
-        $voting_e = intval($this->voting_e); //Точность
+        $voting_e = intval($this->voting_e); //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         if ($voting_e < 0) $voting_e = 0;
         if ($voting_e > 5) $voting_e = 5;
-        
+
         $objcount = count($this->section->objects);
         $rait = array();
-        //Проверяем, есть ли файл статистики, если нет создаем, записываем нули
-        if (!file_exists($this->fnamedat)) 
-        {
+        //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+        if (!file_exists($this->fnamedat)) {
             $f = fopen($this->fnamedat, "w");
             flock($f, LOCK_EX);
-            foreach($this->section->objects as $line)
-            {
+            foreach ($this->section->objects as $line) {
                 $rait[strval($line->id)] = 0;
             }
             $rait_ser = serialize($rait);
@@ -101,20 +95,16 @@ class voting {
             fclose($f);
         }
 
-        //Читаем файл
+        //пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 
         $number = array();
-        if (file_exists($this->fnamedat)) 
-        {
+        if (file_exists($this->fnamedat)) {
             $f = file($this->fnamedat);
             $number = unserialize($f[0]);
-            //Если появились новые записи, приравниваем их к нулю
-            if (!empty($this->section->objects))
-            {
-                foreach ($this->section->objects as $line)
-                {
-                    if (!isset($number[strval($line->id)]))
-                    {
+            //пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ
+            if (!empty($this->section->objects)) {
+                foreach ($this->section->objects as $line) {
+                    if (!isset($number[strval($line->id)])) {
                         $number[strval($line->id)] = 0;
                     }
                 }
@@ -122,19 +112,17 @@ class voting {
         }
 
 
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        if ($this->vot_act && isRequest('voting_radio')) 
-        { 
-            //Если нажали голосовать
-            //Здесь добавляем 1 к нужному и переписываем файл
+        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        if ($this->vot_act && isRequest('voting_radio')) {
+            //пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+            //пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 1 пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
             $_voting_radio = getRequest('voting_radio');
-  
-            if (!isset($number[$_voting_radio]))
-            {
+
+            if (!isset($number[$_voting_radio])) {
                 $number[$_voting_radio] = 0;
             }
             $number[$_voting_radio] += 1;
-  
+
             $f = fopen($this->fnamedat, "w");
             flock($f, LOCK_EX);
             $number_ser = serialize($number);
@@ -143,129 +131,110 @@ class voting {
             flock($f, LOCK_UN);
             fclose($f);
 
-            //добавляем запись в файл IP
+            //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ IP
             $ip = $_SERVER['HTTP_X_REAL_IP'];
             $f = fopen($this->fnameip, "a");
             flock($f, LOCK_EX);
-            fputs($f, $ip."\n");
+            fputs($f, $ip . "\n");
             fflush($f);
             flock($f, LOCK_UN);
             fclose($f);
-	     header("Location: ".seMultiDir()."/" . $_page . '/');
+            header("Location: " . seMultiDir() . "/" . $_page . '/');
             exit();
-
-
         }
 
         if ($this->vot_flag) return;
         $this->buttonstyle = "style='display:none;'";
     }
-    
+
     public function execute()
     {
 
-        if (file_exists($this->fnamedat)) 
-        {
+        if (file_exists($this->fnamedat)) {
             $number_ser = file($this->fnamedat);
-	     $number = unserialize($number_ser[0]);
+            $number = unserialize($number_ser[0]);
         }
 
-        $summ=0;
+        $summ = 0;
         foreach ($number as $nn) $summ += $nn;
 
 
-        if ($this->checkIP($this->section->id, $this->idVoting) || ($this->buttonstyle != ''))
-        {
+        if ($this->checkIP($this->section->id, $this->idVoting) || ($this->buttonstyle != '')) {
 
-            return array('numlist'=>$number, 'summ'=>$summ);
-        } else return false; 
+            return array('numlist' => $number, 'summ' => $summ);
+        } else return false;
     }
-    
-    
+
+
     private function GenHTML()
     {
         $number_ser = file($this->fnamedat);
         $number = unserialize($number_ser[0]);
         $colgolos = array_sum($number);
-  
-        foreach ($this->section->objects as $value)
-        {
+
+        foreach ($this->section->objects as $value) {
             $id = strval($value->id);
-            if (empty($value->field))
-            {
+            if (empty($value->field)) {
                 $ListVote[$id]['color'] = "#000";
-            }
-            else
-            {
+            } else {
                 $ListVote[$id]['color'] = $value->field;
             }
             $ListVote[$id]['title'] = $value->title;
-            if (!isset($number[$id]))
-            {
+            if (!isset($number[$id])) {
                 $number[$id] = 0;
             }
             $ListVote[$id]['number'] = trim($number[$id]);
-       }
-       $cont_vot = "<div style=\"width:". $this->width . "px; border-left: 1px solid #000; border-bottom: 1px solid #000; padding-top: 10px;\">";
-       
-       foreach ($ListVote as $golos)
-       { 
+        }
+        $cont_vot = "<div style=\"width:" . $this->width . "px; border-left: 1px solid #000; border-bottom: 1px solid #000; padding-top: 10px;\">";
+
+        foreach ($ListVote as $golos) {
             if ($golos['number'] > 0)
                 $per = round($golos['number'] / ($colgolos / 100));
             else $per = 0;
-            $cont_vot .= "<div style=\"width: " . $per . "%; height: 10px; margin-bottom: 5px; background: " . $golos['color'] . ";\">&nbsp;</div>"; 
-       }
-       $cont_vot .= "</div>";
-       $cont_vot .= "<ul style=\"list-style: none;\">";
-       foreach ($ListVote as $golos)
-       {
+            $cont_vot .= "<div style=\"width: " . $per . "%; height: 10px; margin-bottom: 5px; background: " . $golos['color'] . ";\">&nbsp;</div>";
+        }
+        $cont_vot .= "</div>";
+        $cont_vot .= "<ul style=\"list-style: none;\">";
+        foreach ($ListVote as $golos) {
             if ($golos['number'] > 0)
                 $per = round($golos['number'] / ($colgolos / 100),  $this->voting_e);
             else $per = 0;
             $cont_vot .= "<li class=\"golos_txt\" style=\"color: " . $golos['color'] . "\">" . $golos['title'] . " " . $per . "%</li>";
-       }
-       $cont_vot .= "<li class=\"golos_txt\">{$this->textvoting}: " . $colgolos . "</li>";
-       $cont_vot .= "</ul>";
-       return $cont_vot;   
+        }
+        $cont_vot .= "<li class=\"golos_txt\">{$this->textvoting}: " . $colgolos . "</li>";
+        $cont_vot .= "</ul>";
+        return $cont_vot;
     }
-    
+
     private function checkIP()
     {
-      // проверка ip адреса голосовал он уже или нет.
-      $ip = $_SERVER['HTTP_X_REAL_IP'];
-      if (!file_exists("data"))
-      {
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ ip пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ.
+        $ip = $_SERVER['HTTP_X_REAL_IP'];
+        if (!file_exists("data")) {
             mkdir("data", 0755);
-      }
-
-
-      if (file_exists($this->fnameip))
-      { //если есть файл IP
-        //если дата не совпадает c текущей, удаляем
-        if (date("d", filemtime($this->fnameip)) != date("d"))
-        {
-            unlink($this->fnameip);
         }
-        else
-        {
-            $iplist = file($this->fnameip);
-            foreach ($iplist as $str)
-            {
-                if (trim($str) == $ip)
-                return true;
+
+
+        if (file_exists($this->fnameip)) { //пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ IP
+            //пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ c пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+            if (date("d", filemtime($this->fnameip)) != date("d")) {
+                unlink($this->fnameip);
+            } else {
+                $iplist = file($this->fnameip);
+                foreach ($iplist as $str) {
+                    if (trim($str) == $ip)
+                        return true;
+                }
             }
         }
-      }
-      return false;
+        return false;
     }
-    
+
     public function getResult()
     {
-        if (!empty($this->showhtml))
-        {
-        	unset($this->section->objects);
-        } 
+        if (!empty($this->showhtml)) {
+            unset($this->section->objects);
+        }
         return $this->showhtml;
     }
 }
-?>

@@ -4,9 +4,9 @@ require_once 'lib_currency.php';
 if (!function_exists('se_sqs')) {
     function se_sqs($var, $val)
     {
-// -------- формируем строку запроса - shape query string (sqs)
-// -------- если несколько переменных, то разделяем их ";"  se_stat_sqs("var1;var2;var3", "val1;val2;val3")
-// -------- if several variables then share their by ";"
+        // -------- формируем строку запроса - shape query string (sqs)
+        // -------- если несколько переменных, то разделяем их ";"  se_stat_sqs("var1;var2;var3", "val1;val2;val3")
+        // -------- if several variables then share their by ";"
 
         $link = array();
         $remove = array('part', 'rec', 'archive', 'sub', 'page', 'razdel');
@@ -16,7 +16,6 @@ if (!function_exists('se_sqs')) {
             $arrvar = explode(";", $var);
             $arrval = explode(";", $val);
             foreach ($arrvar as $k => $v) if (isset($arrval[$k]) && $v) $link[$v] = $v . '=' . $arrval[$k];
-
         }
         $SE_VARS['get'] = join('&', $link);
         return $SE_VARS['get'];
@@ -143,10 +142,10 @@ if (!function_exists('se_Money_Convert')) {
 if (!function_exists('se_MoneyConvert')) {
     function se_MoneyConvert($summa, $setvalut, $getvalut, $date_rep = '')
     {
-// конвертирование цен
-// price conversion
+        // конвертирование цен
+        // price conversion
         if (!se_manual_curr_rate()) {
-			if ($setvalut == $getvalut) return $summa;
+            if ($setvalut == $getvalut) return $summa;
             $curs1 = getCurrencyValues($setvalut);
             $curs1 = (!empty($curs1['Value'])) ? str_replace(',', '.', $curs1['Value']) / $curs1['Nominal'] : 1.00;
             $curs2 = getCurrencyValues($getvalut);
@@ -179,7 +178,7 @@ if (!function_exists('se_CheckMail')) {
         $se_check_dns = $se_check_mx = true;
         // Проверка правильности написания адреса
         //
-//    $se_strings_isemail = ereg('^([a-zA-Z0-9_\-]|-|.)+'.'@'.'([a-zA-Z0-9_\-]|-|.)+'.'[a-zA-Z]{2,4}$',$str_email);
+        //    $se_strings_isemail = ereg('^([a-zA-Z0-9_\-]|-|.)+'.'@'.'([a-zA-Z0-9_\-]|-|.)+'.'[a-zA-Z]{2,4}$',$str_email);
         $se_strings_isemail = preg_match('/^(?:[\w\d\-\.]+)@(?:[\w\d\-\.]+)$/', $str_email);
 
         // Проверка MX записи домена в DNS
@@ -334,21 +333,19 @@ function se_getMainId()
     }
 }
 
-function seUserTypePrice() 
+function seUserTypePrice()
 {
-	if (!SE_DB_ENABLE) return;
-	if (!defined('USER_TYPEPRICE')) {
-		$price_type = 0;
-		if ($id_user = seUserId()) {
-			$p = new seTable('person');
-			$p->select('price_type');
-			$p->find($id_user);
-			$price_type = (int)$p->price_type;
-		}
-		define('USER_TYPEPRICE', $price_type);
-	}
+    if (!SE_DB_ENABLE) return;
+    if (!defined('USER_TYPEPRICE')) {
+        $price_type = 0;
+        if ($id_user = seUserId()) {
+            $p = new seTable('person');
+            $p->select('price_type');
+            $p->find($id_user);
+            $price_type = (int)$p->price_type;
+        }
+        define('USER_TYPEPRICE', $price_type);
+    }
 
     return USER_TYPEPRICE;
 }
-
-?>

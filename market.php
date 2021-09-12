@@ -12,18 +12,18 @@ if (!empty($_SERVER['REDIRECT_HTTPS']) && $_SERVER['REDIRECT_HTTPS'] == 'on')
     define('_HTTP_', 'https://');
 else {
     if (!empty($_SERVER['REQUEST_SCHEME'])) {
-        define('_HTTP_', $_SERVER['REQUEST_SCHEME'].'://');
+        define('_HTTP_', $_SERVER['REQUEST_SCHEME'] . '://');
     } else {
         define('_HTTP_', ((!$_SERVER['HTTPS'] || $_SERVER['HTTPS'] == 'off') ? 'http://' : 'https://'));
     }
 }
 if (file_exists('system/domain.dat')) {
     $thisdomain = trim(file_get_contents('system/domain.dat'));
-    list(,$base) = explode('//',$thisdomain);
+    list(, $base) = explode('//', $thisdomain);
 }
 
 $domain = ($_SERVER['HTTP_HOST'] != $base) ?  _HTTP_ . $_SERVER['HTTP_HOST'] : $thisdomain;
-$file_market = SE_ROOT . SE_DIR . 'market_'.$_SERVER['HTTP_HOST'].'.yml';
+$file_market = SE_ROOT . SE_DIR . 'market_' . $_SERVER['HTTP_HOST'] . '.yml';
 
 if (!file_exists($file_market) || filemtime($file_market) + 300 < time()) {
     //chdir(__DIR__);

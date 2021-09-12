@@ -6,12 +6,13 @@ function __autoload($psClassName)
         require_once dirname(__file__) . '/classes/' . $psClassName . '.class.php';
     } else
     if (file_exists(SE_ROOT . 'system/plugins/' . strtolower($psClassName) . '.class.php')) {
-            require_once SE_ROOT . 'system/plugins/' . strtolower($psClassName) . '.class.php';
+        require_once SE_ROOT . 'system/plugins/' . strtolower($psClassName) . '.class.php';
     } else
     if (strpos($psClassName, 'plugin_') !== false) {
         if ($handle = opendir(dirname(__file__) . '/plugins/')) {
             while (false !== ($file = readdir($handle))) {
-                if (is_dir(dirname(__file__) . '/plugins/' . $file)
+                if (
+                    is_dir(dirname(__file__) . '/plugins/' . $file)
                     && strpos($file, "plugin_") !== false && strpos(strtolower($psClassName), $file) !== false
                 ) {
                     if (file_exists(dirname(__file__) . '/plugins/' . $file . '/' . strtolower($psClassName) . '.class.php'))
