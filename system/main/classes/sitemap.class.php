@@ -31,7 +31,7 @@ class siteMap
         $shgroup = new seTable('shop_price', 'sp');
         $shgroup->select('concat_ws("/", sg.code_gr, sp.code) code, sp.updated_at, sp.created_at');
         $shgroup->innerJoin('shop_group sg', 'sg.id=sp.id_group');
-		$shgroup->where("sp.id_group='?'", $id_group);
+        $shgroup->where("sp.id_group='?'", $id_group);
         $shgroup->andwhere("enabled='Y'");
         return $shgroup->getList();
     }
@@ -61,9 +61,7 @@ class siteMap
             if ($page->level == 2) return 8.5;
             if ($page->level > 2) return 8;
             return 6;
-
         } else return $page->priority;
-
     }
 
     private function changefreq($time)
@@ -120,16 +118,15 @@ class siteMap
             }
 
             if ($section->type == 'monlinenews') {
-
             }
             if (SE_DB_ENABLE && $index) {
                 // Обработка групп товаров
                 if (strpos($section->type, 'shop_groups') !== false || strpos($section->type, 'vitrine') !== false) {
-                    
+
                     $p = plugin_shopgroups::getInstance();
-                    
+
                     $groups = $p->getAllGroups();
-                    
+
                     foreach ($groups as $key => $code) {
                         if (!is_int($key))
                             continue;
@@ -231,7 +228,7 @@ class siteMap
             $domain = _HTTP_ . $domain;
         if (strval($prj->language) == '') $prj->language = 'rus';
         $pages = simplexml_load_file($dir . "pages.xml");
-		$domain = '{host}';
+        $domain = '{host}';
 
         $folder = (str_replace('/', '', seMultiDir())) ? seMultiDir() : '';
         if ($folder == $defsite . '/' || $extdomain) $folder = '';

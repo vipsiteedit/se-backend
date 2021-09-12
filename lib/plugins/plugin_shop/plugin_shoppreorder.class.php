@@ -1,12 +1,15 @@
 <?php
 
-class plugin_shoppreorder {
-	
-	public function __construct() {
+class plugin_shoppreorder
+{
+
+	public function __construct()
+	{
 		$this->updateDB();
 	}
-	
-	public function updateDB() {
+
+	public function updateDB()
+	{
 		if (!file_exists(SE_ROOT . '/system/logs/shop_preorder.upd')) {
 			$sql = "CREATE TABLE IF NOT EXISTS shop_preorder (
 				id int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -53,7 +56,7 @@ class plugin_shoppreorder {
 					</tbody>
 				</table>'
 			);
-			
+
 			$mail_template['preorderadmin'] = array(
 				'title' => 'Письмо администратору о предзаказе',
 				'subject' => 'Заявка на поступление товара',
@@ -74,7 +77,7 @@ class plugin_shoppreorder {
 					</tbody>
 				</table>'
 			);
-			
+
 			$mail_template['notifystockuser'] = array(
 				'title' => 'Письмо клиенту о поступлении товара',
 				'subject' => 'Товар поступил на склад',
@@ -98,7 +101,7 @@ class plugin_shoppreorder {
 					</tbody>
 				</table>'
 			);
-			
+
 			foreach ($mail_template as $key => $val) {
 				$sm = new seTable('shop_mail');
 				$sm->select('id');
@@ -112,18 +115,19 @@ class plugin_shoppreorder {
 					$sm->save();
 				}
 			}
-			
+
 			file_put_contents(SE_ROOT . '/system/logs/shop_mail_preorder.upd', date('Y-m-d H:i:s'));
 		}
 	}
-	
-	public function addPreorder($fields = array()) {
-		
+
+	public function addPreorder($fields = array())
+	{
+
 		if (empty($_SESSION['modifications'][$fields['id_product']])) $_SESSION['modifications'][$fields['id_product']] = null;
 		$modifications = join(',', $_SESSION['modifications'][$fields['id_product']]);
 		$fields['modifications'] = $modifications;
 		$sp = new seTable('shop_preorder');
-		$sp->addField('modifications','varchar(255)');
+		$sp->addField('modifications', 'varchar(255)');
 		$sp->insert();
 		$sp->id_price = $fields['id_product'];
 		$sp->modifications = $modifications;
@@ -134,117 +138,119 @@ class plugin_shoppreorder {
 		if (!empty($fields['phone']))
 			$sp->phone = $fields['phone'];
 		$id = $sp->save();
-		
+
 		if ($id) {
 			$this->log('new preorder - ' . $id);
 			$this->sendMailPreorder($fields);
 		}
-		
+
 		return $id;
 	}
-	
-	private function sendMailPreorder($fields) {
+
+	private function sendMailPreorder($fields)
+	{
 		$mails = new plugin_shopmail();
-		
+
 		$params = array(
 			'THISNAMESITE' => $_SERVER['HTTP_HOST'],
 			'CLIENT.NAME' => $fields['name'],
 			'CLIENT.EMAIL' => $fields['email'],
 			'CLIENT.PHONE' => $fields['phone']
 		);
-		
+
 		if ($fields['id_product']) {
 			if ($fields['modifications']) {
 				$mod = new plugin_shopmodifications($fields['id_product']);
 				$modification = $mod->getName(explode(',', $fields['modifications']));
 			}
-			$psg = new plugin_shopgoods(); 
+			$psg = new plugin_shopgoods();
 			$product = $psg->getGoods(array(), $fields['id_product']);
 			if ($product = $product[0][0]) {
 				$plugin_amount = new plugin_shopamount(0, $product);
 				if ($modification) $product['name'] .= ' (' . $modification . ')';
 				$params['PRODUCT.NAME'] = $product['name'];
 				if ($product['img']) {
-					$imgurl = '/images/'.se_getLang().'/shopprice/'.$product['img'];
-					$params['PRODUCT.IMAGE'] = '<a href="http://'.$_SERVER['HTTP_HOST'].$imgurl.'" target="_blank"><img src="http://'.$_SERVER['HTTP_HOST'].$imgurl.'" width="100" border=0></a>';
+					$imgurl = '/images/' . se_getLang() . '/shopprice/' . $product['img'];
+					$params['PRODUCT.IMAGE'] = '<a href="http://' . $_SERVER['HTTP_HOST'] . $imgurl . '" target="_blank"><img src="http://' . $_SERVER['HTTP_HOST'] . $imgurl . '" width="100" border=0></a>';
 				}
 				$params['PRODUCT.PRICE'] = $plugin_amount->showPrice(true);
 			}
 		}
 		$result = $mails->sendmail('preorderuser', $fields['email'], $params);
 		$this->log('send mail "preorderuser" - ' . $result);
-		
+
 		$result = $mails->sendmail('preorderadmin', '', $params);
 		$this->log('send mail "preorderadmin" - ' . $result);
 	}
-	
-	public function checkProductCount($id_price = 0) {
+
+	public function checkProductCount($id_price = 0)
+	{
 		if (!$id_price) return;
-		
-		$plugin_amount = new plugin_shopamount($id_price);   
+
+		$plugin_amount = new plugin_shopamount($id_price);
 		$count = $plugin_amount->getPresenceCount();
-		
-		$this->log('check product - ' . $id_price . ', count - ' . $count); 
-		
+
+		$this->log('check product - ' . $id_price . ', count - ' . $count);
+
 		if ($count != 0) {
 			$sp = new setable('shop_preorder');
-			$sp->addField('modifications','varchar(255)');
+			$sp->addField('modifications', 'varchar(255)');
 			$sp->select('id, id_price, modifications, email, name, phone');
 			$sp->where('id_price=?', $id_price);
 			$sp->andWhere('send_mail=0');
 			$list = $sp->getList();
-			
+
 			if (!empty($list)) {
-				$this->log('find preorders, count - ' . count($list)); 
+				$this->log('find preorders, count - ' . count($list));
 				foreach ($list as $val) {
 					if ($this->sendMailNotify($val)) {
-						$sp->find($val[id]);
+						$sp->find($val['id']);
 						$sp->send_mail = 1;
 						$sp->save();
 					}
-						
 				}
 			}
 		}
-		
 	}
-	
-	private function sendMailNotify($fields) {
+
+	private function sendMailNotify($fields)
+	{
 		$mails = new plugin_shopmail();
-		
+
 		$params = array(
 			'THISNAMESITE' => $_SERVER['HTTP_HOST'],
 			'CLIENT.NAME' => $fields['name'],
 			'CLIENT.EMAIL' => $fields['email'],
 			'CLIENT.PHONE' => $fields['phone']
 		);
-		
+
 		if ($fields['id_price']) {
 			if ($fields['modifications']) {
 				$mod = new plugin_shopmodifications($fields['id_price']);
 				$modification = $mod->getName(explode(',', $fields['modifications']));
 			}
-			$psg = new plugin_shopgoods(); 
+			$psg = new plugin_shopgoods();
 			$product = $psg->getGoods(array(), $fields['id_price']);
 			if ($product = $product[0][0]) {
-				$plugin_amount = new plugin_shopamount(0, $product);   
-				if ($modification) $product['name'] .= ' ('.$modification . ')';
+				$plugin_amount = new plugin_shopamount(0, $product);
+				if ($modification) $product['name'] .= ' (' . $modification . ')';
 				$params['PRODUCT.NAME'] = $product['name'];
 				if ($product['img']) {
-					$imgurl = '/images/'.se_getLang().'/shopprice/'.$product['img'];
-					$params['PRODUCT.IMAGE'] = '<a href="http://'.$_SERVER['HTTP_HOST'].$imgurl.'" target="_blank"><img src="http://'.$_SERVER['HTTP_HOST'].$imgurl.'" width="100" border=0></a>';
+					$imgurl = '/images/' . se_getLang() . '/shopprice/' . $product['img'];
+					$params['PRODUCT.IMAGE'] = '<a href="http://' . $_SERVER['HTTP_HOST'] . $imgurl . '" target="_blank"><img src="http://' . $_SERVER['HTTP_HOST'] . $imgurl . '" width="100" border=0></a>';
 				}
 				$params['PRODUCT.PRICE'] = $plugin_amount->showPrice(true);
 			}
 		}
-		
+
 		$result = $mails->sendmail('notifystockuser', $fields['email'], $params);
 		$this->log('send mail "notifystockuser" ' . $fields['email'] . ' - ' . $result);
 		$result = true;
 		return $result;
 	}
-	
-	private function log($text) {
+
+	private function log($text)
+	{
 		$log_dir = SE_ROOT . 'system/logs/preorder/';
 		if (!is_dir($log_dir))
 			mkdir($log_dir);
@@ -252,7 +258,6 @@ class plugin_shoppreorder {
 		$text = date('[Y-m-d H:i:s]') . ' ' . $text . "\r\n";
 		$file = fopen($log_file, 'ab');
 		fwrite($file, $text);
-		fclose($file);	
+		fclose($file);
 	}
-
 }

@@ -48,8 +48,8 @@ class plugin_shopdiscount
 
         if ($day_week == 0)
             $day_week = 7;
-		
-		se_db_query('SET group_concat_max_len = 16096;');
+
+        se_db_query('SET group_concat_max_len = 16096;');
 
         $shop_discounts = new seTable('shop_discounts', 'sd');
         $shop_discounts->select('
@@ -72,7 +72,7 @@ class plugin_shopdiscount
 			GROUP_CONCAT(DISTINCT sdl.id_usergroup) AS user_groups
 		');
         //$shop_discounts->where("((sd.date_from <= '?' OR sd.date_from IS NULL) AND (sd.date_to >= '?' OR sd.date_to IS NULL))", $date);
-		$shop_discounts->where("((sd.date_from <= '?' OR sd.date_from IS NULL OR sd.date_from=0) AND (sd.date_to >= '?' OR sd.date_to IS NULL OR sd.date_to=0))", $date);
+        $shop_discounts->where("((sd.date_from <= '?' OR sd.date_from IS NULL OR sd.date_from=0) AND (sd.date_to >= '?' OR sd.date_to IS NULL OR sd.date_to=0))", $date);
         $shop_discounts->andWhere('(SUBSTRING(sd.week, ?, 1) > 0 OR sd.week IS NULL)', (int)$day_week);
 
         $shop_discounts->innerJoin('shop_discount_links sdl', 'sdl.discount_id=sd.id');
@@ -149,14 +149,6 @@ class plugin_shopdiscount
 
     public function getDiscount($product, $summ = 0, $count = 0)
     {
-        if (!empty($this->id_user) && file_exists(SE_LIB . 'plugins/plugin_partner/plugin_parnerdiscount.class.php')) {
-            $pdsc = new plugin_partnerdiscount();
-            $discountValue = $pdsc->getDiscount($this->id_user);
-            return array(
-                'value' => $discountValue,
-                'type' => 'percent'
-            );
-        }
         if (empty($this->discounts))
             return;
 
@@ -230,5 +222,4 @@ class plugin_shopdiscount
         }
         return $dlist;
     }
-
 }

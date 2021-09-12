@@ -1,10 +1,5 @@
 <?php
 
-/**
- * Отложенные товары
- * 
- */
-
 class plugin_shopWishlist
 {
 	private $mailtemplate = 'depositend';
@@ -23,7 +18,7 @@ class plugin_shopWishlist
 		$tord->fetchOne();
 		return intval($tord->cnt);		
 	}
-	// $hors - часов до блокировки, $user_id - ID пользователя
+	// $hors - пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, $user_id - ID пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	public function getList($hors = -1, $user_id = 0)
 	{
 		$wtab = new seTable('shop_order', 'so');
@@ -41,20 +36,20 @@ class plugin_shopWishlist
 	}
 
 	
-	// Удаление отложенного заказа (Заказ удаляется полностью без восстановления)
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
 	public function delete($order_id) {
 		if(empty($order_id)) return;	
 		$goods = $this->getGoods($order_id);
 		foreach($goods as $good) {
 			$this->deleteGood($good);
-			// Возвращаем товры в каталог
+			// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		}
 		
 		$ord = new seTable('shop_order');
 		$ord->delete($order_id);
 	}
 	
-	// Получить список товаров в заказе.  $item_id - id заказанного товара в таблице shop_tovarorder
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ.  $item_id - id пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ shop_tovarorder
 	public function getGoods($order_id, $item_id = 0)
 	{
 		if(empty($order_id)) return;	
@@ -65,13 +60,13 @@ class plugin_shopWishlist
 		$tord->where('sto.id_order=?', $order_id);
 		$tord->andwhere("(so.is_delete='N' OR so.is_delete IS NULL)");
 		if ($item_id) {
-			$tord->andwhere('sto.id=?', $item_id);  // Если нужна одна запись отложеного товара
+			$tord->andwhere('sto.id=?', $item_id);  // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 		}
-		$res = $tord->getList(); echo mysql_error();
+		$res = $tord->getList(); echo se_db_error();
 		return $res;
 	}
 
-	// Удалить товар в заказе.  $good - массив параметров по товару getGoods
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ.  $good - пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ getGoods
 	public function deleteGood($good)
 	{
 		if(!$good['id']) return;	
@@ -96,7 +91,7 @@ class plugin_shopWishlist
 				$ord->delete($good['id_order']);
 			}
 			
-			// Сдесь нужно записать в дисконтный баланс отрицательную запись от стоимости товара
+			// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 			$sub = new seTable('shop_user_discountbalace');
 			$sub->user_id = $good['id_author'];
 			$sub->balance = (0 - $spr->price);
@@ -106,4 +101,3 @@ class plugin_shopWishlist
 			unset($spr);
 	}
 }
-?>

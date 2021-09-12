@@ -1,28 +1,35 @@
 <?php
 
-class InsertYM extends AYandexMarket {
+class InsertYM extends AYandexMarket
+{
     private $pictureLoad = array();
 
-    public function currency($currencies) {
+    public function currency($currencies)
+    {
         foreach ($currencies as $currency) {
             $currency = (string)$currency->attributes()->id;
             $valute_list = $this->getCurrency();
             if (!in_array($currency, $valute_list)) {
                 $cbr_code = $this->sbrCode();
                 if ($currency == 'RUR' || $currency == 'RUB') {
-                    $cbr_code['RUB'] = $cbr_code['RUR'] = array('name' => 'Российский рубль',
-                                                                'code' => '');
+                    $cbr_code['RUB'] = $cbr_code['RUR'] = array(
+                        'name' => 'Российский рубль',
+                        'code' => ''
+                    );
                 }
-                $itemCurrency = array('name'    => $currency,
-                                      'title'   => $cbr_code[$currency]['name'],
-                                      'cbr_kod' => $cbr_code[$currency]['code']);
+                $itemCurrency = array(
+                    'name'    => $currency,
+                    'title'   => $cbr_code[$currency]['name'],
+                    'cbr_kod' => $cbr_code[$currency]['code']
+                );
                 $this->setCurrency($itemCurrency);
             }
         }
         $this->save('money_title');
     }
 
-    public function category($groups) {
+    public function category($groups)
+    {
         foreach ($groups as $group) {
             $id = (int)$group->attributes()->id;
             $parentId = (int)$group->attributes()->parentId;
@@ -32,17 +39,20 @@ class InsertYM extends AYandexMarket {
             $uniqCategory = $this->getTranslitName($name);
             $parentId = (empty($this->categoryTree[$parentId]))
                 ? 'null' : $this->categoryTree[$parentId];
-            $itemCategory = array('code_gr' => $uniqCategory,
-                                  'name'    => $name,
-                                  'upid'    => $parentId,
-                                  'visits'  => '00');
+            $itemCategory = array(
+                'code_gr' => $uniqCategory,
+                'name'    => $name,
+                'upid'    => $parentId,
+                'visits'  => '00'
+            );
             $this->setCategory($itemCategory);
             $ins = $this->save('shop_group');
             $this->categoryTree[$id] = $ins;
         }
     }
 
-    public function offer($offers) {
+    public function offer($offers)
+    {
         $this->getProduct(); // нужно для транслита
         foreach ($offers as $offer) {
             $id = (int)$offer->attributes()->id;
@@ -61,8 +71,10 @@ class InsertYM extends AYandexMarket {
                 $currentBrand = $this->getBrand();
                 if (!in_array($brand, $currentBrand)) {
                     $uniqBrand = $this->getTranslitName($brand);
-                    $itemBrand = array('name' => $brand,
-                                       'code' => $uniqBrand);
+                    $itemBrand = array(
+                        'name' => $brand,
+                        'code' => $uniqBrand
+                    );
 
                     $this->setBrand($itemBrand);
                     $brandId = $this->save('shop_brand');
@@ -76,18 +88,20 @@ class InsertYM extends AYandexMarket {
             $uniqProduct = $this->getTranslitName($name);
             $group = (empty($this->categoryTree[$group]))
                 ? 'null' : $this->categoryTree[$group];
-            $itemProduct = array('code'           => $uniqProduct,
-                                 'lang'           => 'rus',
-                                 'id_group'       => $group,
-                                 'id_brand'       => $brandId,
-                                 'name'           => $name,
-                                 'price'          => $price,
-                                 'price_opt'      => '00',
-                                 'price_opt_corp' => '00',
-                                 'bonus'          => '00',
-                                 'votes'          => '00',
-                                 'note'           => $note,
-                                 'curr'           => $currency);
+            $itemProduct = array(
+                'code'           => $uniqProduct,
+                'lang'           => 'rus',
+                'id_group'       => $group,
+                'id_brand'       => $brandId,
+                'name'           => $name,
+                'price'          => $price,
+                'price_opt'      => '00',
+                'price_opt_corp' => '00',
+                'bonus'          => '00',
+                'votes'          => '00',
+                'note'           => $note,
+                'curr'           => $currency
+            );
             $this->setProduct($itemProduct);
 
             foreach ($offer->param as $line) {
@@ -119,8 +133,10 @@ class InsertYM extends AYandexMarket {
                 $idParam = 0;
                 if (!in_array($name, $currentParam)) {
                     $unit = (empty($unit)) ? 'null' : $unit;
-                    $itemParam = array('name'    => $name,
-                                       'measure' => $unit);
+                    $itemParam = array(
+                        'name'    => $name,
+                        'measure' => $unit
+                    );
 
                     $this->setParam($itemParam);
                     $idParam = $this->save('shop_feature');
@@ -133,8 +149,10 @@ class InsertYM extends AYandexMarket {
                     $paramValues = $this->getParamValue($idParam);
                     $idValue = 0;
                     if (!in_array($value, $paramValues)) {
-                        $itemParamValue = array('id_feature' => $idParam,
-                                                'value'      => $value);
+                        $itemParamValue = array(
+                            'id_feature' => $idParam,
+                            'value'      => $value
+                        );
 
                         $this->setParamValue($itemParamValue);
                         $idValue = $this->save('shop_feature_value_list');
@@ -146,9 +164,11 @@ class InsertYM extends AYandexMarket {
 
                     if (!empty($idValue) && !empty($productList[$code])) {
                         $idPrice = $productList[$code];
-                        $itemProductParamValue = array('id_price'   => $idPrice,
-                                                       'id_feature' => $idParam,
-                                                       'id_value'   => $idValue);
+                        $itemProductParamValue = array(
+                            'id_price'   => $idPrice,
+                            'id_feature' => $idParam,
+                            'id_value'   => $idValue
+                        );
                         $this->setProductParamValue($itemProductParamValue);
                     }
                 }
@@ -159,8 +179,10 @@ class InsertYM extends AYandexMarket {
         foreach ($this->pictureNewList as $code => $values) {
             foreach ($values as $value) {
                 $idPrice = $productList[$code];
-                $itemPictureList = array('id_price' => $idPrice,
-                                         'picture' => $value);
+                $itemPictureList = array(
+                    'id_price' => $idPrice,
+                    'picture' => $value
+                );
                 $this->setPicture($itemPictureList);
             }
         }

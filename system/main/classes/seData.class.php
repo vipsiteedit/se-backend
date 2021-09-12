@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************
  ** seData - core siteedit
  ** Author - Edgestile LTD 2016
@@ -117,9 +118,9 @@ class seData
                 $this->pagename = $_SESSION['SE'][$this->pagename];
             else
                 if (!empty($_SESSION['se']['page']))
-                    $this->pagename = $_SESSION['se']['page'];
-                else
-                    $this->pagename = substr($this->pagename, 4);
+                $this->pagename = $_SESSION['se']['page'];
+            else
+                $this->pagename = substr($this->pagename, 4);
         }
 
         if (isset($_GET['interfacelang'])) {
@@ -202,11 +203,9 @@ class seData
             $this->req->page = $this->namepage;
             return true;
         }
-
-
     }
-	
-	// Получить адрес страницы по имени
+
+    // Получить адрес страницы по имени
     public function getPagePattern($name)
     {
         foreach ($this->URLS[strval($name)] as $urls) {
@@ -243,7 +242,6 @@ class seData
             if ((!$fs && $this->req->razdel) || (!$fo && $this->req->object)) {
                 $this->go404();
             }
-
         }
         if (!empty($this->req->param[2])) {
             if ($nameurl == $this->req->param[1]) {
@@ -313,9 +311,9 @@ class seData
                 $this->pagename = $_SESSION['SE'][$this->pagename];
             else
                 if (!empty($_SESSION['se']['page']))
-                    $this->pagename = $_SESSION['se']['page'];
-                else
-                    $this->pagename = substr($this->pagename, 4);
+                $this->pagename = $_SESSION['se']['page'];
+            else
+                $this->pagename = substr($this->pagename, 4);
         }
     }
 
@@ -331,7 +329,8 @@ class seData
 
     private function redirectPage()
     {
-        if (empty($_POST) && $this->pagename && ($_SERVER['REQUEST_URI'] == seMultiDir() . '/' . $this->pagename
+        if (
+            empty($_POST) && $this->pagename && ($_SERVER['REQUEST_URI'] == seMultiDir() . '/' . $this->pagename
                 || $_SERVER['REQUEST_URI'] == seMultiDir() . '/' . $this->pagename . '.html')
         ) {
             $this->go301(seMultiDir() . '/' . $this->pagename . '/');
@@ -399,8 +398,7 @@ class seData
     private function getWorkFolder($namefile)
     {
         return ($this->editorAccess() && file_exists(SE_SAFE . 'projects/' . SE_DIR . 'edit/' . $namefile)
-            && filemtime(SE_SAFE . 'projects/' . SE_DIR . 'edit/' . $namefile) > filemtime(SE_SAFE . 'projects/' . SE_DIR . $namefile)
-        ) ? 'edit/' : '';
+            && filemtime(SE_SAFE . 'projects/' . SE_DIR . 'edit/' . $namefile) > filemtime(SE_SAFE . 'projects/' . SE_DIR . $namefile)) ? 'edit/' : '';
     }
 
     // Загрузка файла проекта
@@ -411,28 +409,28 @@ class seData
             $this->prj = simplexml_load_file(SE_SAFE . 'projects/' . SE_DIR . $folder . 'project.xml');
             $this->startpage = (!empty($this->prj->vars->startpage)) ? strval($this->prj->vars->startpage) : 'home';
             if (SE_DB_ENABLE && file_exists(SE_LIBS . 'plugins/plugin_geo/plugin_geovalues.class.php')) {
-				$gval = plugin_geovalues::getInstance();
-				if (method_exists($gval, 'getAltPageName') && $gval->getAltPageName('home')) {
-					$this->startpage = $gval->getAltPageName('home');
-				}
-				if (empty($this->pagename)) $this->pagename = $this->startpage;
-				if (method_exists($gval, 'getAltDesign') && $gval->getAltDesign($this->pagename)) {
-					$this->skin = $gval->getAltDesign($this->pagename);
-				}
-				if (method_exists($gval, 'getAltPageName') && $gval->getAltPageName($this->pagename)) {
-					$this->pagename = $gval->getAltPageName($this->pagename);
-				}
-			}
-			
-			
-			
-			define('SE_STARTPAGE', $this->startpage);
+                $gval = plugin_geovalues::getInstance();
+                if (method_exists($gval, 'getAltPageName') && $gval->getAltPageName('home')) {
+                    $this->startpage = $gval->getAltPageName('home');
+                }
+                if (empty($this->pagename)) $this->pagename = $this->startpage;
+                if (method_exists($gval, 'getAltDesign') && $gval->getAltDesign($this->pagename)) {
+                    $this->skin = $gval->getAltDesign($this->pagename);
+                }
+                if (method_exists($gval, 'getAltPageName') && $gval->getAltPageName($this->pagename)) {
+                    $this->pagename = $gval->getAltPageName($this->pagename);
+                }
+            }
+
+
+
+            define('SE_STARTPAGE', $this->startpage);
             if (strval($this->prj->vars->language) == '') {
                 $this->prj->vars->language = 'rus';
             }
             if (strval($this->prj->sitedomain) && $this->prj->siteredirect == '1') {
                 //$urlsite = strtolower(str_replace(array('http://', 'https://'), '', $this->prj->sitedomain));
-                if (strpos($this->prj->sitedomain, '://')===false) $this->prj->sitedomain = _HTTP_ . $this->prj->sitedomain;
+                if (strpos($this->prj->sitedomain, '://') === false) $this->prj->sitedomain = _HTTP_ . $this->prj->sitedomain;
                 if (_HTTP_ . $_SERVER['HTTP_HOST'] != $this->prj->sitedomain) {
                     $this->go301($this->prj->sitedomain . $_SERVER['REQUEST_URI']);
                 }
@@ -457,16 +455,16 @@ class seData
                 $this->startpage = 'home';
             }
             $uri = $_SERVER['REQUEST_URI'];
-            if (str_replace('/', '', $uri) == $this->startpage
+            if (
+                str_replace('/', '', $uri) == $this->startpage
                 || ($uri == '/' . SE_DIR . $this->startpage . URL_END && seMultiDir() == '')
             ) {
                 $this->go301(seMultiDir() . '/');
             }
-            if (SE_DIR != '' && substr($uri, 1, strlen(SE_DIR)) == SE_DIR && seMultiDir() == ''){
+            if (SE_DIR != '' && substr($uri, 1, strlen(SE_DIR)) == SE_DIR && seMultiDir() == '') {
                 $uri = substr($uri, strlen(SE_DIR), strlen($uri));
                 $this->go301($uri);
             }
-
         }
         $this->prj->wmgoogle = trim($this->prj->wmgoogle);
         $this->prj->wmyandex = trim($this->prj->wmyandex);
@@ -497,7 +495,7 @@ class seData
     private function initpage()
     {
         $pname = $this->pagename;
-		$folder = $this->getWorkFolder('pages/' . $pname . '.xml');
+        $folder = $this->getWorkFolder('pages/' . $pname . '.xml');
         if (!file_exists(SE_SAFE . 'projects/' . SE_DIR . $folder . 'pages/' . $pname . '.xml')) {
             $this->go404();
         } else {
@@ -512,9 +510,9 @@ class seData
         } else {
             $this->page = new SimpleXMLElement('<page></page>');
         }
-		if ($this->skin) {
-			$this->page->css = $this->skin;
-		}
+        if ($this->skin) {
+            $this->page->css = $this->skin;
+        }
         if ($this->page->css == '') $this->page->css = 'default';
         if (file_exists(SE_SAFE . 'projects/' . SE_DIR . 'cache/map_' . $this->page->css . '.json')) {
             $this->contarr = json_decode(file_get_contents(SE_SAFE . 'projects/' . SE_DIR . 'cache/map_' . $this->page->css . '.json'), true);
@@ -601,12 +599,10 @@ class seData
         if (file_exists(SE_SAFE . 'projects/' . SE_DIR . 'pages/404.xml')) {
             header('HTTP/1.0 404 File not found');
             print $this->getHTTP(_HOST_ . seMultiDir() . '/404/');
-        }
-        elseif (file_exists(SE_SAFE . 'projects/' . SE_DIR . 'pages/page404.xml')) {
+        } elseif (file_exists(SE_SAFE . 'projects/' . SE_DIR . 'pages/page404.xml')) {
             header('HTTP/1.0 404 File not found');
             print $this->getHTTP(_HOST_ . seMultiDir() . '/page404/');
-        }
-        else {
+        } else {
             header("Location: https://e-stile.ru/404.php");
             //print preg_replace("/[\"](images|skin)\//", '"http://e-stile.ru/$1/', $this->getHTTP("http://e-stile.ru/404.html"));
         }
@@ -662,12 +658,12 @@ class seData
         }
         return $link;
     }
-    
-    private function parseParams($section) 
+
+    private function parseParams($section)
     {
-        foreach($section->parametrs as $param){
-            foreach($param as $name => $value){
-                while (preg_match("/\[%([\w\d\-]+)%\]/u", $value, $m)!=false){
+        foreach ($section->parametrs as $param) {
+            foreach ($param as $name => $value) {
+                while (preg_match("/\[%([\w\d\-]+)%\]/u", $value, $m) != false) {
                     $__result = $this->prj->vars->{$m[1]};
                     $value = str_replace($m[0], $__result, $value);
                 }
@@ -684,12 +680,12 @@ class seData
 
     public function getArhivUrl($sectionId)
     {
-         $pagelink =  ($this->getSectionNumber($sectionId) < 100000) ? strval($this->pagename) : 'index';
-         foreach ($this->URLS[$pagelink] as $url) {
-             if ($url['action'] == 'arhiv' && $url['id'] == $sectionId) {
-                     return $url['pattern'];
-             }
-         }
+        $pagelink =  ($this->getSectionNumber($sectionId) < 100000) ? strval($this->pagename) : 'index';
+        foreach ($this->URLS[$pagelink] as $url) {
+            if ($url['action'] == 'arhiv' && $url['id'] == $sectionId) {
+                return $url['pattern'];
+            }
+        }
     }
 
     public function execute()
@@ -815,16 +811,16 @@ class seData
 
                     if (!in_array($nametype, $modulesArr)) {
                         $modulesArr[] = $nametype;
-                        if($link = $this->getLinkStyle($section, $modulepath . '/' . $nametype)){
+                        if ($link = $this->getLinkStyle($section, $modulepath . '/' . $nametype)) {
                             if (!in_array($link, $this->headercss)) {
                                 $this->headercss[] = $link;
                             }
                         }
                     }
                     $arr = array();
-                    
+
                     $this->parseParams($section);
-                    
+
                     $arr = call_user_func_array('module_' . $nametype, array($id_content, $section));
                     /*if (!SE_ALL_SERVICES && !$this->getStatusService($nametype, false)) {
                         $arr['content']['form'] = '<div style="color: #FF0000;">&nbsp;'.$this->editor->getTextLanguage('close_service').'</div>' . $arr['content']['form'];
@@ -837,7 +833,6 @@ class seData
                     }
                     if (!empty($arr['content']['show'])) {
                         $section->formshow = replace_link($this->getHeader($arr['content']['show'], $section));
-
                     }
                     if (!empty($arr['content']['arhiv'])) {
                         $section->formarhiv = replace_link($this->getHeader($arr['content']['arhiv'], $section));
@@ -862,7 +857,7 @@ class seData
                 $this->go301($url[0]);
             }
             foreach ($SE_REQUEST_NAME as $qname => $name) {
-                if (strval($uname) == strval($qname) || !isset($arr) || isset($_GET[$uname])) { 
+                if (strval($uname) == strval($qname) || !isset($arr) || isset($_GET[$uname])) {
                     $find = true;
                     break;
                 }
@@ -933,7 +928,8 @@ class seData
                 if (!$url_protocol) {
                     $url_start = autoencode($ur[0]);
                 }
-                if ($ur[0] != '' && (autoencode($oldurl) == autoencode($ur[0])
+                if (
+                    $ur[0] != '' && (autoencode($oldurl) == autoencode($ur[0])
                         || ($_SERVER['HTTP_HOST'] . autoencode($oldurl) == $url_start)
                         || (autoencode(urldecode($_SERVER['REQUEST_URI'])) == $url_start))
                 ) {
@@ -990,7 +986,8 @@ class seData
             if (!file_exists(SE_SAFE . 'projects/' . SE_DIR . 'types/')) {
                 mkdir(SE_SAFE . 'projects/' . SE_DIR . 'types/');
             }
-            if (!file_exists(SE_SAFE . 'projects/' . SE_DIR . 'types/' . $type)
+            if (
+                !file_exists(SE_SAFE . 'projects/' . SE_DIR . 'types/' . $type)
                 || filemtime(SE_SAFE . 'projects/' . SE_DIR . 'types/' . $type) < filemtime(SE_SAFE . 'projects/' . SE_DIR . 'project.xml')
                 || $rewrite || $this->getVirtualPage($type) != $namepage
             ) {
@@ -1076,7 +1073,7 @@ class seData
     }
 
 
-    public function getHeader($text, $section = '')
+    public function getHeader($text, $section)
     {
         $modulefolder = '';
         if (!empty($section->type)) {
@@ -1156,16 +1153,18 @@ class seData
         $pathalt = '/lib';
         $path = '/modules';
 
-        if (file_exists(getcwd() . $pathalt . $path . '/module_' . $type . '.class.php')
+        if (
+            file_exists(getcwd() . $pathalt . $path . '/module_' . $type . '.class.php')
             || file_exists(getcwd() . $pathalt . $path . '/mdl_' . $type . '.php')
         ) {
             return $pathalt . $path;
         } else
-            if (file_exists(getcwd() . $path . '/module_' . $type . '.class.php')
-                || file_exists(getcwd() . $path . '/mdl_' . $type . '.php')
-            ) {
-                return $path;
-            }
+            if (
+            file_exists(getcwd() . $path . '/module_' . $type . '.class.php')
+            || file_exists(getcwd() . $path . '/mdl_' . $type . '.php')
+        ) {
+            return $path;
+        }
         return;
     }
 
@@ -1212,9 +1211,9 @@ class seData
                 <a itemprop="item" href="' . seMultiDir() . '/">
                 <span itemprop="name">' . $page->title . '</span>
                 </a>
-                <meta itemprop="position" content="'.$level_num.'" />
+                <meta itemprop="position" content="' . $level_num . '" />
                 </span> ';
-                $level_num ++;
+                $level_num++;
                 break;
             }
         }
@@ -1227,9 +1226,9 @@ class seData
                 if ($object->id == intval($this->req->object)) {
                     $linkTemplate = '<span class="space">' . $space . '</span> ' . '<span itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
                     <span class="endtitle" itemprop="name">' . $object->title . '</span>
-                    <meta itemprop="position" content="'.$level_num.'" />
+                    <meta itemprop="position" content="' . $level_num . '" />
                     </span> ';
-                    $level_num ++;
+                    $level_num++;
                     break;
                 }
             }
@@ -1243,27 +1242,27 @@ class seData
             if (($linkTemplate == '') && ($getLastElement['title'] == $line['title'])) {
                 $link .= '<span class="space">' . $space . '</span> <span itemprop="itemListElement" itemscope  itemtype="http://schema.org/ListItem">
                 <span itemprop="name">' . $line['title'] . '</span>
-                <meta itemprop="position" content="'.$level_num.'" />
+                <meta itemprop="position" content="' . $level_num . '" />
                 </span> ';
             } else {
                 $link .= '<span class="space">' . $space . '</span> <span itemprop="itemListElement" itemscope  itemtype="http://schema.org/ListItem">
                 <a itemprop="item" href="' . seMultiDir() . '/' . $line['name'] . SE_END . '">
                 <span itemprop="name">' . $line['title'] . '</span>
                 </a>
-                <meta itemprop="position" content="'.$level_num.'" />
+                <meta itemprop="position" content="' . $level_num . '" />
                 </span> ';
             }
-            $level_num ++;
+            $level_num++;
         }
         $link .= $linkTemplate;
         if ($endtitle != '') {
             $link .= '<span class="space">' . $space . '</span> <span itemprop="itemListElement" itemscope  itemtype="http://schema.org/ListItem">
             <span class="endtitle" itemprop="name">' . $endtitle . '</span>
-            <meta itemprop="position" content="'.$level_num.'" />
+            <meta itemprop="position" content="' . $level_num . '" />
             </span>';
         }
         $link = '<span itemscope itemtype="http://schema.org/BreadcrumbList">' . $link . '</span>';
-        
+
         return $link;
     }
 
@@ -1391,7 +1390,7 @@ class seData
 
     public function setItemList($section, $nameobject, $itemarray)
     {
-		add_simplexml_from_array($section, $nameobject, $itemarray);
+        add_simplexml_from_array($section, $nameobject, $itemarray);
     }
 
     public function goSubName($section, $subname)
@@ -1433,7 +1432,7 @@ class seData
         } else {
             $objects = array();
             $k = count($section->objects);
-            foreach($section->objects as $it) {
+            foreach ($section->objects as $it) {
                 $objects[] = $section->objects[$k - 1];
                 $k--;
             }
@@ -1574,7 +1573,7 @@ class seData
     {
         while (preg_match("/<createmenu:item\-([^>]+)>(.+?)<\/createmenu>/umis", $text, $m)) {
             if (!preg_match("/[\'\"]?\[param([^\]]+)\][\'\"]?/im", $m[1], $m1)) {
-                $m[1] = '"'.$m[1].'"';
+                $m[1] = '"' . $m[1] . '"';
             }
             while (preg_match("/[\'\"]?\[param([^\]]+)\][\'\"]?/im", $m[1], $m1)) {
                 $m[1] = str_replace($m1[0], '$section->parametrs->param' . $m1[1], $m[1]);
@@ -1586,8 +1585,10 @@ class seData
 
     private function conditions($text)
     {
-        while (preg_match("/\<if:\(\s?(.+?)\s?\)\>/im", $text, $m)
-            || preg_match("/\<if:\s?([^\>]+)\s?\>/im", $text, $m)) {
+        while (
+            preg_match("/\<if:\(\s?(.+?)\s?\)\>/im", $text, $m)
+            || preg_match("/\<if:\s?([^\>]+)\s?\>/im", $text, $m)
+        ) {
             $m[1] = str_replace('[thispage.link]', '$__data->getLinkPageName()', $m[1]);
             $m[1] = str_replace('[arhiv.link]', '<?php echo seMultiDir()."/".$__data->getPageName()."/".$section->id."/arhiv/" ?>', $m[1]);
             $m[1] = str_replace('[thispage.name]', '$__data->getPageName()', $m[1]);
@@ -1628,7 +1629,7 @@ class seData
     public function parseModule($tpl, $section)
     {
         $tpl = str_replace(array('<serv>', '</serv>', '<SERV>', '</SERV>'), '', $tpl);
-        
+
         $tpl = preg_replace("/<se>(.+?)<\/se>/imus", "", $tpl);
         $tpl = preg_replace("/\[#\"(.+?)\"\]/imus", "$1", $tpl);
         $tpl = preg_replace("/\[se\.\"(.+?)\"\]/imus", "", $tpl);
@@ -1641,10 +1642,16 @@ class seData
             $tpl = str_replace("[menu.item-" . $mm[1] . "]", '<?php echo ItemsMenu(\'' . $mm[1] . '\') ?>', $tpl);
         }
 
-        $tpl = preg_replace("/<wrapper>(.+?)<\/wrapper>/imus",
-            "<?php \$__data->recordsWrapperStart(\$section->id) ?>$1<?php \$__data->recordsWrapperEnd() ?>", $tpl);
-        $tpl = preg_replace("/<arhiv:item>(.+?)<\/arhiv:item>/imus",
-            "<?php foreach(\$__data->limitObjects(\$section, \$section->objectcount) as \$record): ?>$1<?php endforeach; ?>", $tpl);
+        $tpl = preg_replace(
+            "/<wrapper>(.+?)<\/wrapper>/imus",
+            "<?php \$__data->recordsWrapperStart(\$section->id) ?>$1<?php \$__data->recordsWrapperEnd() ?>",
+            $tpl
+        );
+        $tpl = preg_replace(
+            "/<arhiv:item>(.+?)<\/arhiv:item>/imus",
+            "<?php foreach(\$__data->limitObjects(\$section, \$section->objectcount) as \$record): ?>$1<?php endforeach; ?>",
+            $tpl
+        );
 
 
         $tpl = str_replace('[site.authorizeform]', '<?php echo replace_link(seAuthorize($__data->prj->vars->authorizeform)) ?>', $tpl);
@@ -1661,7 +1668,7 @@ class seData
 
         $tpl = $this->getParseMenu($tpl, $section);
         $tpl = $this->conditions($tpl);
-        
+
         $tpl = preg_replace("/(=[\"\'])?([\w\d\-_\[\]\.]+)\.html/u", "$1" . seMultiDir() . "/$2/", $tpl);
 
         $tpl = preg_replace("/<noempty:\[sys\.request\.([\w\d_]+)\]>/i", "<?php if(getRequest('$1', 3)): ?>", $tpl);
@@ -1700,21 +1707,27 @@ class seData
 
         //$tpl = str_replace('[include_css]', '<link href="[module_url]css/style.css" rel="stylesheet">', $tpl);
         //$tpl = str_replace('[include_js]', '<script src="[module_url]engine.js"></script>', $tpl);
-        $tpl = preg_replace("/<repeat:records>(.+?)<\/repeat:records>/imus",
-            "<?php foreach(\$__data->limitObjects(\$section, \$section->objectcount) as \$record): ?>\n$1\n<?php endforeach; ?>", $tpl);
-        $tpl = preg_replace("/<repeat:records\|desc>(.+?)<\/repeat:records>/imus",
-            "<?php foreach(\$__data->limitObjects(\$section, \$section->objectcount, 1) as \$record): ?>\n$1\n<?php endforeach; ?>", $tpl);
+        $tpl = preg_replace(
+            "/<repeat:records>(.+?)<\/repeat:records>/imus",
+            "<?php foreach(\$__data->limitObjects(\$section, \$section->objectcount) as \$record): ?>\n$1\n<?php endforeach; ?>",
+            $tpl
+        );
+        $tpl = preg_replace(
+            "/<repeat:records\|desc>(.+?)<\/repeat:records>/imus",
+            "<?php foreach(\$__data->limitObjects(\$section, \$section->objectcount, 1) as \$record): ?>\n$1\n<?php endforeach; ?>",
+            $tpl
+        );
 
         while (preg_match("/<repeat:\[([\w\d]+)\.([\w\d]+)\]([^\>]+)?>/imus", $tpl, $m)) {
             $s1 = 'record';
-            if (count($m == 4) && trim($m[3])) list(, $s1) = explode('=', $m[3]);
+            if (count($m) == 4 && trim($m[3])) list(, $s1) = explode('=', $m[3]);
             $tpl = str_replace($m[0], '<?php foreach($' . $m[1] . '->' . $m[2] . ' as $' . $s1 . '): ?>', $tpl);
         }
 
 
         while (preg_match("/<repeat:([\d\w]+)\[([\w\d]+)\.([\w\d]+)\]([^\>]+)?>/imus", $tpl, $m)) {
             $s1 = 'record';
-            if (count($m == 5) && trim($m[4])) list(, $s1) = explode('=', $m[4]);
+            if (count($m) == 5 && trim($m[4])) list(, $s1) = explode('=', $m[4]);
             $tpl = str_replace($m[0], '<?php $__list = \'' . $m[1] . '\'.$' . $m[2] . '->' . $m[3] . ';
           foreach($section->$__list as $' . $s1 . '): ?>', $tpl);
         }
@@ -1738,11 +1751,13 @@ class seData
         $tpl = preg_replace("/\<\/repeat:(.+?)\>/m", '<?php endforeach; ?>', $tpl);
 
 
-        $tpl = preg_replace("/\[subpage\sname=([\w\d]+)\]/m",
+        $tpl = preg_replace(
+            "/\[subpage\sname=([\w\d]+)\]/m",
             "<?php if(file_exists(\$__MDL_ROOT.\"/php/subpage_$1.php\")) 
             include \$__MDL_ROOT.\"/php/subpage_$1.php\"; 
             if(file_exists(\$__MDL_ROOT.\"/tpl/subpage_$1.tpl\")) include \$__data->include_tpl(\$section, \"subpage_$1\"); ?>",
-            $tpl);
+            $tpl
+        );
 
         while (preg_match("/\[textline\.(.+?)\/textline\]/usim", $tpl, $m)) {
             $s1 = '<?php $noteitem = explode("\n", str_replace("\n\n","\n", 
@@ -1773,9 +1788,12 @@ class seData
 
         $tpl = preg_replace("/\[([\w\d_]+)\.([\w\d_]+)\]/im", "<?php echo \$$1->$2 ?>", $tpl);
         $tpl = str_replace(array('<serv>', '</serv>', '[*addobj]', '[*edobj]'), '', $tpl);
-        $tpl = str_replace('[SE_PARTSELECTOR]',
+        $tpl = str_replace(
+            '[SE_PARTSELECTOR]',
             '<?php echo SE_PARTSELECTOR($section->id,count($section->objects),
-               $section->objectcount, getRequest("item",1), getRequest("sel",1)) ?>', $tpl);
+               $section->objectcount, getRequest("item",1), getRequest("sel",1)) ?>',
+            $tpl
+        );
 
 
         $tpl = str_replace('[objedit]', '<?php echo $__data->editItemRecord($section->id, $record->id) ?>', $tpl);
@@ -1795,7 +1813,4 @@ class seData
 
         return $tpl;
     }
-
 }
-
-?>

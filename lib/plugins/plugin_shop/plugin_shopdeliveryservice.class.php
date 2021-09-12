@@ -94,5 +94,3 @@ class EMS_service
         return json_decode($json, true);
     }
 }
-
-?>

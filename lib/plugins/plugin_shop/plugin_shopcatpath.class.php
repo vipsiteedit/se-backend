@@ -1,7 +1,6 @@
 <?php
 
 /**
- * Базовый класс для построения пути по каталогу 
  * @filesource plugin_shop_catpath.class.php
  * @copyright EDGESTILE
  */
@@ -61,4 +60,3 @@ class plugin_ShopCatPath {
     	return $showpath; 
 	}
 }
-?>

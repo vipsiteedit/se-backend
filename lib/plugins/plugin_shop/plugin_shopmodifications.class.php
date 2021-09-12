@@ -1,26 +1,29 @@
 <?php
-class plugin_shopmodifications {
-	private $lang; 
+class plugin_shopmodifications
+{
+	private $lang;
 	private $id_price;
 	private $in_stock_only = false;
 	private $mode = 'selected';
-	
-	public function __construct($id_price,  $in_stock_only = false) {
+
+	public function __construct($id_price,  $in_stock_only = false)
+	{
 		$this->lang = se_getLang();
 		$this->id_price = $id_price;
 		$this->in_stock_only = $in_stock_only;
-		
+
 		if ($mode = plugin_shopsettings::getInstance()->getValue('modification_mode')) {
 			$this->mode = $mode;
 		}
 	}
-	
-	public static function getName($modifications) {
+
+	public static function getName($modifications)
+	{
 		$name = '';
 		if (!empty($modifications)) {
-			if (is_array($modifications)) 
+			if (is_array($modifications))
 				$modifications = join(',', $modifications);
-			
+
 			$shop_modifications = new seTable('shop_modifications', 'sm');
 			$shop_modifications->select('GROUP_CONCAT(CONCAT(sf.name,": ",sfvl.value) SEPARATOR ", ") AS paramsname');
 			$shop_modifications->innerjoin('shop_modifications_feature smf', 'sm.id=smf.id_modification');
@@ -28,17 +31,18 @@ class plugin_shopmodifications {
 			$shop_modifications->innerjoin('shop_feature_value_list sfvl', 'smf.id_value=sfvl.id');
 			$shop_modifications->where('sm.id IN (?)', $modifications);
 			$shop_modifications->fetchOne();
-			
+
 			if ($shop_modifications->isFind())
 				$name = $shop_modifications->paramsname;
 		}
 		return $name;
 	}
-	
-	public static function getArticle($modifications) {
+
+	public static function getArticle($modifications)
+	{
 		$article = '';
 		if (!empty($modifications)) {
-			if (!is_array($modifications)) { 
+			if (!is_array($modifications)) {
 				$modifications = explode(',', $modifications);
 			}
 
@@ -49,23 +53,25 @@ class plugin_shopmodifications {
 			if ($shop_modifications->isFind())
 				$article = $shop_modifications->code;
 		}
-		
+
 		return $article;
 	}
-	
-	public function getFeatureName() {
+
+	public function getFeatureName()
+	{
 		if (!$this->id_price) return;
-		
+
 		$sm = new seTable('shop_modifications', 'sm');
 		$sm->select('sf.name');
 		$sm->innerJoin('shop_modifications_feature smf', 'sm.id = smf.id_modification');
 		$sm->innerJoin('shop_feature sf', 'smf.id_feature = sf.id');
-		$sm->where('sm.id_price = ? ORDER BY sf.sort ASC', $this->id_price); 
+		$sm->where('sm.id_price = ? ORDER BY sf.sort ASC', $this->id_price);
 		$sm->fetchOne();
-		return $sm->name; 
+		return $sm->name;
 	}
-	
-	public function getAllList($in_sql = null) {
+
+	public function getAllList($in_sql = null)
+	{
 		if (!$this->id_price) return;
 		$shop_modifications = new seTable('shop_modifications', 'sm');
 		$shop_modifications->select('
@@ -88,65 +94,66 @@ class plugin_shopmodifications {
 		$shop_modifications->innerJoin('shop_modifications_group smg', 'sm.id_mod_group = smg.id');
 		$shop_modifications->where('sm.id_price = ?', $this->id_price);
 		if (!empty($in_sql))
-			$shop_modifications->andwhere('sm.id IN (?)', $in_sql);   
+			$shop_modifications->andwhere('sm.id IN (?)', $in_sql);
 		if ($this->in_stock_only)
-			$shop_modifications->andWhere('(sm.count <> 0 OR sm.count IS NULL)');  
+			$shop_modifications->andWhere('(sm.count <> 0 OR sm.count IS NULL)');
 		$shop_modifications->orderBy('smg.sort', 0);
 		$shop_modifications->addOrderBy('sf.sort', 0);
 		$shop_modifications->addOrderBy('sm.sort', 0);
 		$shop_modifications->addOrderBy('sfvl.sort', 0);
 		$shop_modifications->addOrderBy('sfvl.value', 0);
-		return $shop_modifications->getList();  
+		return $shop_modifications->getList();
 	}
 
-	public function getModifications($selected_only = false) {
+	public function getModifications($selected_only = false)
+	{
 		$images_dir = '/images/' . $this->lang . '/shopfeature/';
 		$params = array();
 		$modifications_list = $this->getAllList();
-		if (!empty($modifications_list)) { 
+		if (!empty($modifications_list)) {
 			$selected = array();
 			$get_selected = isRequest('m') ? explode(',', getRequest('m', 3)) : '';
-			
+
 			if ($this->mode == 'placeholder' && !empty($_SESSION['modifications'][$this->id_price])) {
 				unset($_SESSION['modifications'][$this->id_price]);
 			}
-			
-			foreach($modifications_list as $val) {
+
+			foreach ($modifications_list as $val) {
 				$id_group = $val['id_mod_group'];
 				$id_feature = $val['id_feature'];
 				$id_modification = $val['id'];
 				$id_value = $val['id_value'];
-				
+
 				if (!($this->mode == 'placeholder' && empty($_SESSION['modifications'][$this->id_price]))) {
 
 					if (!isset($selected[$id_group])) {
-						$selected[$id_group] = array('first' => $id_modification, 'selected' => null, 'default' => null); 
+						$selected[$id_group] = array('first' => $id_modification, 'selected' => null, 'default' => null);
 					}
 					if (!$selected[$id_group]['default'] && $val['default'])
 						$selected[$id_group]['default'] = $id_modification;
-					
+
 					if (!$selected[$id_group]['selected'] && isset($_SESSION['modifications'][$this->id_price][$id_group])) {
 						if ($id_modification == $_SESSION['modifications'][$this->id_price][$id_group])
 							$selected[$id_group]['selected'] = $id_modification;
-					}       
+					}
 					if (!empty($get_selected) && in_array($id_modification, $get_selected)) {
 						$selected[$id_group]['selected'] = $id_modification;
 					}
 				}
 				if (!$selected_only) {
 					if (!isset($params[$id_group])) {
-						$params[$id_group] = array('name' => 'gr_' . $id_group, 'params' => array());      
+						$params[$id_group] = array('name' => 'gr_' . $id_group, 'params' => array());
 					}
-					
+
 					if (!isset($params[$id_group]['params'][$id_feature])) {
 						$params[$id_group]['params'][$id_feature] = array(
 							'name' => $val['name'],
 							'type' => $val['type'],
 							'description' => $val['description'],
 							'values' => array()
-						);                
-					} 
-					
+						);
+					}
+
 					if (($this->mode == 'placeholder') && empty($_SESSION['modifications'][$this->id_price]) && !isset($params[$id_group]['params'][$id_feature]['values'][0])) {
 						if (empty($val['placeholder']))
 							$val['placeholder'] = 'Укажите значение';
@@ -155,7 +162,7 @@ class plugin_shopmodifications {
 							'modification' => 0
 						);
 					}
-					
+
 					if (!isset($params[$id_group]['params'][$id_feature]['values'][$id_value])) {
 						$params[$id_group]['params'][$id_feature]['values'][$id_value] = array(
 							'value' => $val['value'],
@@ -163,9 +170,8 @@ class plugin_shopmodifications {
 							'image' => (!empty($val['image']) && file_exists(SE_ROOT . $images_dir . $val['image'])) ? $images_dir . $val['image'] : '',
 							'modification' => array($val['id'])
 						);
-					}
-					elseif (!in_array($id_modification, $params[$id_group]['params'][$id_feature]['values'][$id_value]['modification'])) {
-						$params[$id_group]['params'][$id_feature]['values'][$id_value]['modification'][] = $id_modification;    
+					} elseif (!in_array($id_modification, $params[$id_group]['params'][$id_feature]['values'][$id_value]['modification'])) {
+						$params[$id_group]['params'][$id_feature]['values'][$id_value]['modification'][] = $id_modification;
 					}
 				}
 			}
@@ -180,8 +186,9 @@ class plugin_shopmodifications {
 		}
 		return $params;
 	}
-	
-	public function changeModifications($group, $param, $value) {
+
+	public function changeModifications($group, $param, $value)
+	{
 		$images_dir = '/images/' . $this->lang . '/shopfeature/';
 		if (empty($_SESSION['modifications'][$this->id_price]) && isset($_SESSION['modifications'][$this->id_price])) {
 			unset($_SESSION['modifications'][$this->id_price]); //$_SESSION['modifications']
@@ -194,13 +201,13 @@ class plugin_shopmodifications {
 			$list = $this->getAllList($shop_modifications->getSql());
 			$params = array();
 			$selected = $_SESSION['modifications'][$this->id_price][$group];
-			
+
 			$shop_modifications->select('smf.id_feature, smf.id_value');
 			$shop_modifications->innerjoin('shop_modifications_feature smf', 'sm.id=smf.id_modification');
 			$shop_modifications->where('sm.id = ?', $selected);
 			$selected_list = $shop_modifications->getList();
 			$selected_feature = array();
-			foreach($selected_list as $val) {
+			foreach ($selected_list as $val) {
 				$selected_feature[$val['id_feature']] = $val['id_value'];
 			}
 			$last_m = $new_m = array();
@@ -208,7 +215,7 @@ class plugin_shopmodifications {
 				$id_feature = $val['id_feature'];
 				$id_modification = $val['id'];
 				$id_value = $val['id_value'];
-				
+
 				if (in_array($id_feature, array_keys($selected_feature))) {
 					//if ($selected_feature[$id_feature] == $id_value && !in_array($id_modification, $last_m))
 					//	$last_m[] = $id_modification;
@@ -219,17 +226,17 @@ class plugin_shopmodifications {
 							$last_m[$id_modification] = 1;
 					}
 				}
-				
+
 				if ($param == $id_feature && $value == $id_value) {
 					$new_m[] = $id_modification;
 				}
-					
+
 				if (!isset($params[$id_feature])) {
 					$params[$id_feature] = array(
 						'type' => $val['type'],
 						'selected' => 0,
 						'values' => array()
-					);                
+					);
 				}
 				if (!isset($params[$id_feature]['values'][$id_value])) {
 					$params[$id_feature]['values'][$id_value] = array(
@@ -239,7 +246,7 @@ class plugin_shopmodifications {
 					if (!empty($val['image']) && file_exists(SE_ROOT . $images_dir . $val['image']))
 						$params[$id_feature]['values'][$id_value]['image'] = $images_dir . $val['image'];
 				}
-				
+
 				if (!isset($params[$id_feature]['values'][$id_value]['mod']) || !in_array($id_modification, $params[$id_feature]['values'][$id_value]['mod']))
 					$params[$id_feature]['values'][$id_value]['mod'][] = $id_modification;
 			}
@@ -250,28 +257,28 @@ class plugin_shopmodifications {
 				$selected = array_shift($result);
 			else
 				$selected = array_shift($new_m);
-			
+
 			$available_features1 = null;
 			$available_features2 = null;
 			foreach ($params as $key => $val) {
 				if (!empty($available_features2)) {
 					if ($available_features1 === null)
-						$available_features1 = $available_features2;    
+						$available_features1 = $available_features2;
 					else
 						$available_features1 = array_intersect($available_features1, $available_features2);
 				}
-            
+
 				$available_features2 = null;
 				foreach ($val['values'] as $key2 => $val2) {
 					if (!empty($available_features1)) {
-						$result = array_intersect($available_features1, $val2['mod']); 
+						$result = array_intersect($available_features1, $val2['mod']);
 						if (empty($result)) {
 							unset($params[$key]['values'][$key2]);
-						}      
+						}
 					}
 					if (in_array($selected, $val2['mod'])) {
 						$params[$key]['selected'] = $key2;
-						if (empty($available_features2)){
+						if (empty($available_features2)) {
 							$available_features2 = $val2['mod'];
 						}
 					}
@@ -280,56 +287,59 @@ class plugin_shopmodifications {
 			}
 			$_SESSION['modifications'][$this->id_price][$group] = $selected;
 			return $params;
-		}		
+		}
 	}
-	
-	public function getChangesModification($options = array()) {
+
+	public function getChangesModification($options = array())
+	{
 		$param = getRequest('param', 1);
 		$value = getRequest('value', 1);
 		$group = getRequest('group', 1);
-		
+
 		$response['params'] = $this->changeModifications($group, $param, $value);
-		$selected = !empty($_SESSION['modifications'][$this->id_price]) ? $_SESSION['modifications'][$this->id_price] : '';    
-	
+		$selected = !empty($_SESSION['modifications'][$this->id_price]) ? $_SESSION['modifications'][$this->id_price] : '';
+
 		$plugin_amount = new plugin_shopamount($this->id_price, '', null, 1, $selected);
-	
+
 		$response['count'] = (string)$plugin_amount->getPresenceCount();
 		$response['presence'] = (string)$plugin_amount->showPresenceCount('нет в наличии', 'в наличии');
 		$response['price'] = array(
 			'new' => $plugin_amount->showPrice(true, false),
-			'old' => $plugin_amount->showPrice(false, false) 
+			'old' => $plugin_amount->showPrice(false, false)
 		);
-		
+
 
 		if (!empty($options['images']))
 			$response['images'] = $this->getImages($selected);
 		$descr = $this->getdescription($selected);
-        
-        $response['description'] = $descr['description'];
-        $response['article'] = $descr['article'];
-		
+
+		$response['description'] = $descr['description'];
+		$response['article'] = $descr['article'];
+
 		return $response;
 	}
-	
-	public function getImages($modifications) {
+
+	public function getImages($modifications)
+	{
 		$images = array();
 		if (!empty($modifications)) {
-			if (is_array($modifications)) 
+			if (is_array($modifications))
 				$modifications = join(',', $modifications);
 			$shop_img = new seTable('shop_img', 'si');
 			$shop_img->select('si.id');
-			$shop_img->innerJoin('shop_modifications_img smi', 'smi.id_img=si.id'); 
+			$shop_img->innerJoin('shop_modifications_img smi', 'smi.id_img=si.id');
 			$shop_img->where('si.id_price=?', $this->id_price);
 			$shop_img->andwhere('smi.id_modification IN (?)', $modifications);
-			$images = $shop_img->getList();  
+			$images = $shop_img->getList();
 		}
 		return $images;
 	}
-    
-    public static function getDescription($modifications) {
+
+	public static function getDescription($modifications)
+	{
 		$description = $article = '';
 		if (!empty($modifications)) {
-			if (!is_array($modifications)) { 
+			if (!is_array($modifications)) {
 				$modifications = explode(',', $modifications);
 			}
 
@@ -339,11 +349,9 @@ class plugin_shopmodifications {
 			$shop_modifications->fetchOne();
 			if ($shop_modifications->isFind())
 				$description = $shop_modifications->description;
-				$article = $shop_modifications->code;
+			$article = $shop_modifications->code;
 		}
-		
-		return array('description'=>$description, 'article'=>$article);
+
+		return array('description' => $description, 'article' => $article);
 	}
-    
-    
 }

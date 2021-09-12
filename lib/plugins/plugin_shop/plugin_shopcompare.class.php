@@ -1,20 +1,23 @@
 <?php
 
-class plugin_shopcompare {
-	
+class plugin_shopcompare
+{
+
 	private $compare_list;
 	private $type_compare = 0;
-	
-	public function __construct($type = 0) {
+
+	public function __construct($type = 0)
+	{
 		if (!empty($type)) {
 			$_SESSION['type_compare'] = $this->type_compare = (int)$type;
-		}	
-		$this->compare_list = isset($_SESSION['compare']) ? $_SESSION['compare'] : array();	
-		
+		}
+		$this->compare_list = isset($_SESSION['compare']) ? $_SESSION['compare'] : array();
+
 		$this->checkCompare();
 	}
-	
-	private function checkCompare() {
+
+	private function checkCompare()
+	{
 		$find_type = false;
 		$last_type = (int)$_SESSION['type_compare'];
 		unset($_SESSION['type_compare']);
@@ -33,8 +36,9 @@ class plugin_shopcompare {
 		if (!$find_type)
 			$this->type_compare = $this->getDefaultType();
 	}
-	
-	public function getTypeCompare($id_price) {
+
+	public function getTypeCompare($id_price)
+	{
 		$type = 0;
 		/*
 		if (!empty($id_price)) {
@@ -60,25 +64,25 @@ class plugin_shopcompare {
 		}
 		*/
 		return $type;
-	}            
+	}
 
-	public function inCompare($id_price) {
+	public function inCompare($id_price)
+	{
 		$_SESSION['type_compare'] = $this->type_compare = (int)$this->getTypeCompare($id_price);
 		return isset($_SESSION['compare']) && in_array($id_price, $_SESSION['compare']);
 	}
-	
-	public function changeCompare($id_price, $limit = 0) {
+
+	public function changeCompare($id_price, $limit = 0)
+	{
 		$action = '';
 		if ($this->inCompare($id_price)) {
-            $action = 'remove';
+			$action = 'remove';
 			$this->removeFromCompare($id_price);
-		}
-        else {
+		} else {
 			$all_count = $this->getCountAllCompare();
 			if (($limit > 0 && $limit <= $all_count)) {
 				$action = 'remove';
-			}
-			else {
+			} else {
 				$action = 'add';
 				$this->addToCompare($id_price);
 			}
@@ -86,100 +90,104 @@ class plugin_shopcompare {
 		return $action;
 	}
 
-	public function addToCompare($id_price) {
+	public function addToCompare($id_price)
+	{
 		$_SESSION['type_compare'] = $this->type_compare = (int)$this->getTypeCompare($id_price);
 		if (!isset($_SESSION['test_compare'][$this->type_compare])) {
-			$_SESSION['test_compare'][$this->type_compare ] = array();
+			$_SESSION['test_compare'][$this->type_compare] = array();
 		}
 		array_unshift($_SESSION['test_compare'][$this->type_compare], $id_price);
-		$_SESSION['compare'][] = $id_price;    
+		$_SESSION['compare'][] = $id_price;
 	}
 
-	public function removeFromCompare($id_price) {
+	public function removeFromCompare($id_price)
+	{
 		$_SESSION['type_compare'] = $this->type_compare = (int)$this->getTypeCompare($id_price);
 		if (isset($_SESSION['compare'])) {
-			unset($_SESSION['compare'][array_search($id_price, $_SESSION['compare'])]); 
-			unset($_SESSION['test_compare'][$this->type_compare][array_search($id_price, $_SESSION['test_compare'][$this->type_compare])]);			
+			unset($_SESSION['compare'][array_search($id_price, $_SESSION['compare'])]);
+			unset($_SESSION['test_compare'][$this->type_compare][array_search($id_price, $_SESSION['test_compare'][$this->type_compare])]);
 		}
 	}
 
-	public function clearCompare() {
+	public function clearCompare()
+	{
 		unset($_SESSION['compare']);
 		unset($_SESSION['test_compare']);
 	}
 
-	public function getCountAllCompare() {
+	public function getCountAllCompare()
+	{
 		$count = isset($_SESSION['compare']) ? count($_SESSION['compare']) : 0;
 		return $count;
 	}
-	
-	public function getCountCompare() {
+
+	public function getCountCompare()
+	{
 		$count = isset($_SESSION['compare'][$this->type_compare]) ? count($_SESSION['compare'][$this->type_compare]) : 0;
 		return $count;
 	}
-	
-	public function getTypesCompare($name_catalog = 'Каталог') {
+
+	public function getTypesCompare($name_catalog = 'Каталог')
+	{
 		$list = array();
-		if (!empty($_SESSION['test_compare']) && count($_SESSION['test_compare'] > 0)) {
-			foreach($_SESSION['test_compare'] as $key => $val) {
+		if (!empty($_SESSION['test_compare']) && count($_SESSION['test_compare']) > 0) {
+			foreach ($_SESSION['test_compare'] as $key => $val) {
 				if (empty($val))
 					continue;
 				if (!empty($key)) {
 					$shop_group = new seTable('shop_group');
 					$shop_group->find($key);
 					$list[$key]['name'] = $shop_group->name;
-				}
-				else
+				} else
 					$list[$key]['name'] = $name_catalog;
 				$list[$key]['count'] = count($val);
 				$list[$key]['selected'] = $key == $this->type_compare;
 			}
 		}
-		return $list; 	
-		//return array('12' => array('name' => 'Телефоны', 'count' => '2'), '13' => array('name' => 'Телевизор', 'count' => '5')); 
+		return $list;
 	}
-	
-	public function getDefaultType() {
+
+	public function getDefaultType()
+	{
 		if (isset($_SESSION['type_compare']))
 			return $_SESSION['type_compare'];
-		elseif (!empty($_SESSION['test_compare'])) { 
+		elseif (!empty($_SESSION['test_compare'])) {
 			return array_pop(array_keys($_SESSION['test_compare']));
 		}
 	}
-	
-	public function getGoodsCompare() {
+
+	public function getGoodsCompare()
+	{
 		return $_SESSION['test_compare'][$this->type_compare];
 	}
-	
-	function getCompareList($fields = array(), $modifications = false) {
-		// print_r($_SESSION);
-		//print_r($_SESSION['test_compare']);
-		
+
+	function getCompareList($fields = array(), $modifications = false)
+	{
 		$id_products = join(', ', $this->getGoodsCompare());
 		if (empty($id_products))
 			return;
 		$plugin_shopgoods = new plugin_shopgoods();
-		
+
 		$option = array(
-			'limit'=>30,
-			'sort'=>'',
-			'is_under_group'=>1
+			'limit' => 30,
+			'sort' => '',
+			'is_under_group' => 1
 		);
 
-		list($pricelist, ) = $plugin_shopgoods->getGoods($option, $id_products);
-		
+		list($pricelist,) = $plugin_shopgoods->getGoods($option, $id_products);
+
 		$empty_list = array();
-		foreach ($_SESSION['test_compare'][$this->type_compare] as $line){
+		foreach ($_SESSION['test_compare'][$this->type_compare] as $line) {
 			$head_comare[$line] = array();
 			$empty_list[$line] = null;
 		}
-		
+
 		if (!empty($pricelist)) {
-			foreach($pricelist as $val) {
+			foreach ($pricelist as $val) {
 				$head_comare[$val['id']] = $val;;
 			}
 		}
-		
+
 		$features = new seTable('shop_modifications_feature', 'smf');
 		$features->select("DISTINCT 
 			smf.id_price,
@@ -208,34 +216,32 @@ class plugin_shopcompare {
 		$copmpares = array();
 		$allcount = count($empty_list);
 
-		foreach($feature_list as $line) {
-			if (!isset($copmpares['g_' . $line['gid']])){
+		foreach ($feature_list as $line) {
+			if (!isset($copmpares['g_' . $line['gid']])) {
 				$copmpares['g_' . $line['gid']] = array(
 					'name' => $line['gname'],
 					'group' => true,
 					'count' => $allcount + 1,
 					'diff' => 'f-diff',
-				);   
+				);
 			}
 			if (!isset($copmpares[$line['fid']])) {
 				$copmpares['g_' . $line['gid']]['diff'] = 'f-diff';
 				$copmpares[$line['fid']] = array(
-					'name' => $line['fname'], 
+					'name' => $line['fname'],
 					'type' => $line['type'],
-					'diff' => 'f-diff', 
-					'values' => $empty_list, 
+					'diff' => 'f-diff',
+					'values' => $empty_list,
 					'count' => 0
 				);
-			} 
+			}
 			$copmpares[$line['fid']]['count']++;
-			$copmpares[$line['fid']]['values'][$line['id_price']] = $line['value']; 
+			$copmpares[$line['fid']]['values'][$line['id_price']] = $line['value'];
 			if ($copmpares[$line['fid']]['count'] == $allcount && count(array_unique($copmpares[$line['fid']]['values'])) == 1) {
 				$copmpares[$line['fid']]['diff'] = 'f-same';
 				$copmpares['g_' . $line['gid']]['diff'] = 'f-same';
 			}
 		}
-		//print_r($copmpares);
-		return array($head_comare, $copmpares);    
+		return array($head_comare, $copmpares);
 	}
-	
 }

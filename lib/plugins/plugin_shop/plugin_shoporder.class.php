@@ -11,9 +11,9 @@ class plugin_shopOrder
 	private $indelivery = array();
 	private $basecurr = 'RUR';
 	private $email;
-	private $param = array('Код', 'Картинка','Наименование', 'Цена', 'Скидка', 'Кол-во', 'Сумма');
+	private $param = array('Код', 'Картинка', 'Наименование', 'Цена', 'Скидка', 'Кол-во', 'Сумма');
 	private $user_id;
-	private $company_id;	
+	private $company_id;
 	private $username = '';
 	private $userdiscount = 0;
 	private $useremail = '';
@@ -27,23 +27,23 @@ class plugin_shopOrder
 	private $show_summ_delivery = '';
 	private $show_summ_all = '';
 	private $status = 'N';
-  
+
 	public $commentary = '';
 	public $inpayee = false;
 	public $date_credit = null;
 	public $payment_type = '';
 
 	/**
-	* @param integer $user_id   ID пользователя
-	* @param array  $incart	 Массив товаров  array('price_id'=>1,'count'=>1,'name'=>'','action'=>'1000011122:version=6')
-	**/
+	 * @param integer $user_id   ID пользователя
+	 * @param array  $incart	 Массив товаров  array('price_id'=>1,'count'=>1,'name'=>'','action'=>'1000011122:version=6')
+	 **/
 	function __construct($user_id, $incart = array(), $name_user = '')
 	{
 		setlocale(LC_NUMERIC, 'C');
 		$this->incart = $incart;
 		$this->user_id = $user_id;
 		$this->basecurr = se_baseCurrency();
-		
+
 		if ($this->user_id) {
 			$user = new seUser();
 			$user->find($user_id);
@@ -61,69 +61,69 @@ class plugin_shopOrder
 				$this->phone = $company->phone;
 				$this->company_id = $user->id_company;
 			}
-		} 
-		else {
+		} else {
 			$this->userdiscount = 0;
 			$this->username = $name_user;
 		}
 	}
 
-	public function getItemList() {
+	public function getItemList()
+	{
 		$data = array();
 		foreach ($this->incart as $item) {
 			if (isset($item['discount']) && ($item['curr'] != $this->basecurr)) {
 				$item['discount'] = se_MoneyConvert($item['discount'], $item['curr'], $this->basecurr);
 			}
-			
+
 			if (isset($item['price']) && ($item['curr'] != $this->basecurr)) {
 				$item['price'] = se_MoneyConvert($item['price'], $item['curr'], $this->basecurr);
 			}
-				
-			if (!empty($item['paramsname'])){
-				$item['name'] .= ' ('.$item['paramsname'].')';
-			} 
+
+			if (!empty($item['paramsname'])) {
+				$item['name'] .= ' (' . $item['paramsname'] . ')';
+			}
 
 			if (!empty($item['action'])) {
 				// Если заказ определяется по типу
-				list($action_serial, ) = explode(":", $item['action']);
+				list($action_serial,) = explode(":", $item['action']);
 				$item['name'] .= ' :: ' . $action_serial;
-			} 
-			else $item['action'] = '';
-			
+			} else $item['action'] = '';
+
 			if (!empty($item['article']))
 				$item['code'] = $item['article'];
-			
+
 			//echo $item['code'];
 			//exit;
-			
+
 			$data[] = array(
-				'price_id' => $item['price_id'], 
-				'code' => $item['code'], 
-				'discount' => $item['discount'], 
+				'price_id' => $item['price_id'],
+				'code' => $item['code'],
+				'discount' => $item['discount'],
 				'count' => $item['count'],
-				'action' => $item['action'], 
-				'name' => $item['name'], 
+				'action' => $item['action'],
+				'name' => $item['name'],
 				'price' => $item['price'],
-				'commentary'=>$item['commentary'], 
+				'commentary' => $item['commentary'],
 				'params' => $item['params']
 			);
 		}
-	
+
 		return $data;
 	}
 
 
 	/**
-	* Формирование заказа
-	* @param array  $indelivery Параметры доставки ([id], [phone],[calltime],[address],[postindex])
-	* @param string $email	  Email пользователя, куда отправлять заказ
-	* @param array  $param	  Список заголовков  array('Код', 'Наименование','Цена','Скидка','Кол-во','Сумма')
-	*/
-	public function execute($indelivery = array(), $email = '', $param = array(), $discount = 0, $coupon = null) {
+	 * Формирование заказа
+	 * @param array  $indelivery Параметры доставки ([id], [phone],[calltime],[address],[postindex])
+	 * @param string $email	  Email пользователя, куда отправлять заказ
+	 * @param array  $param	  Список заголовков  array('Код', 'Наименование','Цена','Скидка','Кол-во','Сумма')
+	 */
+	public function execute($indelivery = array(), $email = '', $param = array(), $discount = 0, $coupon = null)
+	{
 		// Формирование данных для отображения заказа
-		if (!empty($email)) 
+		if (!empty($email))
 			$this->useremail = $email;
-		
+
 		if (!empty($indelivery['phone']) && empty($this->phone)) {
 			$person = new seTable('person');
 			$person->select('id, phone');
@@ -131,38 +131,36 @@ class plugin_shopOrder
 			$person->phone = $indelivery['phone'];
 			$person->save();
 		}
-	
-	
+
+
 		if (!empty($param))
 			$this->param = $param;
 
 		$this->indelivery = $indelivery;
-		
+
 		if (!empty($this->incart)) {
 			$this->summ_discount = 0;
 			$this->summ_delivery = 0;
 			$this->summ_order = 0;
 			$this->goodslist = '';
-	  
+
 			$itemlist = $this->getItemList();
-			
+
 			if (empty($this->indelivery['summ'])) {
 				if (!empty($this->indelivery['id'])) {
 					$delivery = new seTable();
 					$delivery->from('shop_deliverytype', 'dt')->find($this->indelivery['id']);
 					if ($delivery->forone == 'Y') {
 						$delsumm = 0;
-						foreach($itemlist as $item) {
+						foreach ($itemlist as $item) {
 							$delsumm += $delivery->price * $item['count'];
 						}
-					}
-					else
+					} else
 						$delsumm = $delivery->price;
-						
+
 					$this->summ_delivery = se_MoneyConvert($delsumm, $delivery->curr, $this->basecurr);
 				}
-			} 
-			else {
+			} else {
 				$this->summ_delivery = $this->indelivery['summ'];
 			}
 
@@ -173,34 +171,33 @@ class plugin_shopOrder
 				$order->discount = $discount;
 				$order->curr = $this->basecurr;
 				$order->status = $this->status;
-				
+
 				if (!empty($this->commentary))
 					$order->commentary = $this->commentary;
-				
+
 				if ($this->inpayee) {
 					$order->inpayee = 'Y';
 					$order->payment_type = $this->payment_type;
-				}
-				else 
+				} else
 					$order->inpayee = 'N';
-	  
+
 				if (!empty($this->date_credit))
 					$order->date_credit = $this->date_credit;
 
 				$order->delivery_payee = $this->summ_delivery;
-				
+
 				if ($this->indelivery['id'] > 0)
 					$order->delivery_type = $this->indelivery['id'];
-				
+
 				$order->delivery_status = 'N';
-				
-				if (!empty($_SESSION['payment_type_id'])){ 
+
+				if (!empty($_SESSION['payment_type_id'])) {
 					$order->payment_type = $_SESSION['payment_type_id'];
 				}
-				
+
 				$order_id = $order->save();
-				
-				if (!empty($coupon['id']) && $order_id){
+
+				if (!empty($coupon['id']) && $order_id) {
 					$shop_coupon_history = new seTable('shop_coupons_history');
 					$shop_coupon_history->insert();
 					$shop_coupon_history->code_coupon = $_SESSION['code_coupon'];
@@ -208,24 +205,23 @@ class plugin_shopOrder
 					$shop_coupon_history->id_user = $this->user_id;
 					$shop_coupon_history->id_order = $order_id;
 					$shop_coupon_history->discount = $coupon['discount'];
-					$shop_coupon_history->save();	
+					$shop_coupon_history->save();
 				}
 
 				$this->order_id = $order_id;
 				if ($order_id > 0) {
-					
+
 					if (!seUserGroup()) {
 						$_SESSION['orders'][] = $order_id;
 					}
-					
+
 					if (!empty($this->indelivery)) {
 						$delivery = new seTable('shop_delivery', 'sd');
 						if (!file_exists(SE_ROOT . '/system/logs/shop_delivery_id_sub.upd')) {
 							if (!$delivery->isFindField('id_subdelivery')) {
 								$result = se_db_query('ALTER TABLE shop_delivery ADD COLUMN id_subdelivery INT(10) UNSIGNED DEFAULT NULL AFTER id_order');
 								se_db_query('ALTER TABLE shop_delivery ADD CONSTRAINT FK_shop_delivery_shop_deliverytype_id FOREIGN KEY (id_subdelivery) REFERENCES shop_deliverytype(id) ON DELETE RESTRICT ON UPDATE RESTRICT');
-							}
-							else
+							} else
 								$result = true;
 							if ($result)
 								file_put_contents(SE_ROOT . '/system/logs/shop_delivery_id_sub.upd', date('Y-m-d H:i:s'));
@@ -233,28 +229,28 @@ class plugin_shopOrder
 
 						$delivery->id_order = $order_id;
 						$delivery->telnumber = $this->indelivery['phone'];
-						
+
 						if (!empty($_SESSION['delivery_sub'][$this->indelivery['id']])) {
 							$delivery->id_subdelivery = $_SESSION['delivery_sub'][$this->indelivery['id']];
 						}
-						
+
 						if (!empty($_SESSION['user_region']['id_city'])) {
 							$delivery->id_city = $_SESSION['user_region']['id_city'];
-						} 
-						
+						}
+
 						$delivery->email = $this->useremail;
 						$delivery->calltime = $this->indelivery['calltime'];
 						$delivery->address = $this->indelivery['address'];
 						$delivery->postindex = $this->indelivery['postindex'];
 						$delivery->save();
 					}
-		  
+
 					// позиции товаров
 					$goods = new seTable('shop_tovarorder');
 					foreach ($itemlist as $item) { // Добавляем позиции товаров в заказ
-						
+
 						$item['count'] = $this->setCount($item['price_id'], $item['count'], $item['params']);
-						
+
 						$goods->insert();
 						$goods->id_order = $order_id;
 						$goods->id_price = $item['price_id'];
@@ -272,16 +268,14 @@ class plugin_shopOrder
 						$goods->save();
 						$this->mail_item($item);
 					}
-			
+
 					$this->setShopAccount($this->order_id);
 					$this->setShopContract($this->order_id);
-				} 
-				else {
+				} else {
 					return 0;
 				}
-			} 
-			else {
-				$this->order_id = time() - strtotime('2012-01-01');//date('ymdHis');
+			} else {
+				$this->order_id = time() - strtotime('2012-01-01'); //date('ymdHis');
 				foreach ($itemlist as $item) { // Добавляем позиции товаров в заказ
 					$prices = new seShopPrice();
 					$prices->select('presence_count');
@@ -308,12 +302,13 @@ class plugin_shopOrder
 			$mails = new plugin_shopmail($this->order_id, 0, 'html');
 			$mails->sendmail('orderuser', $this->useremail);
 			$mails->sendmail('orderadm', '');
-			
+
 			return $order_id;
 		}
 	}
-	
-	public function getUserOrders($limit) {
+
+	public function getUserOrders($limit)
+	{
 		if (empty($this->user_id)) return;
 		if (!$limit)
 			$limit = 30;
@@ -329,11 +324,12 @@ class plugin_shopOrder
 		}
 		$orders->orderby('idorder', 1);
 		$orders->groupby('so.id');
-		$MANYPAGE = $orders->pageNavigator($limit);		
+		$MANYPAGE = $orders->pageNavigator($limit);
 		return array($orders->getlist(), $MANYPAGE);
 	}
-	
-	public function returnGood($good) {
+
+	public function returnGood($good)
+	{
 		if (!empty($good['count'])) {
 			if (!empty($good['modifications'])) {
 				$modifications = new seTable('shop_modifications');
@@ -342,20 +338,19 @@ class plugin_shopOrder
 				$modifications->andWhere('id_price=?', $good['id_price']);
 				$list = $modifications->getList();
 				if (!empty($list)) {
-					foreach($list as $val) {
+					foreach ($list as $val) {
 						if ($val['count'] === '0' || $val['count'] > 0) {
-							$modifications->update('count', 'count+'.(int)$good['count']);
+							$modifications->update('count', 'count+' . (int)$good['count']);
 							$modifications->where('id=?', $val['id']);
 							$modifications->save();
 						}
 					}
 				}
-			}
-			else {
+			} else {
 				$shop_price = new seShopPrice();
 				$shop_price->find($good['id_price']);
 				if ($shop_price->presence_count === '0' || $shop_price->presence_count > 0) {
-					$shop_price->update('presence_count', 'presence_count+'.(int)$good['count']);
+					$shop_price->update('presence_count', 'presence_count+' . (int)$good['count']);
 					$shop_price->where('id=?', $good['id_price']);
 					$shop_price->save();
 				}
@@ -363,8 +358,9 @@ class plugin_shopOrder
 		}
 	}
 
-	public function getGoods($order_id) {
-		if(empty($order_id)) return;	
+	public function getGoods($order_id)
+	{
+		if (empty($order_id)) return;
 		$tord = new seTable('shop_tovarorder', 'sto');
 		$tord->select('sto.id_order, sto.id_price, sto.count, sto.modifications');
 		$tord->innerjoin('shop_order so', 'sto.id_order=so.id');
@@ -372,14 +368,15 @@ class plugin_shopOrder
 		$res = $tord->getList();
 		return $res;
 	}
-	
-	public function deleteOrder($order_id) {
+
+	public function deleteOrder($order_id)
+	{
 		if (empty($order_id) || empty($this->user_id)) return;
-		
+
 		if (!seUserGroup() && (empty($_SESSION['orders']) || !in_array($order_id, $_SESSION['orders']))) {
 			return;
 		}
-		
+
 		$shop_order = new seTable('shop_order');
 		$shop_order->update('is_delete', "'Y'");
 		$shop_order->where('id=?', $order_id);
@@ -388,18 +385,20 @@ class plugin_shopOrder
 		if ($shop_order->save()) {
 			$goods = $this->getGoods($order_id);
 			if (!empty($goods)) {
-				foreach($goods as $good) {
+				foreach ($goods as $good) {
 					$this->returnGood($good);
 				}
 			}
 		}
 	}
-	
-	public function setStatus($status = 'N') {
+
+	public function setStatus($status = 'N')
+	{
 		$this->status = $status;
 	}
-	
-	public function setCount($price_id, $count, $params) {
+
+	public function setCount($price_id, $count, $params)
+	{
 		if (empty($params)) {
 			$prices = new seShopPrice();
 			$prices->select('presence_count');
@@ -408,50 +407,50 @@ class plugin_shopOrder
 				if ($count >= $prices->presence_count) {
 					$count = $prices->presence_count;
 				}
-				$prices->update('presence_count', 'presence_count-'.$count);
+				$prices->update('presence_count', 'presence_count-' . $count);
 				$prices->where('id=?', $price_id);
 				$prices->save();
 			}
-		}
-		else {
+		} else {
 			$modifications = new seTable('shop_modifications');
 			$modifications->select('id, count');
 			$modifications->where('id IN (?)', $params);
 			$list = $modifications->getList();
 			if (!empty($list)) {
-				foreach($list as $val) {
+				foreach ($list as $val) {
 					if ($val['count'] > 0) {
 						if ($count >= $val['count'])
 							$count = $val['count'];
-						$modifications->update('count', 'count-'.$count);
+						$modifications->update('count', 'count-' . $count);
 						$modifications->where('id=?', $val['id']);
 						$modifications->save();
 					}
 				}
 			}
 		}
-		
+
 		return $count;
 	}
 
 	// Подготовка данных для отправки письма (строка заказа в виде html и подсчет общей суммы)
-	private function mail_item($item) {
-		if ($item['price_id']){
+	private function mail_item($item)
+	{
+		if ($item['price_id']) {
 			$shop_img = new seTable('shop_img');
 			$shop_img->select('picture');
 			$shop_img->where('id_price=?', $item['price_id']);
 			$shop_img->orderBy('`default`', 1);
 			$shop_img->addorderBy('sort');
 			$shop_img->fetchone();
-			$imgurl = '/images/'.se_getLang().'/shopprice/'.$shop_img->picture;
-			$item['img'] = '<a href="http://'.$_SERVER['HTTP_HOST'].$imgurl.'" target="_blank"><img src="http://'.$_SERVER['HTTP_HOST'].$imgurl.'" width="100" border=0></a>';
+			$imgurl = '/images/' . se_getLang() . '/shopprice/' . $shop_img->picture;
+			$item['img'] = '<a href="http://' . $_SERVER['HTTP_HOST'] . $imgurl . '" target="_blank"><img src="http://' . $_SERVER['HTTP_HOST'] . $imgurl . '" width="100" border=0></a>';
 		} else {
-		   $item['img'] = '';
+			$item['img'] = '';
 		}
 		$summ_price = ($item['price'] - $item['discount']) * $item['count'];
-		$this->goodslist .= 
+		$this->goodslist .=
 			'<tr vAlign=middle>
-			<td>'.(($item['img']) ? $item['img'] . '&nbsp;' : '').'</td>
+			<td>' . (($item['img']) ? $item['img'] . '&nbsp;' : '') . '</td>
 			<td width=50>' . $item['code'] . '&nbsp;</td>
 			<td>' . $item['name'] . '&nbsp;</td>
 			<td>' . se_formatNumber($item['price']) . '&nbsp;</td>
@@ -463,7 +462,8 @@ class plugin_shopOrder
 		$this->summ_order += $item['price'] * $item['count'];
 	}
 
-	private function setShopAccount($order_id) {
+	private function setShopAccount($order_id)
+	{
 		$table = new seShopAccount();
 		$max = $table->maxAccount();
 		$table->insert();
@@ -473,7 +473,8 @@ class plugin_shopOrder
 		$table->save();
 	}
 
-	private function setShopContract($order_id) {
+	private function setShopContract($order_id)
+	{
 		$table = new seShopContract();
 		$max = $table->maxNumber();
 		$table->insert();
@@ -484,7 +485,8 @@ class plugin_shopOrder
 		$table->save();
 	}
 
-	private function mailtemplate() {
+	private function mailtemplate()
+	{
 		// Создание шаблона письма
 		if (!empty($this->indelivery)) {
 			$mail['ORDER.TELNUMBER'] = $this->indelivery['phone'];
@@ -518,7 +520,7 @@ class plugin_shopOrder
 		$mail['SHOP_ORDER_DEVILERY'] = $this->show_summ_delivery;
 		$mail['SHOP_ORDER_TOTAL'] = $this->show_summ_all;
 		$mail['SHOP_ORDER_DISCOUNT'] = $this->show_summ_discount;
-		
+
 		return $mail;
 	}
 }

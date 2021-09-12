@@ -2,18 +2,20 @@
 
 include_once __DIR__ . '/yandex_market/AYandexMarket.php';
 
-class yandex_market_loader {
+class yandex_market_loader
+{
 
-    public function __construct($filename = '', $action = 'compare') {
+    public function __construct($filename = '', $action = 'compare')
+    {
         switch ($action) {
             case 'insert':
                 include_once __DIR__ . '/yandex_market/InsertYM.php';
                 $this->ym = new InsertYM();
                 break;
-            case 'update':
-                include_once __DIR__ . '/yandex_market/UpdateYM.php';
-                $this->ym = new UpdateYM();
-                break;
+            // case 'update':
+            //     include_once __DIR__ . '/yandex_market/UpdateYM.php';
+            //     $this->ym = new UpdateYM();
+            //     break;
             case 'compare':
             default:
                 include_once __DIR__ . '/yandex_market/CompareYM.php';
@@ -24,7 +26,8 @@ class yandex_market_loader {
         $this->loadFromMarket($filename);
     }
 
-    public function updateDB() {
+    public function updateDB()
+    {
         //для параметров поле is_market
         //для товаров поле market_category
         //параметры интеграции exportModifications = 0, exportFeatures = 0, enabledVendorModel = 0, paramIdForModel = '', paramIdForTypePrefix = ''
@@ -104,7 +107,8 @@ class yandex_market_loader {
         }
     }
 
-    private function loadFromMarket($filename) {
+    private function loadFromMarket($filename)
+    {
         if (!SE_DB_ENABLE) return;
 
         if (file_exists($filename))
@@ -130,7 +134,8 @@ class yandex_market_loader {
     }
 
 
-    public function getVendorModel($id_product, $id_model, $id_type_prefix, $features = array()) {
+    public function getVendorModel($id_product, $id_model, $id_type_prefix, $features = array())
+    {
         $model = $type_prefix = '';
         if (!empty($features)) {
             foreach ($features as $val) {
@@ -168,7 +173,8 @@ class yandex_market_loader {
     }
 
 
-    private function getDeliveries() {
+    private function getDeliveries()
+    {
         $delivery = new seTable('shop_deliverygroup', 'sg');
         $delivery->select('sg.id_group, sd.price, sd.time');
         $delivery->innerjoin('shop_deliverytype sd', 'sd.id=sg.id_type');
@@ -180,7 +186,8 @@ class yandex_market_loader {
         return $list;
     }
 
-    private function getFeatureParams() {
+    private function getFeatureParams()
+    {
         $params = array();
         $shop_feature = new seTable('shop_feature');
         $shop_feature->select('id, name, type, measure');
@@ -195,7 +202,8 @@ class yandex_market_loader {
         return $params;
     }
 
-    private function getProductFeatures($id_product) {
+    private function getProductFeatures($id_product)
+    {
         if (empty($id_product)) return;
 
         $shop_feature = new seTable('shop_feature', 'sf');
@@ -219,7 +227,8 @@ class yandex_market_loader {
         return $list;
     }
 
-    private function recursiveModifications($modifications = array()) {
+    private function recursiveModifications($modifications = array())
+    {
         $result = array();
         if (!empty($modifications)) {
             $first = array_shift($modifications);
@@ -244,7 +253,8 @@ class yandex_market_loader {
         return $result;
     }
 
-    private function getProductModifications($id_price, $in_stock = true) {
+    private function getProductModifications($id_price, $in_stock = true)
+    {
 
         $shop_modifications = new seTable('shop_modifications', 'sm');
         $shop_modifications->select('sm.id, sm.id_mod_group as gid, (SELECT sort FROM shop_modifications_group WHERE sm.id_mod_group = id) AS gsort, GROUP_CONCAT(sf.id , "#!#", sf.name, "#!#", sfvl.value, "#!#", sfvl.id SEPARATOR "~!~") AS feature');
@@ -284,7 +294,6 @@ class yandex_market_loader {
                         $modifications[$gid][$mid]['features'][$fid] = $fvalue;
                         //$modifications[$gid][$mid]['name'][] = $fname . ': ' . $fvalue;
                     }
-
                 }
             }
         }
@@ -294,7 +303,8 @@ class yandex_market_loader {
         return $modifications;
     }
 
-    private function shoppage($folder) {
+    private function shoppage($folder)
+    {
         //  check business
         if (!file_exists('system/business')) {
             return false;
@@ -313,15 +323,18 @@ class yandex_market_loader {
         return false;
     }
 
-    private function convert_curr($name) {
+    private function convert_curr($name)
+    {
         return str_replace(array('KZT', 'BYR', 'RUB', 'UAH'), array('KAT', 'BER', 'RUR', 'UKH'), $name);
     }
 
-    private function getBool($int) {
+    private function getBool($int)
+    {
         return ($int) ? 'true' : 'false';
     }
 
-    private function replace($text) {
+    private function replace($text)
+    {
         $search = array('&', '"', '>', '<', "'");
         $replace = array('&amp;', '&quot;', '&gt;', '&lt;', '&apos;');
         $text = str_replace($search, $replace, $text);

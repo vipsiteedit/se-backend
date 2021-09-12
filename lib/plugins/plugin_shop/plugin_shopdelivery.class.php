@@ -14,88 +14,88 @@ class plugin_shopdelivery
     private $not_delivery;
     private $geo_data = array();
     private $params = array();
-	
-	private $services = array(
-		'ems' => array(
-			'code' => 'ems',
-			'name' => 'EMS калькулятор',
-			'description' => '',
-		),
-		'post' => array(
-			'code' => 'post',
-			'name' => 'Почта России',
-			'description' => '',
-		),
-		'sdek' => array(
-			'code' => 'sdek',
-			'name' => 'СДЭК',
-			'description' => '',
-		),
-	);
-	
-	private $service_settings = array(
-		'sdek' => array(
-			'from_city' => array(
-				'name' => 'Город отправителя',
-				'description' => '',
-				'code' => 'from_city',
-				'type' => 'city',
-				'value' => null,
-			),
-			'type_delivery' => array(
-				'name' => 'Тип доставки',
-				'description' => 'Укажите необходимый тип отправления',
-				'code' => 'type_delivery',
-				'type' => 'list',
-				'values' => array(
-					'1' => 'Склад-Склад',
-					'2' => 'Склад-Дверь',
-					'3' => 'Дверь-Склад',
-					'4' => 'Дверь-Дверь',
-				),
-				'value' => '1',
-			),
-			'login' => array(
-				'name' => 'Логин',
-				'description' => '',
-				'code' => 'login',
-				'type' => 'text',
-				'value' => null,
-			),
-			'password' => array(
-				'name' => 'Пароль',
-				'description' => '',
-				'code' => 'password',
-				'type' => 'password',
-				'value' => null,
-			),
-		),
-		'post' => array(
-			'from_index' => array(
-				'name' => 'Почтовый индекс отправителя',
-				'description' => '',
-				'code' => 'from_index',
-				'type' => 'text',
-				'value' => '101000',
-			),
-		),
-		'ems' => array(
-			'from_city' => array(
-				'name' => 'Город отправителя',
-				'description' => '',
-				'code' => 'from_city',
-				'type' => 'city',
-				'value' => null,
-			),
-			'declared_value' => array(
-				'name' => 'Объявленная ценность послыки',
-				'description' => '',
-				'code' => 'declared_value',
-				'type' => 'bool',
-				'value' => 0,
-			),
-		),
-	);
+
+    private $services = array(
+        'ems' => array(
+            'code' => 'ems',
+            'name' => 'EMS калькулятор',
+            'description' => '',
+        ),
+        'post' => array(
+            'code' => 'post',
+            'name' => 'Почта России',
+            'description' => '',
+        ),
+        'sdek' => array(
+            'code' => 'sdek',
+            'name' => 'СДЭК',
+            'description' => '',
+        ),
+    );
+
+    private $service_settings = array(
+        'sdek' => array(
+            'from_city' => array(
+                'name' => 'Город отправителя',
+                'description' => '',
+                'code' => 'from_city',
+                'type' => 'city',
+                'value' => null,
+            ),
+            'type_delivery' => array(
+                'name' => 'Тип доставки',
+                'description' => 'Укажите необходимый тип отправления',
+                'code' => 'type_delivery',
+                'type' => 'list',
+                'values' => array(
+                    '1' => 'Склад-Склад',
+                    '2' => 'Склад-Дверь',
+                    '3' => 'Дверь-Склад',
+                    '4' => 'Дверь-Дверь',
+                ),
+                'value' => '1',
+            ),
+            'login' => array(
+                'name' => 'Логин',
+                'description' => '',
+                'code' => 'login',
+                'type' => 'text',
+                'value' => null,
+            ),
+            'password' => array(
+                'name' => 'Пароль',
+                'description' => '',
+                'code' => 'password',
+                'type' => 'password',
+                'value' => null,
+            ),
+        ),
+        'post' => array(
+            'from_index' => array(
+                'name' => 'Почтовый индекс отправителя',
+                'description' => '',
+                'code' => 'from_index',
+                'type' => 'text',
+                'value' => '101000',
+            ),
+        ),
+        'ems' => array(
+            'from_city' => array(
+                'name' => 'Город отправителя',
+                'description' => '',
+                'code' => 'from_city',
+                'type' => 'city',
+                'value' => null,
+            ),
+            'declared_value' => array(
+                'name' => 'Объявленная ценность послыки',
+                'description' => '',
+                'code' => 'declared_value',
+                'type' => 'bool',
+                'value' => 0,
+            ),
+        ),
+    );
 
 
     public function __construct($not_delivery = array())
@@ -124,14 +124,14 @@ class plugin_shopdelivery
             $_SESSION['delivery_sub'][$this->delivery_type_id] = getRequest('delivery_sub_' . $this->delivery_type_id);
 
         $this->checkUserRegion();
-		
-		$this->updateDB();
+
+        $this->updateDB();
     }
-	
-	private function updateDB()
-	{
-		if (!file_exists(SE_ROOT . '/system/logs/shop_delivery_settings.upd')) {
-			$sql = "CREATE TABLE IF NOT EXISTS shop_delivery_settings (
+
+    private function updateDB()
+    {
+        if (!file_exists(SE_ROOT . '/system/logs/shop_delivery_settings.upd')) {
+            $sql = "CREATE TABLE IF NOT EXISTS shop_delivery_settings (
 			  id int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 			  id_delivery int(10) UNSIGNED NOT NULL,
 			  code varchar(255) NOT NULL,
@@ -149,12 +149,12 @@ class plugin_shopdelivery
 			AVG_ROW_LENGTH = 1365
 			CHARACTER SET utf8
 			COLLATE utf8_general_ci;";
-			
-			se_db_query($sql);
-			echo se_db_error();
-			file_put_contents(SE_ROOT . '/system/logs/shop_delivery_settings.upd', date('Y-m-d H:i:s'));
-		}
-	}
+
+            se_db_query($sql);
+            echo se_db_error();
+            file_put_contents(SE_ROOT . '/system/logs/shop_delivery_settings.upd', date('Y-m-d H:i:s'));
+        }
+    }
 
     public function getParentId($id_sub = 0)
     {
@@ -187,12 +187,12 @@ class plugin_shopdelivery
         $this->checkUserRegion();
 
         if (!$id_price) {
-			$id_price = $this->total['goods_id'];
-		}
-		
-		if (is_array($id_price)) {
-			$id_price = join(',', $id_price);
-		}
+            $id_price = $this->total['goods_id'];
+        }
+
+        if (is_array($id_price)) {
+            $id_price = join(',', $id_price);
+        }
 
         $rdeliv = new seTable('shop_deliverytype', 'sdt');
         $rdeliv->select('DISTINCT sdt.id, sdt.name, sdt.code, sdt.time, sdt.price, sdt.curr, sdt.forone, sdt.note, sdt.week, sdt.need_address');
@@ -207,8 +207,8 @@ class plugin_shopdelivery
             $rdeliv->orderBy('sort');
 
         $deliveries = $rdeliv->getList();
-		
-		$find_delivery = false;
+
+        $find_delivery = false;
 
         if (!empty($deliveries)) {
             $day_week = (date('w') + 6) % 7;
@@ -255,7 +255,7 @@ class plugin_shopdelivery
                     } else {
                         $delivery['price'] += se_Money_Convert($delivery_cdek['price'], 'RUR', $delivery['curr']);
                         $delivery['time'] = $delivery_cdek['time'];
-						$delivery['sub'] = $delivery_cdek['sub'];
+                        $delivery['sub'] = $delivery_cdek['sub'];
                     }
                 } elseif ($delivery['code'] == 'pek') {
                     $delivery_pek = $this->getDeliveryPricePek();
@@ -279,71 +279,70 @@ class plugin_shopdelivery
         }
         if (!empty($this->not_delivery))
             array_unshift($deliveries, $this->not_delivery);
-        
-		if (!$find_delivery) {
+
+        if (!$find_delivery) {
             $first = current($deliveries);
-			$this->delivery_type_id = $_SESSION['delivery_type_id'] = $first['id'];
+            $this->delivery_type_id = $_SESSION['delivery_type_id'] = $first['id'];
         }
 
         return $deliveries;
     }
-	
-	public function getServices()
-	{
-		return $this->services;
-	}
-	
-	public function getSettings($id_delivery = 0, $type= '')
-	{
-		$settings = array();
-		
-		if ($id_delivery) {
-			$sdt = new seTable('shop_deliverytype');
-			
-			if ($sdt->find($id_delivery)) {
-				if (empty($type))
-					$type = $sdt->code;
-				
-				$sds = new seTable('shop_delivery_settings', 'sds');
-				$sds->select('sds.code, sds.value');
-				$sds->where('id_delivery=?', $id_delivery);
-				$list = $sds->getList();
-			}
-		}
-		
-		if (!empty($type) && !empty($this->service_settings[$type])) {
-			$settings = $this->service_settings[$type];
-			
-			if (!empty($list)) {
-				foreach ($list as $val) {
-					$code = $val['code'];
-					$value = $val['value'];
-					if (isset($settings[$code])) {
-						$settings[$code]['value'] = $value;
-					}
-				}
-			}
-			
-		}
-		
-		return $settings;
-	}
-	
-	public function saveSettings($id_delivery = 0, $settings = array()) {
-		if ($id_delivery && $settings) {
-			foreach ($settings as $val) {
-				$sds = new seTable('shop_delivery_settings');
-				$sds->where('id_delivery=?', $id_delivery);
-				$sds->andWhere('code="?"', $val['code']);
-				$sds->fetchOne();
-				$sds->id_delivery = $id_delivery;
-				$sds->code = $val['code'];
-				$sds->value = $val['value'];
-				$sds->save();
-			}
-			
-		}
-	}
+
+    public function getServices()
+    {
+        return $this->services;
+    }
+
+    public function getSettings($id_delivery = 0, $type = '')
+    {
+        $settings = array();
+
+        if ($id_delivery) {
+            $sdt = new seTable('shop_deliverytype');
+
+            if ($sdt->find($id_delivery)) {
+                if (empty($type))
+                    $type = $sdt->code;
+
+                $sds = new seTable('shop_delivery_settings', 'sds');
+                $sds->select('sds.code, sds.value');
+                $sds->where('id_delivery=?', $id_delivery);
+                $list = $sds->getList();
+            }
+        }
+
+        if (!empty($type) && !empty($this->service_settings[$type])) {
+            $settings = $this->service_settings[$type];
+
+            if (!empty($list)) {
+                foreach ($list as $val) {
+                    $code = $val['code'];
+                    $value = $val['value'];
+                    if (isset($settings[$code])) {
+                        $settings[$code]['value'] = $value;
+                    }
+                }
+            }
+        }
+
+        return $settings;
+    }
+
+    public function saveSettings($id_delivery = 0, $settings = array())
+    {
+        if ($id_delivery && $settings) {
+            foreach ($settings as $val) {
+                $sds = new seTable('shop_delivery_settings');
+                $sds->where('id_delivery=?', $id_delivery);
+                $sds->andWhere('code="?"', $val['code']);
+                $sds->fetchOne();
+                $sds->id_delivery = $id_delivery;
+                $sds->code = $val['code'];
+                $sds->value = $val['value'];
+                $sds->save();
+            }
+        }
+    }
 
     private function getDeliveryPricePost()
     {
@@ -391,7 +390,6 @@ class plugin_shopdelivery
         }
 
         return $delivery;
-
     }
 
     private function getDeliveryPriceCdek($id)
@@ -401,24 +399,24 @@ class plugin_shopdelivery
         $city_to = $this->geo_data['city'];
 
         if (empty($this->ems_params['city_from'])) {
-			$tlb_main = new seTable('main');
-			$tlb_main->select('city_from_delivery as city');
-			$tlb_main->fetchOne();
-			$this->ems_params['city_from'] = $tlb_main->city;
-			unset($tlb_main);
-		}
-		
-		$city_from = $this->ems_params['city_from'];
+            $tlb_main = new seTable('main');
+            $tlb_main->select('city_from_delivery as city');
+            $tlb_main->fetchOne();
+            $this->ems_params['city_from'] = $tlb_main->city;
+            unset($tlb_main);
+        }
+
+        $city_from = $this->ems_params['city_from'];
 
         $settings = $this->getSettings($id);
-		
-		if (!empty($settings['from_city']['value'])) {
-			$plugin_shopgeo = new plugin_shopgeo();
-			$geo_data = $plugin_shopgeo->getCity($settings['from_city']['value']);
-			if (!empty($geo_data['city_name'])) {
-				$city_from = $geo_data['city_name'];
-			}
-		}
+
+        if (!empty($settings['from_city']['value'])) {
+            $plugin_shopgeo = new plugin_shopgeo();
+            $geo_data = $plugin_shopgeo->getCity($settings['from_city']['value']);
+            if (!empty($geo_data['city_name'])) {
+                $city_from = $geo_data['city_name'];
+            }
+        }
 
         if ($city_to && $city_from) {
 
@@ -428,65 +426,65 @@ class plugin_shopdelivery
                 $cities = json_decode(file_get_contents($filename), 1);
 
             if (($id_city_from = $cities[$city_from]) && ($id_city_to = $cities[$city_to])) {
-				
-				$date = date('Y-m-d');
+
+                $date = date('Y-m-d');
 
                 $request = array(
-					'version' => '1.0', 
-					'dateExecute' => $date, 
-					'senderCityId' => $id_city_from,
-					'receiverCityId' => $id_city_to,
-					'tariffList' => array(
-						array('priority' => 1, 'id' => 5), //Экономичный экспресс склад-склад
-						array('priority' => 2, 'id' => 10), //Экспресс лайт склад-склад
-						array('priority' => 3, 'id' => 11), //Экспресс лайт склад-дверь
-						array('priority' => 4, 'id' => 12), //Экспресс лайт дверь-склад
-						array('priority' => 5, 'id' => 1), //Экспресс лайт дверь-дверь
-						array('priority' => 6, 'id' => 3), //Супер-экспресс до 18
-					),
-					//'modeId' => '1', //1 - дверь-дверь 2 - дверь-склад 3 - склад-дверь 4 - склад-склад
-					'goods' => array()
-				);
-				
-				if (!empty($settings['type_delivery']['value'])) {
-					switch ($settings['type_delivery']['value']) {
-						case '1'://Склад-Склад
-							$request['tariffList'] = array(
-								array('priority' => 1, 'id' => 136),
-								array('priority' => 2, 'id' => 234),
-								array('priority' => 3, 'id' => 5),
-								array('priority' => 4, 'id' => 10),
-							);
-							$get_points = true;
-							break;
-						case '2'://Склад-Дверь
-							$request['tariffList'] = array(
-								array('priority' => 1, 'id' => 137),
-								array('priority' => 2, 'id' => 233),
-								array('priority' => 3, 'id' => 11),
-							);
-							break;
-						case '3'://Дверь-Склад
-							$request['tariffList'] = array(
-								array('priority' => 1, 'id' => 138),
-								array('priority' => 2, 'id' => 301),
-								array('priority' => 3, 'id' => 12),
-							);
-							$get_points = true;
-							break;
-						case '4'://Дверь-Дверь
-							$request['tariffList'] = array(
-								array('priority' => 1, 'id' => 139),
-								array('priority' => 2, 'id' => 1),
-							);
-							break;
-					}
-				}
-				
-				if (!empty($settings['login']['value']) && !empty($settings['password']['value'])) {
-					$request['authLogin'] = $settings['login']['value'];
-					$request['secure'] = md5($date . '&' . $settings['password']['value']);
-					/*
+                    'version' => '1.0',
+                    'dateExecute' => $date,
+                    'senderCityId' => $id_city_from,
+                    'receiverCityId' => $id_city_to,
+                    'tariffList' => array(
+                        array('priority' => 1, 'id' => 5), //Экономичный экспресс склад-склад
+                        array('priority' => 2, 'id' => 10), //Экспресс лайт склад-склад
+                        array('priority' => 3, 'id' => 11), //Экспресс лайт склад-дверь
+                        array('priority' => 4, 'id' => 12), //Экспресс лайт дверь-склад
+                        array('priority' => 5, 'id' => 1), //Экспресс лайт дверь-дверь
+                        array('priority' => 6, 'id' => 3), //Супер-экспресс до 18
+                    ),
+                    //'modeId' => '1', //1 - дверь-дверь 2 - дверь-склад 3 - склад-дверь 4 - склад-склад
+                    'goods' => array()
+                );
+
+                if (!empty($settings['type_delivery']['value'])) {
+                    switch ($settings['type_delivery']['value']) {
+                        case '1': //Склад-Склад
+                            $request['tariffList'] = array(
+                                array('priority' => 1, 'id' => 136),
+                                array('priority' => 2, 'id' => 234),
+                                array('priority' => 3, 'id' => 5),
+                                array('priority' => 4, 'id' => 10),
+                            );
+                            $get_points = true;
+                            break;
+                        case '2': //Склад-Дверь
+                            $request['tariffList'] = array(
+                                array('priority' => 1, 'id' => 137),
+                                array('priority' => 2, 'id' => 233),
+                                array('priority' => 3, 'id' => 11),
+                            );
+                            break;
+                        case '3': //Дверь-Склад
+                            $request['tariffList'] = array(
+                                array('priority' => 1, 'id' => 138),
+                                array('priority' => 2, 'id' => 301),
+                                array('priority' => 3, 'id' => 12),
+                            );
+                            $get_points = true;
+                            break;
+                        case '4': //Дверь-Дверь
+                            $request['tariffList'] = array(
+                                array('priority' => 1, 'id' => 139),
+                                array('priority' => 2, 'id' => 1),
+                            );
+                            break;
+                    }
+                }
+
+                if (!empty($settings['login']['value']) && !empty($settings['password']['value'])) {
+                    $request['authLogin'] = $settings['login']['value'];
+                    $request['secure'] = md5($date . '&' . $settings['password']['value']);
+                    /*
 					$request['tariffList'] = array(
 						array('priority' => 1, 'id' => 136),
 						array('priority' => 2, 'id' => 137),
@@ -504,7 +502,7 @@ class plugin_shopdelivery
 						array('priority' => 21, 'id' => 10),
 					);
 					*/
-				}
+                }
 
                 $plugin_cart = new plugin_shopcart(array('curr' => se_baseCurrency()));
                 $goods = $plugin_cart->getGoodsCart();
@@ -530,79 +528,74 @@ class plugin_shopdelivery
 
                 if ($response === false) {
                     $error = '10000 server error';
-                } 
-				else {
+                } else {
                     $data = json_decode($response, true);
                     if (!empty($data['result'])) {
                         $delivery['price'] = $data['result']['price'];
                         $delivery['time'] = $data['result']['deliveryPeriodMin'];
                         if ($data['result']['deliveryPeriodMin'] != $data['result']['deliveryPeriodMax'])
                             $delivery['time'] .= '-' . $data['result']['deliveryPeriodMax'];
-						
-						if (!empty($get_points)) {
-							$points = $this->getCdekPoints($id_city_to, $id);
-							$delivery['sub'] = $points;
-						}
-                    } 
-					else {
+
+                        if (!empty($get_points)) {
+                            $points = $this->getCdekPoints($id_city_to, $id);
+                            $delivery['sub'] = $points;
+                        }
+                    } else {
                         $error = $data;
                     }
                 }
             }
-
         }
 
         return $delivery;
     }
-	
-	public function getCdekPoints($id_city = 0, $id_delivery = 0)
-	{
-		$points = array();
-		
-		if ($id_city) {
-			$ch = curl_init();
-			curl_setopt($ch, CURLOPT_URL, 'http://int.cdek.ru/pvzlist.php?cityid=' . $id_city);
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-			curl_setopt($ch, CURLOPT_POST, 1);
-			//curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($request));
 
-			$response = curl_exec($ch);
-			$status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-			
-			curl_close($ch);
-			
-			if ($status == 200 && $response !== false) {
-				$xml = simplexml_load_string($response);
-				
-				if ($xml->Pvz) {
-					foreach ($xml->Pvz as $pvz) {
-						$id_sub = (string)$pvz['Code'];
-						$description = '<p><a href="' . (string)$pvz['Site'] . '" title="' . (string)$pvz['FullAddress'] . '" target="_blank">' . (string)$pvz['Address'] . '</a>, Тел.:' . (string)$pvz['Phone'] . '</p>';
-						
-						$description .= '<p>Время работы: ' . (string)$pvz['WorkTime'] . '</p>';
-						
-						$points[] = array(
-							'id' => $id_sub,
-							'name' => (string)$pvz['Name'],
-							'note' => $description,
-							'sel' => ($_SESSION['delivery_sub'][$id_delivery] && $_SESSION['delivery_sub'][$id_delivery] == $id_sub),
-						);
-						
-					}
-				}
-			}
-		}
-		
-		return $points;
-	}
+    public function getCdekPoints($id_city = 0, $id_delivery = 0)
+    {
+        $points = array();
+
+        if ($id_city) {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, 'http://int.cdek.ru/pvzlist.php?cityid=' . $id_city);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+            curl_setopt($ch, CURLOPT_POST, 1);
+            //curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($request));
+
+            $response = curl_exec($ch);
+            $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+            curl_close($ch);
+
+            if ($status == 200 && $response !== false) {
+                $xml = simplexml_load_string($response);
+
+                if ($xml->Pvz) {
+                    foreach ($xml->Pvz as $pvz) {
+                        $id_sub = (string)$pvz['Code'];
+                        $description = '<p><a href="' . (string)$pvz['Site'] . '" title="' . (string)$pvz['FullAddress'] . '" target="_blank">' . (string)$pvz['Address'] . '</a>, Тел.:' . (string)$pvz['Phone'] . '</p>';
+
+                        $description .= '<p>Время работы: ' . (string)$pvz['WorkTime'] . '</p>';
+
+                        $points[] = array(
+                            'id' => $id_sub,
+                            'name' => (string)$pvz['Name'],
+                            'note' => $description,
+                            'sel' => ($_SESSION['delivery_sub'][$id_delivery] && $_SESSION['delivery_sub'][$id_delivery] == $id_sub),
+                        );
+                    }
+                }
+            }
+        }
+
+        return $points;
+    }
 
     private function getDeliveryPricePek()
     {
         $delivery = array();
 
         return $delivery;
-
     }
 
     private function getDeliveryPriceEms()
@@ -661,7 +654,6 @@ class plugin_shopdelivery
                         $locations = file_get_contents(DATA_DIR . 'ems_locations.dat');
                         $this->ems_locations = unserialize($locations);
                     }
-
                 }
                 if (!empty($this->ems_locations)) {
                     $find = 0;
@@ -778,7 +770,6 @@ class plugin_shopdelivery
                 $delivery['price'] = $this->getPriceParam($id_delivery, $delivery['price']);
 
                 $deliv = $delivery;
-
             }
         }
         return $deliv;
@@ -875,7 +866,6 @@ class plugin_shopdelivery
                 if (!empty($_SESSION['delivery_sub'][$id_delivery]) && $_SESSION['delivery_sub'][$id_delivery] == $val['id']) {
                     $selected = $key;
                 }
-
             }
             $deliveries[$selected]['sel'] = true;
             $delivery['price'] = $deliveries[$selected]['price'];
@@ -917,7 +907,6 @@ class plugin_shopdelivery
                 $delivery['price'] = se_Money_Convert($delivery['price'] * ($delivery['forone'] == 'Y' ? $this->total['count'] : 1), $delivery['curr'], $this->basecurr);
 
                 $delivery['addr'] = ($delivery['need_address'] == 'Y');
-
             }
         } elseif ($id === 0 && !empty($this->not_delivery)) $delivery = $this->not_delivery;
         return $delivery;
