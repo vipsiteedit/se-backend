@@ -7,7 +7,7 @@ chdir(dirname(__FILE__) .'/../');
 require_once ("system/config_db.php");
 require_once ("lib/lib_database.php");
 se_db_dsn();
-// Запустить базу данных
+
 se_db_connect();
 require_once ("lib/lib.php");
 require_once ("upload/function.php");
@@ -47,5 +47,3 @@ if ($project==$_SERVER['HTTP_HOST'] && !empty($login)){
         }
     }
 }
-
-?>

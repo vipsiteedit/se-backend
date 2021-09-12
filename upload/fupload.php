@@ -1,7 +1,5 @@
 <?php
 
-//import_request_variables("p", "ext_");
-
 if (!(isset($_POST['session'], $_POST['domain'], $_POST['numpkt']))) {
   header('HTTP/1.0 404');
   exit();
@@ -10,52 +8,46 @@ if (!(isset($_POST['session'], $_POST['domain'], $_POST['numpkt']))) {
 require_once "function.php";
 
 $session = htmlspecialchars(addslashes($_POST['session']));
-$domain =addslashes($_POST['domain']);
+$domain = addslashes($_POST['domain']);
 $numpkt = htmlspecialchars(addslashes($_POST['numpkt']));
 if (!checkSID($session)) exit("no");
 
-$path=getcwd()."/data/";
+$path = getcwd() . "/data/";
 
-//Файл идентификатора
-$fname = $path.$session.".sid";
+$fname = $path . $session . ".sid";
 
-$param=file($fname);
+$param = file($fname);
 
-$pktsize=$param[2]."<br>";
-$pktcol=$param[3];
+$pktsize = $param[2] . "<br>";
+$pktcol = $param[3];
 
-if ($numpkt > $pktcol) exit("no"); //Если номер пакета больше количества пакетов
+if ($numpkt > $pktcol) exit("no"); //пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
-$userfile=$_FILES['userfile']['tmp_name'];
-$userfile_size=$_FILES['userfile']['size'];
-$user=$_FILES['userfile']['name'];
+$userfile = $_FILES['userfile']['tmp_name'];
+$userfile_size = $_FILES['userfile']['size'];
+$user = $_FILES['userfile']['name'];
 
-if ($userfile_size > $pktsize) exit("no"); //Если размер пакета больше заданного
+if ($userfile_size > $pktsize) exit("no");
 
-$uploadfile=$path."pkt_".$numpkt.".tmp";
+$uploadfile = $path . "pkt_" . $numpkt . ".tmp";
 
-if (move_uploaded_file($userfile, $uploadfile)) echo "ok"; else exit("no");
+if (move_uploaded_file($userfile, $uploadfile)) echo "ok";
+else exit("no");
 
-//Читаем файл пакета
 $fname = $uploadfile;
 $f = fopen($fname, "rb");
-$st=fread($f, $pktsize);
+$st = fread($f, $pktsize);
 fclose($f);
 
-//Пишем пакет в файл данных
+$s = $numpkt * $pktsize;
 
-//Вычисляем смещение:
-$s=$numpkt*$pktsize;
-
-$fnamedat = $path.$session.".dat";
+$fnamedat = $path . $session . ".dat";
 $f = fopen($fnamedat, "r+b");
 fseek($f, $s);
 flock($f, LOCK_EX);
-$st=fwrite($f, $st);
+$st = fwrite($f, $st);
 fflush($f);
 flock($f, LOCK_UN);
 fclose($f);
 
 unlink($fname);
-
-?>

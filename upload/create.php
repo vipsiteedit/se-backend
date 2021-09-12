@@ -17,8 +17,6 @@ if (!checkSID($session)) exit("no");
 $path=getcwd()."/data/";
 
 $pktnum=ceil($fullsize / $pktsize);
-
-//Файл идентификатора
 $fname = $path.$session.".sid";
 $f = fopen($fname, "a");
 flock($f, LOCK_EX);
@@ -27,7 +25,7 @@ fflush($f);
 flock($f, LOCK_UN);
 fclose($f);
 
-//Файл данных
+//пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 //$st = str_repeat(" ", $fullsize);
 $st ="";
 $fname = $path.$session.".dat";
@@ -39,4 +37,3 @@ flock($f, LOCK_UN);
 fclose($f);
 
 echo "ok";
-?>

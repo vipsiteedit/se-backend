@@ -221,16 +221,14 @@ function import_offers_51($xml, $default_param_name, $update_data)
                     }
                 }
             } else {
-                
+
                 $goods->price = $price;
                 if ($price_opt)
                     $goods->price_opt = $price_opt;
                 if ($price_opt_corp)
                     $goods->price_opt_corp = $price_opt_corp;
                 $goods->save();
-                
             }
-
         }
 
         if (isset($_SESSION['exchange_products'][$guid_product])) {
@@ -280,7 +278,7 @@ $date_export_orders = $settings['date_export_orders'];  //дата (дата д�
 $update_groups_exchange = array(                        //данные которые необходимо обновлять при импорте групп товаров
     'name' => ($settings['upd_name_group'] == 'Y'),
     'code' => ($settings['upd_code_group'] == 'Y'),
-	'upid' => ($settings['upd_upid_group'] == 'Y'),
+    'upid' => ($settings['upd_upid_group'] == 'Y'),
 );
 
 $update_offers_exchange = array(                        //данные которые необходимо обновлять при импорте ценовых предложений
@@ -325,7 +323,6 @@ if (isRequest('type') && getRequest('type') == 'sale') {
         }
         echo "zip=$zip_files\n";
         echo "file_limit=$limit_filesize\n";
-
     }
 
     if (getRequest('type') == 'sale' && getRequest('mode') == 'query') {
@@ -386,7 +383,6 @@ if (isRequest('type') && getRequest('type') == 'sale') {
     if (getRequest('type') == 'sale' && getRequest('mode') == 'success') {
 
         echo "success";
-
     }
     exit;
 }
@@ -486,7 +482,7 @@ if (isRequest('type') && getRequest('type') == 'catalog') {
                 logExchange('complete import groups catalog ' . $filename);
             }
             */
-            
+
             if (file_exists($exchange_dir . $filename)) {
                 logExchange('start import products');
 
@@ -512,7 +508,7 @@ if (isRequest('type') && getRequest('type') == 'catalog') {
                 $read_xml = new XMLReader;
                 $read_xml->open($exchange_dir . $filename);
 
-                while ($read_xml->read() && $read_xml->name !== 'Товар') ;
+                while ($read_xml->read() && $read_xml->name !== 'Товар');
 
                 if (isset($_SESSION['count_import_product'][$filename]) && $_SESSION['count_import_product'][$filename] > 0) {
                     for ($i = 0; $i < $_SESSION['count_import_product'][$filename]; $i++) {
@@ -526,7 +522,7 @@ if (isRequest('type') && getRequest('type') == 'catalog') {
                     //echo 'test'.$lang_exchange;
                     $xml = new SimpleXMLElement($read_xml->readOuterXML());
                     //import_catalog($xml, $exchange_dir, $main_import_image, $type_code_goods, $lang_exchange, $ex_catalog_name, $update_goods_exchange, '5.3');
-                    
+
                     $_SESSION['import_ex'][(string)$xml->Ид] = (string)$xml->Артикул;
 
                     $exchange_time_current = microtime(true);
@@ -553,7 +549,7 @@ if (isRequest('type') && getRequest('type') == 'catalog') {
                 echo 'файл import.xml не существует';
                 exit;
             }
-            
+
             /*
             updImages52();
 			se_db_query('TRUNCATE shop_group_tree;');
@@ -561,15 +557,14 @@ if (isRequest('type') && getRequest('type') == 'catalog') {
 			
 			plugin_shopgroups::getInstance();
             */
-            
+
             echo "success\n";
-        } 
-        elseif (preg_match('/^offers(.*?)\.xml$/', $filename)) {
+        } elseif (preg_match('/^offers(.*?)\.xml$/', $filename)) {
             if (file_exists($exchange_dir . $filename) && !isset($_SESSION['exchange_type_price'])) {
                 logExchange('start record prices');
                 $read_xml = new XMLReader;
                 $read_xml->open($exchange_dir . $filename);
-                while ($read_xml->read() && $read_xml->name !== 'ТипЦены') ;
+                while ($read_xml->read() && $read_xml->name !== 'ТипЦены');
 
                 while ($read_xml->name == 'ТипЦены') {
                     $xml = new SimpleXMLElement($read_xml->readOuterXML());
@@ -623,9 +618,9 @@ if (isRequest('type') && getRequest('type') == 'catalog') {
                 $read_xml->open($exchange_dir . $filename);
 
                 while ($read_xml->read() && $read_xml->name !== 'КоммерческаяИнформация');
-                
+
                 $schema_version = $read_xml->getAttribute('ВерсияСхемы');
-                
+
                 while ($read_xml->read() && $read_xml->name !== 'Предложение');
 
                 if (isset($_SESSION['count_import_offers'][$filename])) {
@@ -640,14 +635,14 @@ if (isRequest('type') && getRequest('type') == 'catalog') {
                         se_db_query($sql);
                         logExchange('schema version 2.07, enabled imported products, count ' . count($_SESSION['exchange_products']));
                     }
-                    */ 
+                    */
                 }
-                
+
                 while ($read_xml->name == 'Предложение') {
                     $xml = new SimpleXMLElement($read_xml->readOuterXML());
-                    
+
                     import_offers_51($xml, $default_param_name, $update_offers_exchange);
-                    
+
                     $_SESSION['count_import_offers'][$filename]++;
 
                     $exchange_time_current = microtime(true);
@@ -663,7 +658,6 @@ if (isRequest('type') && getRequest('type') == 'catalog') {
                     }
 
                     $read_xml->next('Предложение');
-
                 }
                 $read_xml->close();
                 unset($read_xml, $xml);

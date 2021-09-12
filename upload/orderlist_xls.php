@@ -60,11 +60,11 @@ function getOrderItems($idOrder)
             $product['article'] = $item['article'];
             $product['measurement'] = $item['measure'];
             $product['idGroup'] = $item['id_group'];
-            $product['price'] = (real)$item['price'];
-            $product['count'] = (real)$item['count'];
-            $product['bonus'] = (real)$item['bonus'];
-            $product['discount'] = (real)$item['discount'];                        
-            $product['note'] = $item['commentary']; 
+            $product['price'] = (float)$item['price'];
+            $product['count'] = (float)$item['count'];
+            $product['bonus'] = (float)$item['bonus'];
+            $product['discount'] = (float)$item['discount'];
+            $product['note'] = $item['commentary'];
             $items[] = $product;
         }
     }
@@ -228,7 +228,7 @@ $sheet->getStyle("A{$r}:F{$r}")->getAlignment()->setVertical(PHPExcel_Style_Alig
 $sheet->getStyle("A{$r}")->getAlignment()->setWrapText(true);
 $sheet->mergeCells("A{$r}:F{$rb}");
 
-$uploadDir = $_SERVER["DOCUMENT_ROOT"] . "/files";    
+$uploadDir = $_SERVER["DOCUMENT_ROOT"] . "/files";
 $uploadFile = $uploadDir . "/order_list_{$idOrder}.xlsx";
 if (!file_exists($uploadDir)) {
     $dirs = explode('/', $uploadDir);
