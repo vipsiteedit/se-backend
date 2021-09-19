@@ -1,0 +1,41 @@
+﻿.b_brendline {
+	width: 100%;
+}
+
+.b_brendline-brend_item {
+	display: inline-block;
+	width: 16.65%;
+	min-width: 130px;
+	text-align: center;
+	box-sizing: border-box;
+        padding: 15px 30px;
+}
+
+.b_brendline_brend_group {          
+        text-align:center;
+        font-size: 0;
+        margin: 0 -30px
+}
+
+.b_brendline_brend_group.slider {          
+        text-align:center;
+        font-size: 0;
+        margin: 0;
+        padding: 0 45px;
+}
+
+
+
+@media (max-width: 991px) {
+       .b_brendline-brend_item {
+	    width: 20%;
+            min-width: inherit;
+        }    
+}
+
+@media (max-width: 767px) {
+       .b_brendline-brend_item {
+	    width: 25%;
+            min-width: inherit;
+        }    
+}

@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="no-js lt-ie10 lt-ie9 lt-ie8 lt-ie7" xml:lang="ru" lang="ru"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie10 lt-ie9 lt-ie8" xml:lang="ru" lang="ru"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie10 lt-ie9" xml:lang="ru" lang="ru"> <![endif]-->
+<!--[if IE 9]>    <html class="no-js lt-ie10" xml:lang="ru" lang="ru"> <![endif]-->
+<!--[if false]> --><html class="no-js" xml:lang="ru" lang="ru">  <!-- <![endif]-->
+<head>
+<title>Авторизация | Фирма «Электра»</title>
+<meta name="viewport" content="width=device-width" />
+<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><!<![endif]-->
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="description" content="Оптовый интернет-магазин «Электра»: продажа качественной светотехники. Люстры, лампы, светильники оптом." />
+<link href="/bitrix/js/main/core/css/core.css?15010609323963" type="text/css" rel="stylesheet" />
+
+<script type="text/javascript" data-skip-moving="true">(function(w, d, n) {var cl = "bx-core";var ht = d.documentElement;var htc = ht ? ht.className : undefined;if (htc === undefined || htc.indexOf(cl) !== -1){return;}var ua = n.userAgent;if (/(iPad;)|(iPhone;)/i.test(ua)){cl += " bx-ios";}else if (/Android/i.test(ua)){cl += " bx-android";}cl += (/(ipad|iphone|android|mobile|touch)/i.test(ua) ? " bx-touch" : " bx-no-touch");cl += w.devicePixelRatio && w.devicePixelRatio >= 2? " bx-retina": " bx-no-retina";var ieVersion = -1;if (/AppleWebKit/.test(ua)){cl += " bx-chrome";}else if ((ieVersion = getIeVersion()) > 0){cl += " bx-ie bx-ie" + ieVersion;if (ieVersion > 7 && ieVersion < 10 && !isDoctype()){cl += " bx-quirks";}}else if (/Opera/.test(ua)){cl += " bx-opera";}else if (/Gecko/.test(ua)){cl += " bx-firefox";}if (/Macintosh/i.test(ua)){cl += " bx-mac";}ht.className = htc ? htc + " " + cl : cl;function isDoctype(){if (d.compatMode){return d.compatMode == "CSS1Compat";}return d.documentElement && d.documentElement.clientHeight;}function getIeVersion(){if (/Opera/i.test(ua) || /Webkit/i.test(ua) || /Firefox/i.test(ua) || /Chrome/i.test(ua)){return -1;}var rv = -1;if (!!(w.MSStream) && !(w.ActiveXObject) && ("ActiveXObject" in w)){rv = 11;}else if (!!d.documentMode && d.documentMode >= 10){rv = 10;}else if (!!d.documentMode && d.documentMode >= 9){rv = 9;}else if (d.attachEvent && !/Opera/.test(ua)){rv = 8;}if (rv == -1 || rv == 8){var re;if (n.appName == "Microsoft Internet Explorer"){re = new RegExp("MSIE ([0-9]+[\.0-9]*)");if (re.exec(ua) != null){rv = parseFloat(RegExp.$1);}}else if (n.appName == "Netscape"){rv = 11;re = new RegExp("Trident/.*rv:([0-9]+[\.0-9]*)");if (re.exec(ua) != null){rv = parseFloat(RegExp.$1);}}}return rv;}})(window, document, navigator);</script>
+
+
+<link href="/bitrix/cache/css/s2/sneha/page_b17473fa6890cbd2c493d9479b87731f/page_b17473fa6890cbd2c493d9479b87731f_v1.css?15694949561398" type="text/css"  rel="stylesheet" />
+<link href="/bitrix/cache/css/s2/sneha/template_ac35318fca72ed4a98d52ac2fa19de6a/template_ac35318fca72ed4a98d52ac2fa19de6a_v1.css?1569494790158844" type="text/css"  data-template-style="true" rel="stylesheet" />
+
+
+
+
+
+
+
+<style>.menu-brand .mb-sneha{background-image:url(/upload/iblock/37c/sneha.png);} .menu-brand .mb-illumico{background-image:url(/upload/iblock/396/illumico.png);} .menu-brand .mb-reluce{background-image:url(/upload/iblock/6b0/reluce.png);} .menu-brand .mb-gauss{background-image:url(/upload/iblock/5b9/gauss.png);} </style>
+
+
+
+<link href="/favicon.ico" rel="shortcut icon" />
+<meta name="google-site-verification" content="p4Bssg0faFOnyiFq56GViL11IDjtbZuDXN6PztB4fjY" />
+
+<!-- Google Tag Manager -->
+<script data-skip-moving="true">(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-54R528');</script>
+<!-- End Google Tag Manager -->
+
+</head>
+<body class=" region- guest ">
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-54R528"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+
+<div class="panel"></div>
+<div class="container">
+<header class="header">
+	<nav class="header_menu to-nx-nav">
+	<!--'start_frame_cache_LkGdQn'--><ul class="sneha-up-menu">
+<li class="root " >
+		<a href="/about/"  class="root-item">О компании</a>
+	</li>
+<li class="root " >
+		<a href="/news/"  class="root-item">Новости</a>
+	</li>
+<li class="root parent-root" >
+		<a href="/contacts/"  class="root-item">Контакты</a>
+	<ul>
+<li>
+		<a href="/contacts/moscow/"  >Москва</a>
+	</li>
+<li>
+		<a href="/contacts/nnovgorod/"  >Нижний Новгород</a>
+	</li>
+<li>
+		<a href="/contacts/samara/"  >Самара</a>
+	</li>
+<li>
+		<a href="/contacts/eburg/"  >Екатеринбург</a>
+	</li>
+<li>
+		<a href="/contacts/novosib/"  >Новосибирск</a>
+	</li>
+<li>
+		<a href="/contacts/krasnodar/"  >Краснодар</a>
+	</li>
+<li>
+		<a href="/contacts/piatigorsk/"  >Пятигорск</a>
+	</li>
+<li>
+		<a href="/contacts/gus/"  >Гусь-Хрустальный</a>
+	</li>
+</ul></li><li class="root " >
+	<!--noindex-->	<a href="https://electra-nn.ru" rel="nofollow" class="root-item">Интернет-магазин</a>
+	<!--/noindex--></li>
+</ul>
+<!--'end_frame_cache_LkGdQn'-->	</nav>
+	<a href="/"  class="logo" data-tel="8-800-707-0099">ООО Фирма Электра</a> 
+		
+	<span class="slogan">Светильники для дома и офиса оптом</span>
+	<nav class="nav-trio to-social-nav">
+		<a class="home" title="Главная" href="/">Главная</a>
+		<a class="mail" title="Написать нам" href="mailto:info@sneha.ru" rel="nofollow">Написать нам</a>
+		<a class="map" title="Карта" href="/map.php">Карта</a>
+		<a class="print" title="Версия для печати" href="?print=Y">Версия для печати</a>
+	</nav>
+
+	<div class="seach-form" id="header-search">
+	<form action="/search/index.php" id="NXsearchForm">
+		<input type="text"   name="q"   class="inpt"     value="">
+		<input type="submit" name="s"   class="btn sbtn" value="Найти">
+	</form>
+	</div>
+
+	
+	<div class="feedback-box">
+		<i class="feedback-show show-messeage-form">Напишите нам!</i>
+			</div>
+	
+	<i class="hat"></i>
+	<i class="hat-decor hd-left"></i>
+	<i class="hat-decor hd-right"></i>
+
+	</header>
+<!-- MAIN -->
+<div class="center-block">
+<main class="main">
+<div class="main-inner">
+	<article>
+	<h1>Авторизация</h1><!--'start_frame_cache_0weid0'--><nav class="side-block bx-auth">
+
+	<div class="bx-auth-note">Пожалуйста, авторизуйтесь:</div>
+	<form name="form_auth" method="post" target="_top" action="/private_office/export/?login=yes">
+
+		<input type="hidden" name="AUTH_FORM" value="Y" />
+		<input type="hidden" name="TYPE" value="AUTH" />
+				<input type="hidden" name="backurl" value="/private_office/export/" />
+				
+		<table class="bx-auth-table">
+			<tr>
+				<td class="bx-auth-label">Логин:</td>
+				<td><input class="bx-auth-input inpt" type="text" name="USER_LOGIN" maxlength="255" value="" /></td>
+			</tr>
+			<tr>
+				<td class="bx-auth-label">Пароль:</td>
+				<td><input class="bx-auth-input inpt" type="password" name="USER_PASSWORD" maxlength="255" />
+				</td>
+			</tr>
+						<tr>
+				<td></td>
+				<td><input type="checkbox" id="USER_REMEMBER" name="USER_REMEMBER" value="Y" /><label for="USER_REMEMBER">&nbsp;Запомнить меня на этом компьютере</label></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td class="authorize-submit-cell"><input type="submit" name="Login" value="Войти" class="btn"/></td>
+			</tr>
+		</table>
+
+		<noindex>
+			<p>
+				<a href="/private_office/export/?forgot_password=yes" rel="nofollow">Забыли свой пароль?</a>
+			</p>
+		</noindex>
+
+		<noindex>
+			<p>
+				<a href="/registration/" rel="nofollow">Зарегистрироваться</a><br />
+				Если вы впервые на сайте, заполните, пожалуйста, регистрационную форму.			</p>
+		</noindex>
+
+	</form>
+</nav>
+
+<!--'end_frame_cache_0weid0'--></article>
+</div>
+</main>
+
+<!-- LEFT -->
+<div class="left side-panel">
+	<!--'start_frame_cache_XEVOpk'--><div class="sneha-catalog-left main-mode">
+	<a href="/catalog/" class="btn" >Каталог товаров</a>	
+
+<nav class="side-block  menu-brand">
+		<a href="/brands/sneha/" class="menu-brand-item mb-sneha">Sneha</a>
+		<a href="/brands/illumico/" class="menu-brand-item mb-illumico">ILLUMICO</a>
+		<a href="/brands/reluce/" class="menu-brand-item mb-reluce">Reluce</a>
+		<a href="/brands/gauss/" class="menu-brand-item mb-gauss">Gauss</a>
+	</nav>
+<div class="side-block catalog-main-menu ">
+<nav class="to-nx-nav catalog-menu-block">
+<ul class="sneha-catalog-menu large"> 
+						<li  ><a href="/catalog/Lyustry/" class="root-item " >Люстры</a></li>
+									<li  ><a href="/catalog/Lyustry_svetodiodnye/" class="root-item " >Люстры светодиодные</a></li>
+									<li  ><a href="/catalog/Lyustry_so_svetodiodnoy_podsvetkoy_i_galogennye/" class="root-item " >Люстры со светодиодной подсветкой и галогенные</a></li>
+									<li  ><a href="/catalog/Lyustry_podvesy/" class="root-item " >Люстры-подвесы</a></li>
+									<li  ><a href="/catalog/Bra/" class="root-item " >Бра</a></li>
+									<li  ><a href="/catalog/Nastol_nye_lampy/" class="root-item " >Настольные лампы</a></li>
+									<li  ><a href="/catalog/Torshery/" class="root-item " >Торшеры</a></li>
+									<li  ><a href="/catalog/Tochechnye_svetil_niki__spoty_/" class="root-item " >Точечные светильники (споты)</a></li>
+									<li  ><a href="/catalog/Svetodiodnye_paneli/" class="root-item " >Светодиодные панели</a></li>
+									<li  ><a href="/catalog/Svetodiodnye_svetil_niki/" class="root-item " >Светодиодные светильники</a></li>
+									<li  ><a href="/catalog/Spotovye_svetil_niki/" class="root-item " >Спотовые светильники</a></li>
+						<li  >
+		<a href="/catalog/Dekorativnaya_svetotehnika/" class="root-item ">Декоративная светотехника</a>
+		<ul class="root-item">
+							<li><a href="/catalog/Dyuralayt__Duralight_LED_/"  >Дюралайт (Duralight LED)</a></li>
+									<li><a href="/catalog/Svetodiodnye_lenty_SMD__i_moduli/"  >Светодиодные ленты SMD  и модули</a></li>
+									<li><a href="/catalog/Svetodiodnye_girlyandy/"  >Светодиодные гирлянды</a></li>
+									<li><a href="/catalog/Svetodiodnye_girlyandy___bahroma__/"  >Светодиодные гирлянды (&quot;бахрома&quot;)</a></li>
+									<li><a href="/catalog/Svetovye_zanavesy__LED_/"  >Световые занавесы (LED)</a></li>
+									<li><a href="/catalog/Svetovye_setki__LED_/"  >Световые сетки (LED)</a></li>
+									<li><a href="/catalog/Novogodnie_figury/"  >Новогодние фигуры</a></li>
+									<li><a href="/catalog/Belt_layt/"  >Белт-лайт</a></li>
+									<li><a href="/catalog/LED_lampy_i_stroby/"  >LED лампы и стробы</a></li>
+									<li><a href="/catalog/Elektrofeyerverki/"  >Электрофейерверки</a></li>
+									<li><a href="/catalog/Dekorativnye_derev_ya/"  >Декоративные деревья</a></li>
+									<li><a href="/catalog/Svetodiodnye_tubusy/"  >Светодиодные тубусы</a></li>
+									<li><a href="/catalog/Gibkiy_svet__LED_/"  >Гибкий свет (LED)</a></li>
+									<li><a href="/catalog/Raznoe/"  >Разное</a></li>
+									<li><a href="/catalog/Klip_layt__LED_CLIP_LIGHT_/"  >Клип-лайт (LED CLIP LIGHT)</a></li>
+									<li><a href="/catalog/Cvetovye_zanavesy_i_setki_na_lampah_nakalivaniya/"  >Cветовые занавесы и сетки на лампах накаливания</a></li>
+			</ul></li>						<li  ><a href="/catalog/Svetodiodnye_informatsionnye_tablo/" class="root-item " >Светодиодные информационные табло</a></li>
+									<li  ><a href="/catalog/Ulichnoe_i_parkovoe_osveschenie/" class="root-item " >Уличное и парковое освещение</a></li>
+						<li  >
+		<a href="/catalog/Svetil_niki__Sneha___proizvodstvo___Rossiya_/" class="root-item ">Светильники &quot;Sneha&quot; (производство - Россия)</a>
+		<ul class="root-item">
+							<li><a href="/catalog/Svetil_niki__Rassvet_/"  >Светильники &quot;Рассвет&quot;</a></li>
+									<li><a href="/catalog/Svetil_niki_nastenno_potolochnye_Sneha__NPB__/"  >Светильники настенно-потолочные Sneha (НПБ).</a></li>
+									<li><a href="/catalog/Svetil_niki_nastennye_Sneha__NBB__/"  >Светильники настенные Sneha (НББ).</a></li>
+									<li><a href="/catalog/Svetil_niki_podvesnye_Sneha__NSB__/"  >Светильники подвесные Sneha (НСБ).</a></li>
+			</ul></li>						<li  ><a href="/catalog/CHasy/" class="root-item " >Часы</a></li>
+									<li  ><a href="/catalog/Lyuminestsentnye_svetil_niki/" class="root-item " >Люминесцентные светильники</a></li>
+									<li  ><a href="/catalog/Plafony/" class="root-item " >Плафоны</a></li>
+									<li  ><a href="/catalog/Elektrofurnitura/" class="root-item " >Электрофурнитура</a></li>
+									<li  ><a href="/catalog/Mebel_/" class="root-item " >Мебель</a></li>
+									<li  ><a href="/catalog/Svetil_niki__gauss_/" class="root-item " >Светильники (gauss)</a></li>
+									<li  ><a href="/catalog/Lampy__gauss_/" class="root-item " >Лампы (gauss)</a></li>
+						<li  >
+		<a href="/catalog/Lampy/" class="root-item ">Лампы</a>
+		<ul class="root-item">
+							<li><a href="/catalog/Lampy_galogennye/"  >Лампы галогенные</a></li>
+									<li><a href="/catalog/Lampy_na_svetodiodah/"  >Лампы на светодиодах</a></li>
+									<li><a href="/catalog/Lampy_nakalivaniya/"  >Лампы накаливания</a></li>
+									<li><a href="/catalog/Energosberegayuschie_lampy/"  >Энергосберегающие лампы</a></li>
+			</ul></li>			<li  >
+		<a href="/catalog/Dekorativnye_svetil_niki/" class="root-item ">Декоративные светильники</a>
+		<ul class="root-item">
+							<li><a href="/catalog/Svetodinamicheskie_ustanovki/"  >Светодинамические установки</a></li>
+									<li><a href="/catalog/Nochniki/"  >Ночники</a></li>
+									<li><a href="/catalog/Dekorativnye_nastol_nye_lampy/"  >Декоративные настольные лампы</a></li>
+									<li><a href="/catalog/Kartiny_s_podsvetkoy/"  >Картины с подсветкой</a></li>
+			</ul></li>			<li  >
+		<a href="/catalog/Utsenka/" class="root-item ">Уценка</a>
+		<ul class="root-item">
+							<li><a href="/catalog/Napol_nye_L/"  >Напольные L</a></li>
+									<li><a href="/catalog/Nastennye_L/"  >Настенные L</a></li>
+									<li><a href="/catalog/Nastol_nye_L/"  >Настольные L</a></li>
+									<li><a href="/catalog/Potolochnye_L/"  >Потолочные L</a></li>
+									<li><a href="/catalog/Spoty_L/"  >Споты L</a></li>
+									<li><a href="/catalog/Raznoe_L/"  >Разное L</a></li>
+									<li><a href="/catalog/Spotovye_svetil_niki_L/"  >Спотовые светильники L</a></li>
+			</ul></li>						<li  ><a href="/sale/" class="root-item  status  status-sale" >Распродажа</a></li>
+									<li  ><a href="/new/" class="root-item  status  status-new" >Новинки</a></li>
+			</ul>
+</nav>
+</div>
+</div>
+
+<!--'end_frame_cache_XEVOpk'-->
+
+
+<!-- Yandex.Metrika informer -->
+<a href="https://metrika.yandex.ru/stat/?id=1092481&amp;from=informer"
+target="_blank" rel="nofollow"><img src="https://informer.yandex.ru/informer/1092481/3_0_FFFFFFFF_EFEFEFFF_0_pageviews"
+style="width:88px; height:31px; border:0;" alt="Яндекс.Метрика" title="Яндекс.Метрика: данные за сегодня (просмотры, визиты и уникальные посетители)" class="ym-advanced-informer" data-cid="1092481" data-lang="ru" /></a>
+<!-- /Yandex.Metrika informer -->
+
+</div>
+
+<!-- RIGHT -->
+<div class="right side-panel" >
+<!--'start_frame_cache_iIjGFB'--><nav class="side-block sneha-auth" id="sneha-auth-form">
+	<form method="post" target="_top" action="/private_office/export/?login=yes" class="sheha_auth_form" data-id="sneha-auth-form">
+		<div class="input-sect">
+			<input type="text"     name="USER_LOGIN"    maxlength="50" placeholder="Логин"  class="inpt" value="" />
+			<input type="password" name="USER_PASSWORD" maxlength="50" placeholder="Пароль" class="inpt" />
+		</div>
+		
+
+		
+		<input type="hidden" name="backurl" value="/private_office/export/" />				<input type="hidden" name="AUTH_FORM" value="Y" />
+		<input type="hidden" name="TYPE"  value="AUTH" />
+		<input type="hidden" name="TYPE_NX"  value="AUTH" />
+		<input type="submit" name="Login" value="Войти" class="btn" />
+		<a href="/private_office/?forgot_password=yes&amp;backurl=%2Fprivate_office%2Fexport%2F" class="forgot" rel="nofollow">Забыли пароль?</a>
+	</form>
+
+
+	<a href="/registration/" class="reg" rel="nofollow">Регистрация</a>
+	<a href="/agrements.php" class="reg personal" rel="nofollow" target="_blank">Политика защиты и обработки персональных данных</a>
+</nav>
+<!--'end_frame_cache_iIjGFB'-->	
+<!--'start_frame_cache_SRvrjZ'--><section class="side-block sneha-news-line">
+<h6 class="tab_opened"><a href="/news/" class="more">Новости</a></h6>
+<div>
+<div class="news-line-item" id="bx_3106255276_214655">
+<time datetime="2019-10-04T00:00:00+03:00" >4 Октября 2019</time>
+<a class="ttl" href="/news/214655/">Поступление светильников Электра (7 октября 2019)</a>
+<p><a href="/news/214655/" class="more">Подробнее</a></p>
+</div>
+<div class="news-line-item" id="bx_3106255276_214493">
+<time datetime="2019-09-27T00:00:00+03:00" >27 Сентября 2019</time>
+<a class="ttl" href="/news/214493/">Поступление светильников Электра (30 сентября 2019)</a>
+<p><a href="/news/214493/" class="more">Подробнее</a></p>
+</div>
+</div>
+</section><!--'end_frame_cache_SRvrjZ'--> 
+
+
+<section class="side-block sneha-pdf">
+<h6 class="tab_opened">PDF каталоги</h6>
+<div>
+<a href="/upload/iblock/5db/elektra_2020.pdf" id="bx_4665576_170675" target="_blank" class="pdf">Электра 2020</a>
+<a href="/upload/iblock/6eb/Eletra_tochki_2020_.pdf" id="bx_4665576_12294" target="_blank" class="pdf">Точечные светильники 2020</a>
+<a href="/upload/iblock/721/Gauss_2018.pdf" id="bx_4665576_142576" target="_blank" class="pdf">Лампы Gauss-2018</a>
+</div>
+</section>
+<section class="side-block sneha-pdf">
+<h6 class="tab_opened">Прайс-листы</h6>
+<div>
+</div>
+</section>
+<!--'start_frame_cache_IzufVt'--><section class="side-block subscribe-block">
+	<h6>Рассылка</h6>
+	<div class="subscribe-form">
+		<form action="/subscribe/" >
+		<input type="text" placeholder="E-mail" name="EMAIL" class="inpt" />
+		
+				<p>
+		<input type="checkbox" class = "chb" name="sf_RUB_ID[]" id="sf_RUB_ID_1" value="1" checked="checked" /> 
+		<label for="sf_RUB_ID_1">Новости фирмы «Электра»</label></p>
+				<input type="submit" value="ОК" class="sbtn btn" />
+		</form>
+	</div>
+</section>
+
+
+<!--'end_frame_cache_IzufVt'-->    
+</div>
+</div>
+<!-- FOOTER --> 
+<footer class="footer bb vcard">
+	<address class="copy">
+		© Фирма «Электра»<br />Использование материалов сайта без согласования запрещено.
+		<a href="http://www.imageprom.com" target="_blank" class="ip">Создание и продвижение сайта — <strong>РА «Имиджпром»</strong></a>
+	</address>
+	</footer> 
+</div>
+<script type="text/javascript">if(!window.BX)window.BX={};if(!window.BX.message)window.BX.message=function(mess){if(typeof mess=='object') for(var i in mess) BX.message[i]=mess[i]; return true;};</script>
+<script type="text/javascript">(window.BX||top.BX).message({'JS_CORE_LOADING':'Загрузка...','JS_CORE_NO_DATA':'- Нет данных -','JS_CORE_WINDOW_CLOSE':'Закрыть','JS_CORE_WINDOW_EXPAND':'Развернуть','JS_CORE_WINDOW_NARROW':'Свернуть в окно','JS_CORE_WINDOW_SAVE':'Сохранить','JS_CORE_WINDOW_CANCEL':'Отменить','JS_CORE_WINDOW_CONTINUE':'Продолжить','JS_CORE_H':'ч','JS_CORE_M':'м','JS_CORE_S':'с','JSADM_AI_HIDE_EXTRA':'Скрыть лишние','JSADM_AI_ALL_NOTIF':'Показать все','JSADM_AUTH_REQ':'Требуется авторизация!','JS_CORE_WINDOW_AUTH':'Войти','JS_CORE_IMAGE_FULL':'Полный размер'});</script><script type="text/javascript" src="/bitrix/js/main/core/core.js?1569844030497618"></script><script>BX.setJSList(['/bitrix/js/main/core/core_ajax.js','/bitrix/js/main/core/core_promise.js','/bitrix/js/main/polyfill/promise/js/promise.js','/bitrix/js/main/loadext/loadext.js','/bitrix/js/main/loadext/extension.js','/bitrix/js/main/polyfill/promise/js/promise.js','/bitrix/js/main/polyfill/find/js/find.js','/bitrix/js/main/polyfill/includes/js/includes.js','/bitrix/js/main/polyfill/matches/js/matches.js','/bitrix/js/ui/polyfill/closest/js/closest.js','/bitrix/js/main/polyfill/fill/main.polyfill.fill.js','/bitrix/js/main/polyfill/find/js/find.js','/bitrix/js/main/polyfill/matches/js/matches.js','/bitrix/js/main/polyfill/core/dist/polyfill.bundle.js','/bitrix/js/main/polyfill/core/dist/polyfill.bundle.js','/bitrix/js/main/lazyload/dist/lazyload.bundle.js','/bitrix/js/main/polyfill/core/dist/polyfill.bundle.js','/bitrix/js/main/parambag/dist/parambag.bundle.js']);
+BX.setCSSList(['/bitrix/js/main/lazyload/dist/lazyload.bundle.css','/bitrix/js/main/parambag/dist/parambag.bundle.css']);</script>
+<script type="text/javascript">(window.BX||top.BX).message({'LANGUAGE_ID':'ru','FORMAT_DATE':'DD.MM.YYYY','FORMAT_DATETIME':'DD.MM.YYYY HH:MI:SS','COOKIE_PREFIX':'BITRIX_SM','SERVER_TZ_OFFSET':'10800','SITE_ID':'s2','SITE_DIR':'/','USER_ID':'','SERVER_TIME':'1570268191','USER_TZ_OFFSET':'0','USER_TZ_AUTO':'Y','bitrix_sessid':'9471d527f531a5650fe57119668b1287'});</script><script type="text/javascript"  src="/bitrix/cache/js/s2/sneha/kernel_main/kernel_main_v1.js?1569573253161045"></script>
+<script type="text/javascript" src="/bitrix/js/main/core/core_db.min.js?152820585510247"></script>
+<script type="text/javascript" src="/bitrix/js/main/core/core_ls.min.js?15010609327365"></script>
+<script type="text/javascript" src="/bitrix/js/main/core/core_frame_cache.min.js?153622582211334"></script>
+<script type="text/javascript">BX.setJSList(['/bitrix/js/main/core/core_fx.js','/bitrix/js/main/session.js','/bitrix/js/main/core/core_window.js','/bitrix/js/main/date/main.date.js','/bitrix/js/main/core/core_date.js','/bitrix/js/main/utils.js','/bitrix/templates/.default/components/bitrix/system.auth.authorize/.default/script.js','/bitrix/templates/sneha/jquery-1.12.0.min.js','/bitrix/templates/sneha/jquery-ui-1.11.4.custom.min.js','/bitrix/templates/sneha/jquery-migrate-1.2.1.min.js','/bitrix/templates/sneha/modernizr.js','/bitrix/templates/sneha/nx_plugins.js','/bitrix/templates/sneha/hyphenate.js','/bitrix/templates/.default/components/ip/mailform_4.8/sneha_2.0_ajax/script.js','/bitrix/components/ip/nx_gallery_3.5/jquery.fancybox.min.js','/bitrix/templates/.default/components/bitrix/system.auth.form/sneha_2.0/script.js']); </script>
+<script type="text/javascript">BX.setCSSList(['/bitrix/templates/.default/components/bitrix/system.auth.authorize/.default/style.css','/bitrix/templates/sneha/jquery-ui.css','/bitrix/templates/sneha/catalog.css','/bitrix/components/ip/nx_gallery_3.5/core_styles.css','/bitrix/templates/.default/components/ip/mailform_4.8/sneha_2.0_ajax/style.css','/bitrix/templates/.default/components/bitrix/menu/sneha_2.0_header/style.css','/bitrix/templates/.default/components/bitrix/menu/sneha_2.0_catalog_v2/style.css','/bitrix/templates/.default/components/bitrix/system.auth.form/sneha_2.0/style.css','/bitrix/templates/.default/components/ip/news.line/sneha-news-line/style.css','/bitrix/templates/.default/components/bitrix/news.line/sneha_pdf_2.0/style.css','/bitrix/templates/.default/components/bitrix/subscribe.form/sneha_subs_2.0/style.css','/bitrix/templates/sneha/styles.css','/bitrix/templates/sneha/template_styles.css']); </script>
+<script type="text/javascript"  src="/bitrix/cache/js/s2/sneha/template_b50eb97b3a43e18230495f94b7b3fa83/template_b50eb97b3a43e18230495f94b7b3fa83_v1.js?1569494790517741"></script>
+<script type="text/javascript"  src="/bitrix/cache/js/s2/sneha/page_4fa7e49c9f429bfdad948303736631b5/page_4fa7e49c9f429bfdad948303736631b5_v1.js?15694949561848"></script>
+<script type="text/javascript">var _ba = _ba || []; _ba.push(["aid", "6b7e10ff36906a59d8e203eb7f955171"]); _ba.push(["host", "www.electra.ru"]); (function() {var ba = document.createElement("script"); ba.type = "text/javascript"; ba.async = true;ba.src = (document.location.protocol == "https:" ? "https://" : "http://") + "bitrix.info/ba.js";var s = document.getElementsByTagName("script")[0];s.parentNode.insertBefore(ba, s);})();</script>
+
+
+<script type="text/javascript">
+try{document.form_auth.USER_LOGIN.focus();}catch(e){}
+</script>
+
+</body>
+</html>
+ 
