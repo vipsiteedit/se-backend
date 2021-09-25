@@ -1253,10 +1253,13 @@ class plugin_shopgoods
 		$parents = $this->plugin_groups->getParents((int)$id_group, true);
 
 		if (!empty($parents)) {
-			foreach ($parents as $val) {
+			$i = count($parents) + 3;
+			foreach ($parents as $i=>$val) {
+				$i--;
 				$dt[] = array(
 					'cat' => $val['code'],
-					'cat_nm' => $val['name']
+					'cat_nm' => $val['name'],
+					'pos' => $i
 				);
 			}
 		}

@@ -106,7 +106,7 @@ class plugin_geosites
                     $it = $this->getContact($this->id_contact);
                     $url = $this->getUrl($it['url']);
                     if ($url != $this->basedomain) {
-                        $this->go301($url . $_SERVER['REQUEST_URI']);
+                        //$this->go301($url . $_SERVER['REQUEST_URI']);
                     }
                     $this->storeSession($it);
                 }
