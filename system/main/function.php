@@ -625,7 +625,6 @@ function se_getContainer($cont)
         $content = new seContent($cont);
         $result = $content->execute();
         unset($content);
-        // 240---------- ����� ���������� ������� --------------------------------------------
     } else {
         if ($cont == 0 && $se->page->groupslevel < 4) {
             $result = seAuthorizeForm();

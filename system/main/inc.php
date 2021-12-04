@@ -5,4 +5,3 @@ session_start();
 error_reporting(0);
 //chdir(dirname(__FILE__) . '/../../');
 require_once 'system/main/init.php';
-require_once 'system/main/reindex.php';

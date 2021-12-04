@@ -620,11 +620,15 @@ class plugin_shopgoods
 
 		if (!empty($list)) {
 			foreach ($list as $val) {
+			    if (strpos($val['file'], "://")!==false) {
+				$val['link'] = $val['file'];
+			    } else {
 				$val['link'] = '/files/' . $val['file'];
 				if (!file_exists(SE_ROOT . $val['link']))
 					continue;
 				$val['size'] = $this->formatFileSize(filesize(SE_ROOT . $val['link']));
-				$files[] = $val;
+			    }
+			    $files[] = $val;
 			}
 		}
 

@@ -1,6 +1,7 @@
 <?php
 
 require 'system/main/inc.php';
+require 'system/main/reindex.php';
 
 if (isRequest('reindex') || !is_dir(getcwd() . '/projects/' . SE_DIR . 'searchdata')) {
     reindexsite();
@@ -32,10 +33,6 @@ if (isRequest('err_rep')) {
     error_reporting(E_ALL);
 }
 
-if (file_exists('system/block')) {
-    header('Location: http://e-stile.ru/closed.html');
-    exit();
-}
 if (isRequest('ed')) {
     $system_page = getRequest('ed');
     $system_object = getRequest('object');

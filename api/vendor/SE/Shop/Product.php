@@ -411,7 +411,7 @@ class Product extends Base
             $file['id'] = $item['id'];
             $file['fileURL'] = $item['file'];
             $file['fileText'] = $item['name'];
-            $file['fileName'] = basename($item['file']);
+            $file['fileName'] = $item['file'];
             $file['fileExt'] = strtoupper(substr(strrchr($item['file'], '.'), 1));
             $file['sortIndex'] = $item['sort'];
             if ($file['fileUrl']) {
