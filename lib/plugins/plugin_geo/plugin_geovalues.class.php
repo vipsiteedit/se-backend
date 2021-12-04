@@ -24,7 +24,6 @@ class plugin_geovalues
         $sc->leftjoin('shop_geo_variables sgv', 'sgv.id_variable=sv.id AND sgv.id_contact=' . intval($this->cont['id']));
         $sc->orderBy('name');
         $this->valuelist = $sc->getList();
-		 
 		try {
 			$sc = new seTable('shop_geo_pages', 'sgp');
 			$sc->select('sgp.id_contact, sgp.page, sgp.skin, sgp.altpage');

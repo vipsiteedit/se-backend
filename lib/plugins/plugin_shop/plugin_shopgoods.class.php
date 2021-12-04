@@ -620,15 +620,15 @@ class plugin_shopgoods
 
 		if (!empty($list)) {
 			foreach ($list as $val) {
-			    if (strpos($val['file'], "://")!==false) {
-				$val['link'] = $val['file'];
-			    } else {
-				$val['link'] = '/files/' . $val['file'];
-				if (!file_exists(SE_ROOT . $val['link']))
-					continue;
-				$val['size'] = $this->formatFileSize(filesize(SE_ROOT . $val['link']));
-			    }
-			    $files[] = $val;
+				if (strpos($val['file'], "://") !== false) {
+					$val['link'] = $val['file'];
+				} else {
+					$val['link'] = '/files/' . $val['file'];
+					if (!file_exists(SE_ROOT . $val['link']))
+						continue;
+					$val['size'] = $this->formatFileSize(filesize(SE_ROOT . $val['link']));
+				}
+				$files[] = $val;
 			}
 		}
 
@@ -1257,10 +1257,13 @@ class plugin_shopgoods
 		$parents = $this->plugin_groups->getParents((int)$id_group, true);
 
 		if (!empty($parents)) {
-			foreach ($parents as $val) {
+			$i = count($parents) + 3;
+			foreach ($parents as $i => $val) {
+				$i--;
 				$dt[] = array(
 					'cat' => $val['code'],
-					'cat_nm' => $val['name']
+					'cat_nm' => $val['name'],
+					'pos' => $i
 				);
 			}
 		}

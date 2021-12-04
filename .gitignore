@@ -6,3 +6,7 @@
 /cachedb
 /lib/database/tables
 /lib/database/sql
+/projects
+/www
+hostname.dat
+sitelang.dat
