@@ -40,12 +40,12 @@ function output($getfile)
         if (strpos($getfile, 'robots.txt') !== false) {
             $pr = explode('://', $newdomain);
             if (strpos($line, 'Host:') !== false && $pr[0] == 'http') {
-                echo str_replace(array('{host}', $thisdomain), $pr[1], $line);
+                echo str_replace(array($thisdomain, '{host}'), $pr[1], $line);
             } else {
-                echo str_replace(array('{host}', $thisdomain), $newdomain, $line);
+                echo str_replace(array($thisdomain, '{host}'), $newdomain, $line);
             }
         } else {
-            echo str_replace(array('{host}', $thisdomain), $newdomain, $line);
+            echo str_replace(array($thisdomain, '{host}'), $newdomain, $line);
         }
     }
 }
