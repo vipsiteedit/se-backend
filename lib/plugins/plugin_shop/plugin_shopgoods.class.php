@@ -1278,4 +1278,36 @@ class plugin_shopgoods
 		}
 		return $label;
 	}
+	public function getGoodsWish($id_user = 0, $id_price)
+	{
+		$is_wish = false;
+
+		if (!empty($id_price) && $id_user != 0) {
+			$shop_wishlist = new seTable('shop_wishlist', 'sw');
+			$shop_wishlist->select('sw.id_user, sw.id_price, sp.id as id_wish');
+			$shop_wishlist->innerJoin('shop_price sp', 'sp.id = sw.id_price');
+			$shop_wishlist->where('sw.id_user=?', $id_user);
+			$shop_wishlist->andWhere('sw.id_price=?', $id_price);
+			$fetchWish = $shop_wishlist->fetchOne();
+			if ($fetchWish) {
+				$is_wish = true;
+			} else {
+				$is_wish = false;
+			}
+		}
+
+		$result = $is_wish;
+
+		return $result;
+	}
+
+	public function getGoodsWishCount($id_user = 0)
+	{
+		$table_wish = new seTable('shop_wishlist', 'sw');
+		$table_wish->select('*');
+		$table_wish->where("sw.id_user='?'", $id_user);
+		$count_wish = $table_wish->getListCount();
+
+		return $count_wish;
+	}
 }
