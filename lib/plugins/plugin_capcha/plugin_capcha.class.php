@@ -45,7 +45,7 @@ class plugin_capcha extends CurlAbstract
         return $this->errstpin;
     }
 
-    public function check($response)
+    public function check()
     {
         if (empty($this->key)) {
             require_once SE_LIBS . "card.php";

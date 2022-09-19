@@ -168,6 +168,214 @@ class seData
         }
     }
 
+
+    /**
+     * @param $sectionId
+     * @return string
+     * @Comment: Обработка ссылок на страницe
+     **/
+    public function execute()
+    {
+        global $SE_REQUEST_NAME;
+        if (empty($this->page->title_tag)) $this->page->title_tag = 'h1';
+        $this->sections = array();
+        foreach ($this->prj->sections as $value) {
+            $id_content = strval($value['name']);
+            if ($this->ajaxId && $this->ajaxId != $id_content) continue;
+            //if ($this->ajaxType && $this->ajaxType != strval($value->type)) continue;
+            if (empty($value->title_tag)) $value->title_tag = 'h3';
+            $this->sections[$id_content] = $value;
+        }
+
+        if (count($this->page->sections))
+            foreach ($this->page->sections as $value) {
+                $id_content = strval($value['name']);
+                if ($this->ajaxId && $this->ajaxId != $id_content) continue;
+                //if ($this->ajaxType && $this->ajaxType != strval($value->type)) continue;
+                if (empty($value->title_tag)) $value->title_tag = 'h3';
+                $this->sections[strval($id_content)] = $value;
+            }
+
+        $modulesArr = array();
+        if (!empty($this->sections)) {
+            foreach ($this->sections as $id_content => $section) {
+                $id_content = strval($section->id);
+                $cont = ($id_content > 100000) ? 100 + floor(($id_content - 100000) / 1000) : floor($id_content / 1000);
+                //if (!empty($this->contarr) && !in_array($cont, $this->contarr)) continue;
+                if ($this->req->object && $this->req->razdel == $id_content) {
+                    $obj = $this->getObject($section, $this->req->object);
+                    $this->page->titlepage = (!empty($obj->meta_title)) ? strip_tags($obj->meta_title) : strip_tags($obj->title);
+                    $this->page->keywords = (!empty($obj->meta_keywords)) ? strip_tags($obj->meta_keywords) : strip_tags($obj->title);
+                    $this->page->description = (!empty($obj->meta_descr)) ? strip_tags($obj->meta_descr) : strip_tags($obj->note);
+                }
+
+                $is_add_url = false;
+                $first = 0;
+                $row = 1;
+                if (count(array($section->objects))) {
+                    foreach ($section->objects as $object) {
+                        if ($first == 0) {
+                            $first = intval($object->id);
+                        }
+                        if ($section->showrecord != 'off') {
+                            $object->link_detail = $this->objectLink($section->id, $object);
+                        }
+
+                        $object->first = $first;
+                        $object->row = $row;
+                        $object->num = $row - 1;
+                        if (!empty($object->image) && empty($object->image_prev)) {
+                            if (strpos($object->image, '://') === false) {
+                                $prev = explode('.', $object->image);
+                                $object->image_prev = $prev[0] . '_prev.' . $prev[1];
+                            } else {
+                                $object->image_prev = $object->image;
+                            }
+                        }
+                        if (!strval($object->image_alt)) {
+                            $object->image_alt = htmlspecialchars($object->title);
+                        }
+                        if (empty($object->title_tag)) $object->title_tag = 'h4';
+                        $row++;
+                    }
+                }
+                if (strval($section->showrecord) == 'off' && strval($section->id) == strval($this->req->razdel) && intval($this->req->object)) {
+                    $this->go404();
+                }
+                if (count(array($section->translates))) {
+                    foreach ($section->translates as $language) {
+                        foreach ($language as $name => $value)
+                            $section->language->$name = $value;
+                    }
+                }
+
+                list($nametype) = explode('.', $section->type);
+                $id_content = strval($section->id);
+                if (!function_exists('start_' . $nametype)) {
+                    $root = getcwd() . $this->getFolderModule($nametype);
+                    if (file_exists($root . '/mdl_' . $nametype . '.php')) require_once($root . '/mdl_' . $nametype . '.php');
+                    if ($this->req->sub && $section->id == $this->req->razdel && !file_exists($root . '/' . $nametype . '/php/subpage_' . $this->req->sub . '.php')) {
+                        $this->go404();
+                    }
+                }
+
+
+                $nametype = $section->type;
+                $id_content = strval($section->id);
+                $modulepath = '';
+                if (!function_exists('start_' . $nametype)) {
+                    $modulepath = $this->getFolderModule($nametype);
+                    $root = getcwd() . $modulepath . '/mdl_' . $nametype . '.php';
+                    if (file_exists($root)) require_once($root);
+                }
+                $isShow = false;
+
+                if (function_exists('module_' . $nametype) && $this->getStatusService($nametype)) {
+                    $fl_find_source = false;
+                    if (!empty($section->sources)) {
+                        $fl_find_source = true;
+                        $pagename = ($section->id > 100000) ? '_' : $this->pagename;
+                        $path_cache = SE_SAFE . "projects/" . SE_DIR . 'cache/' . $pagename . '/';
+
+                        $filename_page = SE_SAFE . "projects/" . SE_DIR;
+                        $filename_page .= ($pagename == '_') ? 'project.xml' : 'pages/' . $this->pagename . '.xml';
+                        if (!file_exists($path_cache)) mkdir($path_cache);
+                        foreach ($section->sources[0] as $name => $value) {
+                            if ($value == '') continue;
+                            if (strpos($name, 'sub') === 0) $name = substr($name, 3);
+                            if (file_exists(getcwd() . $modulepath . '/' . $nametype . '/tpl/' . 'subpage_' . $name . '.tpl')) {
+                                $name = 'subpage_' . $name;
+                            }
+                            $name_cache = $path_cache . $nametype . '_' . $name . '_' . $section->id . '.tpl';
+                            if (!file_exists($name_cache) || filemtime($name_cache) < filemtime($filename_page) || filemtime($name_cache) < filemtime(__FILE__)) {
+                                $fp = fopen($name_cache, "w+");
+                                fwrite($fp, $this->parseModule($value, $section));
+                                fclose($fp);
+                            }
+                        }
+                    }
+
+
+                    if (!in_array($nametype, $modulesArr)) {
+                        $modulesArr[] = $nametype;
+                        if ($link = $this->getLinkStyle($section, $modulepath . '/' . $nametype)) {
+                            if (!in_array($link, $this->headercss)) {
+                                $this->headercss[] = $link;
+                            }
+                        }
+                    }
+                    $arr = array();
+
+                    $this->parseParams($section);
+
+                    $arr = call_user_func_array('module_' . $nametype, array($id_content, $section));
+                    /*if (!SE_ALL_SERVICES && !$this->getStatusService($nametype, false)) {
+                        $arr['content']['form'] = '<div style="color: #FF0000;">&nbsp;'.$this->editor->getTextLanguage('close_service').'</div>' . $arr['content']['form'];
+                    }*/
+                    $arr['content']['form'] = $this->setEditorLinks($section, $arr['content']['form']);
+
+                    $section->body = replace_link($this->getHeader($arr['content']['form'], $section));
+                    if (!empty($arr['content']['object'])) {
+                        $section->formobject = replace_link($this->getHeader($arr['content']['object'], $section));
+                    }
+                    if (!empty($arr['content']['show'])) {
+                        $section->formshow = replace_link($this->getHeader($arr['content']['show'], $section));
+                        $isShow = true;
+                    }
+                    if (!empty($arr['content']['arhiv'])) {
+                        $section->formarhiv = replace_link($this->getHeader($arr['content']['arhiv'], $section));
+                    }
+                    if (!empty($arr['subpage']))
+                        foreach ($arr['subpage'] as $subname => $value) {
+                            $section->subpage->$subname->form = $this->getHeader($value['form'], $section);
+                            $section->subpage->$subname->group = $value['group'];
+                        }
+                }
+            }
+        }
+        if ($this->ajaxId || $this->ajaxType) exit;
+
+        $this->checkUrls($isShow);
+        $footer = array();
+        foreach ($this->footer as $key => $line) {
+            $line = trim($line);
+            if (in_array($line, $this->header, true)) {
+                unset($this->footer[$key]);
+                //$footer[] = $line;
+            }
+        }
+    }
+
+    public function checkUrls($isShow)
+    {
+        global $SE_REQUEST_NAME;
+        $urllist = from_Url();
+        $uri = $_SERVER['REQUEST_URI'];
+        foreach ($urllist as $uname => $arr) {
+            $find = false;
+            @list($uname) = explode('[', urldecode($uname));
+            if (empty($uname)) continue;
+            if (is_numeric($uname) && empty($_GET[$uname]) && strpos($uri, '?') !== false) {
+                list($url,) = explode('?', $uri);
+                // echo $url[0];
+                $this->go301($url);
+            }
+            foreach ($SE_REQUEST_NAME as $qname => $name) {
+                if (strval($uname) == strval($qname) || !isset($arr) || isset($_GET[$uname]) || $isShow || $qname == $uri) {
+                    $find = true;
+                    break;
+                }
+            }
+            if (!$find) {
+                $this->go404();
+            }
+        }
+        if (isset($_GET['page'])) {
+            $this->go404();
+        }
+    }
+
+
     private function objectLinkName($sect_id, $object)
     {
         $urlname = (!empty($object->url)) ? $object->url : se_translite_url($object->title);
@@ -421,9 +629,6 @@ class seData
                     $this->pagename = $gval->getAltPageName($this->pagename);
                 }
             }
-
-
-
             define('SE_STARTPAGE', $this->startpage);
             if (strval($this->prj->vars->language) == '') {
                 $this->prj->vars->language = 'rus';
@@ -684,197 +889,6 @@ class seData
         foreach ($this->URLS[$pagelink] as $url) {
             if ($url['action'] == 'arhiv' && $url['id'] == $sectionId) {
                 return $url['pattern'];
-            }
-        }
-    }
-
-    public function execute()
-    {
-        global $SE_REQUEST_NAME;
-        if (empty($this->page->title_tag)) $this->page->title_tag = 'h1';
-        $this->sections = array();
-        foreach ($this->prj->sections as $value) {
-            $id_content = strval($value['name']);
-            if ($this->ajaxId && $this->ajaxId != $id_content) continue;
-            //if ($this->ajaxType && $this->ajaxType != strval($value->type)) continue;
-            if (empty($value->title_tag)) $value->title_tag = 'h3';
-            $this->sections[$id_content] = $value;
-        }
-
-        if (count($this->page->sections))
-            foreach ($this->page->sections as $value) {
-                $id_content = strval($value['name']);
-                if ($this->ajaxId && $this->ajaxId != $id_content) continue;
-                //if ($this->ajaxType && $this->ajaxType != strval($value->type)) continue;
-                if (empty($value->title_tag)) $value->title_tag = 'h3';
-                $this->sections[strval($id_content)] = $value;
-            }
-
-        $modulesArr = array();
-        if (!empty($this->sections)) {
-            foreach ($this->sections as $id_content => $section) {
-                $id_content = strval($section->id);
-                $cont = ($id_content > 100000) ? 100 + floor(($id_content - 100000) / 1000) : floor($id_content / 1000);
-                //if (!empty($this->contarr) && !in_array($cont, $this->contarr)) continue;
-                if ($this->req->object && $this->req->razdel == $id_content) {
-                    $obj = $this->getObject($section, $this->req->object);
-                    $this->page->titlepage = (!empty($obj->meta_title)) ? strip_tags($obj->meta_title) : strip_tags($obj->title);
-                    $this->page->keywords = (!empty($obj->meta_keywords)) ? strip_tags($obj->meta_keywords) : strip_tags($obj->title);
-                    $this->page->description = (!empty($obj->meta_descr)) ? strip_tags($obj->meta_descr) : strip_tags($obj->note);
-                }
-
-                $is_add_url = false;
-                $first = 0;
-                $row = 1;
-                if (count(array($section->objects))) {
-                    foreach ($section->objects as $object) {
-                        if ($first == 0) {
-                            $first = intval($object->id);
-                        }
-                        if ($section->showrecord != 'off') {
-                            $object->link_detail = $this->objectLink($section->id, $object);
-                        }
-
-                        $object->first = $first;
-                        $object->row = $row;
-                        $object->num = $row - 1;
-                        if (!empty($object->image) && empty($object->image_prev)) {
-                            if (strpos($object->image, '://') === false) {
-                                $prev = explode('.', $object->image);
-                                $object->image_prev = $prev[0] . '_prev.' . $prev[1];
-                            } else {
-                                $object->image_prev = $object->image;
-                            }
-                        }
-                        if (!strval($object->image_alt)) {
-                            $object->image_alt = htmlspecialchars($object->title);
-                        }
-                        if (empty($object->title_tag)) $object->title_tag = 'h4';
-                        $row++;
-                    }
-                }
-                if (strval($section->showrecord) == 'off' && strval($section->id) == strval($this->req->razdel) && intval($this->req->object)) {
-                    $this->go404();
-                }
-                if (count(array($section->translates))) {
-                    foreach ($section->translates as $language) {
-                        foreach ($language as $name => $value)
-                            $section->language->$name = $value;
-                    }
-                }
-
-                list($nametype) = explode('.', $section->type);
-                $id_content = strval($section->id);
-                if (!function_exists('start_' . $nametype)) {
-                    $root = getcwd() . $this->getFolderModule($nametype);
-                    if (file_exists($root . '/mdl_' . $nametype . '.php')) require_once($root . '/mdl_' . $nametype . '.php');
-                    if ($this->req->sub && $section->id == $this->req->razdel && !file_exists($root . '/' . $nametype . '/php/subpage_' . $this->req->sub . '.php')) {
-                        $this->go404();
-                    }
-                }
-
-
-                $nametype = $section->type;
-                $id_content = strval($section->id);
-                $modulepath = '';
-                if (!function_exists('start_' . $nametype)) {
-                    $modulepath = $this->getFolderModule($nametype);
-                    $root = getcwd() . $modulepath . '/mdl_' . $nametype . '.php';
-                    if (file_exists($root)) require_once($root);
-                }
-
-                if (function_exists('module_' . $nametype) && $this->getStatusService($nametype)) {
-                    $fl_find_source = false;
-                    if (!empty($section->sources)) {
-                        $fl_find_source = true;
-                        $pagename = ($section->id > 100000) ? '_' : $this->pagename;
-                        $path_cache = SE_SAFE . "projects/" . SE_DIR . 'cache/' . $pagename . '/';
-
-                        $filename_page = SE_SAFE . "projects/" . SE_DIR;
-                        $filename_page .= ($pagename == '_') ? 'project.xml' : 'pages/' . $this->pagename . '.xml';
-                        if (!file_exists($path_cache)) mkdir($path_cache);
-                        foreach ($section->sources[0] as $name => $value) {
-                            if ($value == '') continue;
-                            if (strpos($name, 'sub') === 0) $name = substr($name, 3);
-                            if (file_exists(getcwd() . $modulepath . '/' . $nametype . '/tpl/' . 'subpage_' . $name . '.tpl')) {
-                                $name = 'subpage_' . $name;
-                            }
-                            $name_cache = $path_cache . $nametype . '_' . $name . '_' . $section->id . '.tpl';
-                            if (!file_exists($name_cache) || filemtime($name_cache) < filemtime($filename_page) || filemtime($name_cache) < filemtime(__FILE__)) {
-                                $fp = fopen($name_cache, "w+");
-                                fwrite($fp, $this->parseModule($value, $section));
-                                fclose($fp);
-                            }
-                        }
-                    }
-
-
-                    if (!in_array($nametype, $modulesArr)) {
-                        $modulesArr[] = $nametype;
-                        if ($link = $this->getLinkStyle($section, $modulepath . '/' . $nametype)) {
-                            if (!in_array($link, $this->headercss)) {
-                                $this->headercss[] = $link;
-                            }
-                        }
-                    }
-                    $arr = array();
-
-                    $this->parseParams($section);
-
-                    $arr = call_user_func_array('module_' . $nametype, array($id_content, $section));
-                    /*if (!SE_ALL_SERVICES && !$this->getStatusService($nametype, false)) {
-                        $arr['content']['form'] = '<div style="color: #FF0000;">&nbsp;'.$this->editor->getTextLanguage('close_service').'</div>' . $arr['content']['form'];
-                    }*/
-                    $arr['content']['form'] = $this->setEditorLinks($section, $arr['content']['form']);
-
-                    $section->body = replace_link($this->getHeader($arr['content']['form'], $section));
-                    if (!empty($arr['content']['object'])) {
-                        $section->formobject = replace_link($this->getHeader($arr['content']['object'], $section));
-                    }
-                    if (!empty($arr['content']['show'])) {
-                        $section->formshow = replace_link($this->getHeader($arr['content']['show'], $section));
-                    }
-                    if (!empty($arr['content']['arhiv'])) {
-                        $section->formarhiv = replace_link($this->getHeader($arr['content']['arhiv'], $section));
-                    }
-                    if (!empty($arr['subpage']))
-                        foreach ($arr['subpage'] as $subname => $value) {
-                            $section->subpage->$subname->form = $this->getHeader($value['form'], $section);
-                            $section->subpage->$subname->group = $value['group'];
-                        }
-                }
-            }
-        }
-        if ($this->ajaxId || $this->ajaxType) exit;
-        $urllist = from_Url();
-        foreach ($urllist as $uname => $arr) {
-            $find = false;
-            @list($uname) = explode('[', urldecode($uname));
-            if (empty($uname)) continue;
-            if (is_numeric($uname) && empty($_GET[$uname]) && strpos($_SERVER['REQUEST_URI'], '?') !== false) {
-                $url = explode('?', $_SERVER['REQUEST_URI']);
-                // echo $url[0];
-                $this->go301($url[0]);
-            }
-            foreach ($SE_REQUEST_NAME as $qname => $name) {
-                if (strval($uname) == strval($qname) || !isset($arr) || isset($_GET[$uname])) {
-                    $find = true;
-                    break;
-                }
-            }
-            if (!$find) {
-                $this->go404();
-            }
-        }
-        if (isset($_GET['page'])) {
-            $this->go404();
-        }
-        $footer = array();
-        foreach ($this->footer as $key => $line) {
-            $line = trim($line);
-            if (in_array($line, $this->header, true)) {
-                unset($this->footer[$key]);
-                //$footer[] = $line;
             }
         }
     }
@@ -1171,6 +1185,7 @@ class seData
     public function getPathArray()
     {
         $level_arr = array();
+        $endlevel = 0;
         if ($this->startpage != $this->pagename) {
             foreach ($this->pages as $page) {
                 $level = $page->level;
