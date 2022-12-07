@@ -361,7 +361,7 @@ class seData
                 $this->go301($url);
             }
             foreach ($SE_REQUEST_NAME as $qname => $name) {
-                if (strval($uname) == strval($qname) || !isset($arr) || isset($_GET[$uname]) || $isShow || $qname == $uri) {
+                if (strval($uname) == strval($qname) || !isset($arr) || isset($_GET[$uname]) || $isShow || $qname == $uri || isset($urllist[$uname])) {
                     $find = true;
                     break;
                 }
