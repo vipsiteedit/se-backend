@@ -102,7 +102,7 @@ class Contact extends Base
                 array(
                     "type" => "left",
                     "table" =>
-                        '(
+                    '(
                             SELECT 
                                 so.id,
                                 so.id_author,
@@ -143,7 +143,8 @@ class Contact extends Base
             "convertingValues" => array(
                 "amountOrders",
                 "paidOrders",
-            )
+            ),
+            "groupBy" => "p.id, c.name, sug.group_id"
         );
     } // получить настройки
 
@@ -268,7 +269,7 @@ class Contact extends Base
         $emails = array();
         $u = new DB('person');
         $u->select('email');
-        if(!empty($this->input["ids"]))
+        if (!empty($this->input["ids"]))
             $u->where('id IN (?)', implode(",", $this->input["ids"]));
         $u->andWhere('email IS NOT NULL');
         $u->andWhere('email <> ""');
@@ -277,7 +278,7 @@ class Contact extends Base
             $emails[] = $value["email"];
         if (parent::delete()) {
             if (!empty($emails))
-                foreach($emails as $email) {
+                foreach ($emails as $email) {
                     $emailProvider = new EmailProvider();
                     $emailProvider->removeEmailFromAllBooks($email);
                 }
@@ -322,7 +323,7 @@ class Contact extends Base
             $item['balance'] = $balance;
 
             $course = DB::getCourse($this->currData["name"], $item["curr"]); // 3
-            $convertingValues = array('inPayee','outPayee','balance');
+            $convertingValues = array('inPayee', 'outPayee', 'balance');
             foreach ($convertingValues as $key => $i) {
                 $item[$i] = $item[$i] * $course;
             }
@@ -412,8 +413,8 @@ class Contact extends Base
         foreach ($list as $value) {
             if (se_CheckMail($value['email']))
                 $emails[] = array(
-                    'email' =>$value['email'],
-                    'variables'=>array('name'=>$value['name'])
+                    'email' => $value['email'],
+                    'variables' => array('name' => $value['name'])
                 );
         }
         if (empty($emails))
@@ -459,7 +460,7 @@ class Contact extends Base
                 $u->deleteList();
 
                 //writeLog($idsGroupsDelEmail);
-                foreach($idsGroupsDelEmail as $userId =>$gr) {
+                foreach ($idsGroupsDelEmail as $userId => $gr) {
                     if (!empty($gr) && $userId) {
                         $this->addInAddressBookEmail(array($userId), false, $gr);
                     }
@@ -493,9 +494,7 @@ class Contact extends Base
                 if (!empty($data)) {
                     DB::insertList('se_user_group', $data);
                 }
-
             }
-
         } catch (Exception $e) {
             $this->error = "Не удаётся сохранить группы контакта!";
             throw new Exception($this->error);
@@ -656,10 +655,10 @@ class Contact extends Base
                 $this->info();
                 return $this;
             }
-			if ($this->input["upd"] && !empty($this->input["ids"]) && isset($this->input["priceType"])) {
-				$priceType = intval($this->input["priceType"]);
-				$ids = join(',', $this->input["ids"]);
-				DB::query("UPDATE `person` SET `price_type`='{$priceType}' WHERE id IN ({$ids})");
+            if ($this->input["upd"] && !empty($this->input["ids"]) && isset($this->input["priceType"])) {
+                $priceType = intval($this->input["priceType"]);
+                $ids = join(',', $this->input["ids"]);
+                DB::query("UPDATE `person` SET `price_type`='{$priceType}' WHERE id IN ({$ids})");
                 $this->info();
                 return $this;
             }
@@ -767,7 +766,6 @@ class Contact extends Base
             DB::rollBack();
             $this->error = empty($this->error) ? "Не удаётся сохранить контакт!" : $this->error;
         }
-
     }
 
     public function export()
@@ -791,12 +789,14 @@ class Contact extends Base
         $tempFilePath = DOCUMENT_ROOT . "/files/tempfiles";
         if (!file_exists($tempFilePath) || !is_dir($tempFilePath))
             mkdir($tempFilePath);
-        $filePath = $tempFilePath."/{$fileName}";
+        $filePath = $tempFilePath . "/{$fileName}";
         $urlFile = 'http://' . HOSTNAME . "/files/tempfiles/{$fileName}";
 
-        $this->rmdir_recursive($tempFilePath);                      /** очистка директории с временными файлами */
+        $this->rmdir_recursive($tempFilePath);
+        /** очистка директории с временными файлами */
         if (!file_exists($tempFilePath) || !is_dir($tempFilePath))
-            mkdir($tempFilePath, 0766, true);      /** рекурсивное создание директорий */
+            mkdir($tempFilePath, 0766, true);
+        /** рекурсивное создание директорий */
 
         /** поднимаем записи из БД */
         $rusCols = array(
@@ -826,28 +826,30 @@ class Contact extends Base
         $contacts = $u->getList();
 
         /** формирование массива на запись */
-        $writeArray = array(0=>array());
+        $writeArray = array(0 => array());
         $columnNumbers = array();
         $num = 0;
-        foreach($rusCols as $k=>$i) {
+        foreach ($rusCols as $k => $i) {
             array_push($writeArray[0], $i);
             $columnNumbers[$k] = $num;
             $num += 1;
         }
         unset($rusCols);
-        foreach($contacts as $k=>$i) {
+        foreach ($contacts as $k => $i) {
             $writeArrayUnit = array();
-            foreach($i as $k2=>$i2)
+            foreach ($i as $k2 => $i2)
                 $writeArrayUnit[$columnNumbers[$k2]] = $i2;
-            array_push($writeArray,$writeArrayUnit);
+            array_push($writeArray, $writeArrayUnit);
             unset($contacts[$k]);
         }
         unset($contacts);
 
         /** запись в файл xlsx */
         $writer = WriterFactory::create(Type::XLSX);
-        $writer->setTempFolder($tempFilePath); /** директория хранения временных файлов */
-        $writer->openToFile($filePath);        /** директория сохраниния XLSX */
+        $writer->setTempFolder($tempFilePath);
+        /** директория хранения временных файлов */
+        $writer->openToFile($filePath);
+        /** директория сохраниния XLSX */
         $writer->addRows($writeArray);
         $writer->close();
         unset($writer, $writeArray);
@@ -857,7 +859,6 @@ class Contact extends Base
             $this->result['url'] = $urlFile;
             $this->result['name'] = $fileName;
         } else $this->result = "Не удаётся экспортировать контакты!";
-
     } // экспорт
 
     private function exportItem()
@@ -892,8 +893,8 @@ class Contact extends Base
 
         /** формирование массива на запись*/
         $writeArray = array();
-        foreach($columnValue as $k=>$i) {
-            $unit = array(0=>$k,1=>$i);
+        foreach ($columnValue as $k => $i) {
+            $unit = array(0 => $k, 1 => $i);
             $writeArray[] = $unit;
         }
 
@@ -902,17 +903,21 @@ class Contact extends Base
         $tempFilePath = DOCUMENT_ROOT . "/files/tempfiles";
         if (!file_exists($tempFilePath) || !is_dir($tempFilePath))
             mkdir($tempFilePath);
-        $filePath = $tempFilePath."/{$fileName}";
+        $filePath = $tempFilePath . "/{$fileName}";
         $urlFile = 'http://' . HOSTNAME . "/files/tempfiles/{$fileName}";
 
-        $this->rmdir_recursive($tempFilePath);                      /** очистка директории с временными файлами */
+        $this->rmdir_recursive($tempFilePath);
+        /** очистка директории с временными файлами */
         if (!file_exists($tempFilePath) || !is_dir($tempFilePath))
-            mkdir($tempFilePath, 0766, true);      /** рекурсивное создание директорий */
+            mkdir($tempFilePath, 0766, true);
+        /** рекурсивное создание директорий */
 
         /** запись в файл xlsx */
         $writer = WriterFactory::create(Type::XLSX);
-        $writer->setTempFolder($tempFilePath); /** директория хранения временных файлов */
-        $writer->openToFile($filePath);        /** директория сохраниния XLSX */
+        $writer->setTempFolder($tempFilePath);
+        /** директория хранения временных файлов */
+        $writer->openToFile($filePath);
+        /** директория сохраниния XLSX */
         $writer->addRows($writeArray);
         $writer->close();
         unset($writer, $writeArray);
@@ -922,7 +927,6 @@ class Contact extends Base
             $this->result['url'] = $urlFile;
             $this->result['name'] = $fileName;
         } else $this->result = "Не удаётся экспортировать данные контакта!";
-
     } // экспорт контактА
 
     // @@@@@@ @@@@@@ @@@@@@ @@@@@@@@
@@ -938,7 +942,7 @@ class Contact extends Base
         }
     }
 
-    public function import($fileName,$param)
+    public function import($fileName, $param)
     {
         /**
          * импорт (обновление!!)
@@ -976,11 +980,12 @@ class Contact extends Base
 
         $contacts = $this->getDataFromFile($fileName, $filePath, $param);
         $newArray = $this->importHandler($contacts, $enCols, $skip);
-        foreach ($newArray as $k=>$i)  $this->save($i);
+        foreach ($newArray as $k => $i)  $this->save($i);
 
         $this->rmdir_recursive($path);
         if (!file_exists($path) || !is_dir($path))
-            mkdir($path, 0766, true); /** рекурсивное создание директорий */
+            mkdir($path, 0766, true);
+        /** рекурсивное создание директорий */
     } // импорт (обновление!!)
 
     private function importHandler($contacts, $enCols, $skip)
@@ -990,14 +995,13 @@ class Contact extends Base
         $headers       = array();
         $newArray      = array();
         $arrayUserName = array();
-        foreach ($contacts as $k=>$row) {
+        foreach ($contacts as $k => $row) {
 
-            if ($k==0) {
+            if ($k == 0) {
                 /** линия заголовка */
                 foreach ($row as $kCell => $cell)
                     if ($enCols[$cell]) $headers[] = $enCols[$cell];
-
-            } elseif ($k>=$skip) {
+            } elseif ($k >= $skip) {
                 /** если обычные строки (с учетом пользовательского отступа) */
                 $arrayNewRow = array();
                 foreach ($row as $kCell => $cell) {
@@ -1006,17 +1010,17 @@ class Contact extends Base
                 }
 
                 /** фильтрация пустых значений */
-                if($arrayNewRow['birthDate'] === '0000-00-00')
+                if ($arrayNewRow['birthDate'] === '0000-00-00')
                     unset($arrayNewRow['birthDate']);
-                foreach ($arrayNewRow as $kHead=>$head)
-                    if($head == '')  unset($arrayNewRow[$kHead]);
+                foreach ($arrayNewRow as $kHead => $head)
+                    if ($head == '')  unset($arrayNewRow[$kHead]);
 
 
                 $newArray[]                                     = $arrayNewRow;
-                if ($arrayNewRow["username"])  $arrayUserName[] = '"'.$arrayNewRow["username"].'"';
+                if ($arrayNewRow["username"])  $arrayUserName[] = '"' . $arrayNewRow["username"] . '"';
                 unset($contacts[$k]);
-
-            } else {}
+            } else {
+            }
         }
         unset($contacts);
 
@@ -1028,14 +1032,14 @@ class Contact extends Base
         //$u->andWhere('p.sec_name   = "?"', implode(",", $secName)); // проверка по отчеству
         $arrayDataId = $u->getList();
 
-        $nameId= array();
-        foreach ($arrayDataId as $k=>$i) {
-            $nameId[ $i["username"] ] = $i["id"];
+        $nameId = array();
+        foreach ($arrayDataId as $k => $i) {
+            $nameId[$i["username"]] = $i["id"];
             unset($arrayDataId[$k]);
         }
         unset($arrayDataId);
 
-        foreach ($newArray as $k=>$i)
+        foreach ($newArray as $k => $i)
             if ($nameId[$i["username"]])  $newArray[$k]["id"] = $nameId[$i["username"]];
 
         return $newArray;
@@ -1050,20 +1054,20 @@ class Contact extends Base
          * @throws \Exception
          */
 
-        try{
+        try {
             $temporaryFilePath = DOCUMENT_ROOT . "/files/tempfiles/";
-            $file              = $temporaryFilePath.$filename;
-            if(file_exists($file) and is_readable($file)){
+            $file              = $temporaryFilePath . $filename;
+            if (file_exists($file) and is_readable($file)) {
                 $extension = pathinfo($file, PATHINFO_EXTENSION);
 
-                if($extension == 'xlsx')
+                if ($extension == 'xlsx')
                     return $this->getDataFromFileXLSX($filePath);
-                elseif($extension == 'csv')
-                    return $this->getDataFromFileCSV($file,$options);
+                elseif ($extension == 'csv')
+                    return $this->getDataFromFileCSV($file, $options);
                 else
-                    writeLog('НЕ КОРРЕКТНОЕ РАСШИРЕНИЕ ФАЙЛА '. $file);
+                    writeLog('НЕ КОРРЕКТНОЕ РАСШИРЕНИЕ ФАЙЛА ' . $file);
             } else {
-                writeLog('ФАЙЛА НЕТ '. $file);
+                writeLog('ФАЙЛА НЕТ ' . $file);
             }
         } catch (Exception $e) {
             writeLog($e->getMessage());
@@ -1086,18 +1090,17 @@ class Contact extends Base
                 if (!is_array($row)) $row = array();
                 foreach ($row as $k => $cell) {
                     $encoding = mb_check_encoding($cell, 'UTF-8');
-                    if ($encoding !=1) $row[$k] = mb_convert_encoding($cell, 'utf-8', 'windows-1251');
+                    if ($encoding != 1) $row[$k] = mb_convert_encoding($cell, 'utf-8', 'windows-1251');
                 }
-                array_push($arrayRows,$row);
+                array_push($arrayRows, $row);
             }
         }
         $reader->close();
 
         return $arrayRows;
-
     } // чтение файлов xlsx в windows1251 и utf-8
 
-    private function getDataFromFileCSV($file,$options)
+    private function getDataFromFileCSV($file, $options)
     {
         /**
          * чтение файлов csv в windows1251 и utf-8 (в том числе с автоопределителем разделителя в csv)
@@ -1115,7 +1118,7 @@ class Contact extends Base
         $limiterField = $options['limiterField'];
 
         /** автоопределитель разделителя (чувствителен к порядку знаков - по убывающей приоритетности) */
-        if($delimiter == 'auto') {
+        if ($delimiter == 'auto') {
             $delimiters_first_line  = array('\t' => 0, ';'  => 0, ':'  => 0);
             $delimiters_second_line = $delimiters_first_line;
             $delimiters_final       = array();
@@ -1123,7 +1126,7 @@ class Contact extends Base
             /** читаем первые 2 строки для обработки (вторая строка с учетом пользовательского отступа) */
             $handle      = fopen($file, 'r');
             $first_line  = fgets($handle);
-            for ($c=0; $c < $skip; $c++)  $second_line = fgets($handle);
+            for ($c = 0; $c < $skip; $c++)  $second_line = fgets($handle);
             fclose($handle);
 
             /** производим подсчет знаков из $delimiters_first/second_line в обеих строках */
@@ -1134,16 +1137,16 @@ class Contact extends Base
             $delimiter = array_search(max($delimiters_first_line), $delimiters_first_line);
 
             /** сопоставляем колво знаков - совпадает, в $delimiters_final */
-            foreach($delimiters_first_line as $key => $value)
-                if($delimiters_first_line[$key] == $delimiters_second_line[$key])
+            foreach ($delimiters_first_line as $key => $value)
+                if ($delimiters_first_line[$key] == $delimiters_second_line[$key])
                     $delimiters_final[$key] = $value;
 
             /** получаем максимальное совпадение из $delimiters_final - переназначаем разделитель с ";" */
-            if(count($delimiters_final) > 1) {
+            if (count($delimiters_final) > 1) {
                 $delimiters_final2 = array_keys($delimiters_final, max($delimiters_final));
-                foreach($delimiters_final2 as $value) $delimiter = $value;
+                foreach ($delimiters_final2 as $value) $delimiter = $value;
             } else
-                foreach($delimiters_final as $key => $value) $delimiter = $key;
+                foreach ($delimiters_final as $key => $value) $delimiter = $key;
         };
 
         /** формируем массив */
@@ -1154,13 +1157,13 @@ class Contact extends Base
                 $num = count($line);
                 $row = array();
 
-                for ($c=0; $c < $num; $c++) {
-                    $auto_encoding = mb_check_encoding($line[$c],'UTF-8');
-                    if($auto_encoding != 1) $cell = mb_convert_encoding($line[$c], 'UTF-8', "windows-1251");
+                for ($c = 0; $c < $num; $c++) {
+                    $auto_encoding = mb_check_encoding($line[$c], 'UTF-8');
+                    if ($auto_encoding != 1) $cell = mb_convert_encoding($line[$c], 'UTF-8', "windows-1251");
                     else                    $cell = $line[$c];
                     $row[$c] = $cell;
                 }
-                $arrayRows[]=$row;
+                $arrayRows[] = $row;
             }
             fclose($handle);
 
@@ -1191,6 +1194,4 @@ class Contact extends Base
         }
         return '+' . $result;
     }
-
 }
-

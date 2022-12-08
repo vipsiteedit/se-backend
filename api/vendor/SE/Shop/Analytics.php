@@ -186,8 +186,10 @@ class Analytics extends Base
 
             $u = new DB("shop_stat_events", 'sse');
             $u->select("COUNT(DISTINCT sse.id_session, sse.number) `count`");
-            $u->innerJoin("(SELECT * FROM `shop_stat_events` sse WHERE sse.event = 'add cart') sse1",
-                'sse.id_session = sse1.id_session AND sse.number = sse1.number');
+            $u->innerJoin(
+                "(SELECT * FROM `shop_stat_events` sse WHERE sse.event = 'add cart') sse1",
+                'sse.id_session = sse1.id_session AND sse.number = sse1.number'
+            );
             $u->where("sse.event = 'view shopcart'");
             if ($this->startDate)
                 $u->andWhere('sse.created_at >= "?"', date("Y-m-d", $this->startDate));
@@ -228,20 +230,34 @@ class Analytics extends Base
             $result = $u->getList();
             $funnel["countPaidOrder"] = $result[0]["count"];
 
-            $rows[] = array("Name" => "countVisitors",
-                "Title" => "Посетили сайт", "Value" => $funnel["countVisitors"], "Color" => "#FF6384");
-            $rows[] = array("Name" => "countViewProduct",
-                "Title" => "Посмотрели товар", "Value" => $funnel["countViewProduct"], "Color" => "#9400D3");
-            $rows[] = array("Name" => "countAddCart",
-                "Title" => "Положили в корзину", "Value" => $funnel["countAddCart"], "Color" => "#FFCE56");
-            $rows[] = array("Name" => "countViewCart",
-                "Title" => "Перешли в корзину", "Value" => $funnel["countViewCart"], "Color" => "#36A2EB");
-            $rows[] = array("Name" => "countPlaceOrder",
-                "Title" => "Оформили заказ", "Value" => $funnel["countPlaceOrder"], "Color" => "#4BC0C0");
-            $rows[] = array("Name" => "countConfirmOrder",
-                "Title" => "Подтвердили заказ", "Value" => $funnel["countConfirmOrder"], "Color" => "#CEFF56");
-            $rows[] = array("Name" => "countPaidOrder",
-                "Title" => "Оплатили заказ", "Value" => $funnel["countPaidOrder"], "Color" => "#228B22");
+            $rows[] = array(
+                "Name" => "countVisitors",
+                "Title" => "Посетили сайт", "Value" => $funnel["countVisitors"], "Color" => "#FF6384"
+            );
+            $rows[] = array(
+                "Name" => "countViewProduct",
+                "Title" => "Посмотрели товар", "Value" => $funnel["countViewProduct"], "Color" => "#9400D3"
+            );
+            $rows[] = array(
+                "Name" => "countAddCart",
+                "Title" => "Положили в корзину", "Value" => $funnel["countAddCart"], "Color" => "#FFCE56"
+            );
+            $rows[] = array(
+                "Name" => "countViewCart",
+                "Title" => "Перешли в корзину", "Value" => $funnel["countViewCart"], "Color" => "#36A2EB"
+            );
+            $rows[] = array(
+                "Name" => "countPlaceOrder",
+                "Title" => "Оформили заказ", "Value" => $funnel["countPlaceOrder"], "Color" => "#4BC0C0"
+            );
+            $rows[] = array(
+                "Name" => "countConfirmOrder",
+                "Title" => "Подтвердили заказ", "Value" => $funnel["countConfirmOrder"], "Color" => "#CEFF56"
+            );
+            $rows[] = array(
+                "Name" => "countPaidOrder",
+                "Title" => "Оплатили заказ", "Value" => $funnel["countPaidOrder"], "Color" => "#228B22"
+            );
             return $rows;
         } catch (Exception $e) {
             $this->error = "Не удаётся построить воронку продаж!";

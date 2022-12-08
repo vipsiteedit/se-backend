@@ -50,15 +50,15 @@ class Order extends Base
             $u->save();
         };
     }
-	
-	public function fetch()
-	{
-		parent::fetch();
-		foreach($this->result['items'] as &$item) {
-			$item['dateOrderDisplay'] = date('d.m.Y', strtotime($item['dateOrder']));
-			$item['amount'] = floatval($item['amount']);
-		}
-	}
+
+    public function fetch()
+    {
+        parent::fetch();
+        foreach ($this->result['items'] as &$item) {
+            $item['dateOrderDisplay'] = date('d.m.Y', strtotime($item['dateOrder']));
+            $item['amount'] = floatval($item['amount']);
+        }
+    }
 
     protected function getSettingsFetch()
     {
@@ -108,7 +108,8 @@ class Order extends Base
                 "type" => "SUM",
                 "field" => "amount",
                 "name" => "totalAmount"
-            )
+            ),
+            "groupBy" => "so.id, spp.name_payment, sch.id_coupon, sch.discount"
         );
     }
 
@@ -171,7 +172,7 @@ class Order extends Base
     protected function getAddInfo()
     {
         $result = [];
-        $this->result["amount"] = (real)$this->result["amount"];
+        $this->result["amount"] = (float)$this->result["amount"];
         $result["items"] = $this->getOrderItems();
         $result['payments'] = $this->getPayments();
         $result['customFields'] = $this->getCustomFields($this->input["id"]);
@@ -187,7 +188,7 @@ class Order extends Base
         $u->select('SUM(amount) amount');
         $u->where("sop.id_order = ?", $idOrder);
         $result = $u->fetchOne();
-        return (real)$result['amount'];
+        return (float)$result['amount'];
     }
 
     private function getOrderItems()
@@ -214,17 +215,16 @@ class Order extends Base
                 $product['article'] = $item['article'];
                 $product['measurement'] = $item['measure'];
                 $product['idGroup'] = $item['id_group'];
-                $product['price'] = (real)$item['price'];
-                $product['count'] = (real)$item['count'];
-                $product['bonus'] = (real)$item['bonus'];
-                $product['discount'] = (real)$item['discount'];
+                $product['price'] = (float)$item['price'];
+                $product['count'] = (float)$item['count'];
+                $product['bonus'] = (float)$item['bonus'];
+                $product['discount'] = (float)$item['discount'];
                 $product['license'] = $item['license'];
                 $product['note'] = $item['commentary'];
                 $items[] = $product;
             }
         }
         return $items;
-
     }
 
     private function getPayments()
@@ -273,26 +273,28 @@ class Order extends Base
         $this->saveDelivery();
         $this->savePayments();
         $this->saveCustomFields();
-		$this->send("orduserch");
+        $this->send("orduserch");
         return true;
     }
-	
-	private function send($codemail = "orduserch")
-	{
-		if ($this->input["send"] && $this->input["id"]) {
-			$data = array('idorder'=>$this->input["id"], 'codemail'=>$codemail); 
-			$context = stream_context_create(array(
-				'http' => array(
-				'method' => 'POST',
-				'header' => 'Content-Type: application/x-www-form-urlencoded' . PHP_EOL,
-				'content' => http_build_query($data),
-				),
-			));
-			return (file_get_contents('http://' . HOSTNAME . '/upload/sendmailorder.php',
-			false,
-			$context) == 'ok');
-		} else return true;
-	}
+
+    private function send($codemail = "orduserch")
+    {
+        if ($this->input["send"] && $this->input["id"]) {
+            $data = array('idorder' => $this->input["id"], 'codemail' => $codemail);
+            $context = stream_context_create(array(
+                'http' => array(
+                    'method' => 'POST',
+                    'header' => 'Content-Type: application/x-www-form-urlencoded' . PHP_EOL,
+                    'content' => http_build_query($data),
+                ),
+            ));
+            return (file_get_contents(
+                'http://' . HOSTNAME . '/upload/sendmailorder.php',
+                false,
+                $context
+            ) == 'ok');
+        } else return true;
+    }
 
     private function saveItems()
     {
@@ -323,10 +325,12 @@ class Order extends Base
         // новый товары/услуги заказа
         foreach ($products as $p) {
             if (!$p["id"]) {
-                $data[] = array('id_order' => $idOrder, 'id_price' => $p["idPrice"], 'article' => $p["article"],
+                $data[] = array(
+                    'id_order' => $idOrder, 'id_price' => $p["idPrice"], 'article' => $p["article"],
                     'nameitem' => $p["name"], 'price' => (float)$p["price"],
                     'discount' => $p["discount"], 'count' => $p["count"], 'modifications' => $p["idsModifications"],
-                    'license' => $p["license"], 'commentary' => $p["note"], 'action' => $p["action"]);
+                    'license' => $p["license"], 'commentary' => $p["note"], 'action' => $p["action"]
+                );
             } else {
                 $u = new DB('shop_tovarorder', 'sto');
                 $u->select("modifications");
@@ -463,8 +467,9 @@ class Order extends Base
         $this->limit = null;
         $this->sortOrder = "asc";
         $orders = $this->fetch();
-        foreach ($orders as $k=>$i)
-            if ($i['isDelete'] == 'Y') unset($orders[$k]); /** фильтрация удаленных заказов */
+        foreach ($orders as $k => $i)
+            if ($i['isDelete'] == 'Y') unset($orders[$k]);
+        /** фильтрация удаленных заказов */
         $i = 2;
 
         foreach ($orders as $order) {
@@ -490,7 +495,6 @@ class Order extends Base
 
         $this->result["url"] = $urlFile;
         $this->result["name"] = $fileName;
-
     }
 
     private function exportItem()
@@ -646,7 +650,5 @@ class Order extends Base
 
         $this->result["url"] = $urlFile;
         $this->result["name"] = $fileName;
-
     }
-
 }

@@ -1,7 +1,6 @@
 <?php
 
-$allowedMethods = array('FETCH', 'POST', 'DELETE', 'SAVE', 'INFO', 'GET', 'ADDPRICE', 'TRANSLIT', 'UPLOAD',
-    'CHECKNAMES', 'SORT', 'EXPORT', 'IMPORT', 'LOGOUT', 'MERGE');
+$allowedMethods = array('POST', 'DELETE', 'GET', 'PUT');
 $allowedMethods = implode(",", $allowedMethods);
 
 $headers = getallheaders();
@@ -30,22 +29,25 @@ function writeLog($data)
     fputs($file, $query);
     fclose($file);
 }
-    //require_once 'api/update.php';
-    require_once 'lib/lib_utf8.php';
-    require_once 'lib/lib_function.php';
-    require_once 'lib/lib_se_function.php';
-    //require_once 'api/lib/PHPExcel.php';
-    //require_once 'lib/PHPExcel/Writer/Excel2007.php';
-
-
-
-
-#require_once API_ROOT . "version.php";
+require_once 'lib/lib_utf8.php';
+require_once 'lib/lib_function.php';
+require_once 'lib/lib_se_function.php';
 require_once API_ROOT . "vendor/autoload.php";
 
-$apiMethod = $_SERVER['REQUEST_METHOD'];
+$method = $_SERVER['REQUEST_METHOD'];
 $apiClass = parse_url($_SERVER["REQUEST_URI"]);
-$apiClass = str_replace("api/", "", trim($apiClass['path'], "/"));
+$api =  str_replace("api/", "", trim($apiClass['path'], "/"));
+if (strpos($api, 'Auth') === 0) {
+    list($apiClass, $apiMethod) = explode("/", $api);
+} else {
+    list($apiPath, $apiClass, $apiMethod) = explode("/", $api);
+    $apiClass = $apiPath . "/" . $apiClass;
+}
+if (empty($apiMethod)) {
+    $apiMethod = "get";
+}
+
+//$apiClass = str_replace("api/", "", trim($apiClass['path'], "/"));
 $origin = !empty($headers['Origin']) ? $headers['Origin'] : $headers['origin'];
 
 if (!empty($origin)) {
@@ -59,11 +61,11 @@ if (!empty($origin)) {
         header("Access-Control-Allow-Headers: Project, Secookie");
         header("Access-Control-Allow-Methods: $allowedMethods");
     }
-    if ($apiMethod == "OPTIONS")
+    if ($method == "OPTIONS")
         exit;
 }
 
-if (strpos($apiClass, "/Auth"))
+if (strpos($apiClass, "Auth"))
     $apiClass = "Auth";
 
 if ($apiClass == "Auth" && strtolower($apiMethod) == "logout") {
@@ -91,14 +93,12 @@ define("HOSTNAME", $hostname);
 define('DOCUMENT_ROOT', $_SERVER['DOCUMENT_ROOT']);
 $dbConfig = DOCUMENT_ROOT . '/system/config_db.php';
 
+
 $dirSettings = DOCUMENT_ROOT . '/manager';
 if (!file_exists($dirSettings))
     mkdir($dirSettings);
 
 define("DIR_SETTINGS", $dirSettings);
-
-
-
 
 if (file_exists($dbConfig))
     require_once $dbConfig;
@@ -107,38 +107,30 @@ else {
     echo 'Сессия истекла! Необходима авторизация!';
     exit;
 }
+
 $coreVersion = "530";
-/*
-$verFile = DOCUMENT_ROOT . "/lib/version";
-if (file_exists($verFile)) {
-    $coreVersion = trim(file_get_contents($verFile));
-    $coreVersion = explode(':', $coreVersion);
-    $coreVersion = $coreVersion[1];
-}
-*/
 define('CORE_VERSION', $coreVersion);
 
-
 if ($apiClass != "Auth" && empty($_SESSION['isAuth']) && !in_array($_SERVER["REMOTE_ADDR"], $allowableServers)) {
-    header("HTTP/1.1 401 Unauthorized");
+    //header("HTTP/1.1 401 Unauthorized");
     echo 'Необходима авторизация!';
     exit;
 }
 
-$apiObject = $apiClass;
+$class = "\\SE\\" . str_replace("/", "\\", $apiClass);
 
-if (!class_exists($apiClass = "\\SE\\" . str_replace("/", "\\", $apiClass))) {
+if (!class_exists($class)) {
     header("HTTP/1.1 501 Not Implemented");
-    echo "Объект '{$apiObject}' не найден!";
+    echo "Объект '{$apiClass}' не найден!";
     exit;
 }
-if (!method_exists($apiClass, $apiMethod)) {
+if (!method_exists($class, $apiMethod)) {
     header("HTTP/1.1 501 Not Implemented");
     echo "Метод'{$apiMethod}' не поддерживается!";
     exit;
 }
 
-$apiObject = new $apiClass($phpInput);
+$apiObject = new $class($phpInput);
 if ($apiObject->initConnection($CONFIG))
     $apiObject->$apiMethod();
 $apiObject->output();

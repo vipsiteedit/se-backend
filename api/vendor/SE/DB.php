@@ -6,7 +6,7 @@ use \PDO as PDO;
 
 
 // библиотека получения курсов валют
-IF (IS_EXT)
+if (IS_EXT)
     $dirRoot = $_SERVER['DOCUMENT_ROOT'];
 else $dirRoot = $_SERVER['DOCUMENT_ROOT'] . '/api';
 $dirLib = $dirRoot . "/lib";
@@ -89,8 +89,12 @@ class DB
         try {
             self::$connect    = $connection;
             self::$dbPassword = $connection['DBPassword'];
-            self::$dbh = new PDO("mysql:host={$connection['HostName']};dbname={$connection['DBName']};charset=UTF8",
-                $connection['DBUserName'], $connection['DBPassword'], array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
+            self::$dbh = new PDO(
+                "mysql:host={$connection['HostName']};dbname={$connection['DBName']};charset=UTF8",
+                $connection['DBUserName'],
+                $connection['DBPassword'],
+                array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION)
+            );
             self::$dbh->exec('SET NAMES utf8');
         } catch (\PDOException $e) {
             throw new Exception($e->getMessage());
@@ -223,7 +227,6 @@ class DB
         $sql = "SHOW INDEX FROM `{$this->tableName}` WHERE `Column_name` = '{$field_name}'" . $key_index;
         $flist = DB::query($sql)->fetchAll();
         return (count($flist) > 0);
-
     }
 
     // получить поле
@@ -249,8 +252,11 @@ class DB
     public function add_field($field, $type = 'varchar(20)', $default = null, $index = 0)
     {
         if (!$this->is_field($field)) {
-            $type = str_replace(array('integer', 'string', 'integer(2)', 'integer(4)', 'bool', 'boolean'),
-                array('int', 'varchar', 'int', 'bigint', 'tinyint(1)', 'tinyint(1)'), $type);
+            $type = str_replace(
+                array('integer', 'string', 'integer(2)', 'integer(4)', 'bool', 'boolean'),
+                array('int', 'varchar', 'int', 'bigint', 'tinyint(1)', 'tinyint(1)'),
+                $type
+            );
             if (preg_match("/float(\([\d\,]+\))?/u", $type, $m)) {
                 $m[1] = preg_replace("/[\(\)]/", '', $m[1]);
                 if (!empty($m[1])) {
@@ -320,8 +326,8 @@ class DB
             $query[] = $tableName;
             $query[] = "SET";
             $fields = array();
-            foreach($data[0] as $columns=>$val) {
-                    $columns = str_replace('`', '', $columns);
+            foreach ($data[0] as $columns => $val) {
+                $columns = str_replace('`', '', $columns);
                 $fields[] = '`' . str_replace('`', '', $columns) . '` = :' . $columns;
             }
             $fields = implode(", ", $fields);
@@ -389,8 +395,8 @@ class DB
                     $sql[] = empty($setting["isSort"]) ? "({$link["id"]}, {$idKey})" :
                         "({$link["id"]}, {$idKey}, {$link["sort"]})";
                 $sql = (empty($setting["isSort"]) ?
-                        "INSERT INTO {$setting['table']} ({$setting['link']}, {$setting['key']}) VALUES " :
-                        "INSERT INTO {$setting['table']} ({$setting['link']}, {$setting['key']}, sort) VALUES ") . implode(",", $sql);
+                    "INSERT INTO {$setting['table']} ({$setting['link']}, {$setting['key']}) VALUES " :
+                    "INSERT INTO {$setting['table']} ({$setting['link']}, {$setting['key']}, sort) VALUES ") . implode(",", $sql);
                 DB::exec($sql);
             }
             if ($updateLinks && !empty($setting["isSort"])) {
@@ -401,7 +407,6 @@ class DB
                 $sql = implode(";\n", $sql);
                 DB::exec($sql);
             }
-
         } catch (\PDOException $e) {
             throw new Exception("Query: " . self::$lastQuery . "\nError: " . $e->getMessage());
         }
@@ -498,8 +503,8 @@ class DB
         $currencyValues = getCurrencyValues($unitCurrency);
         if (empty($baseValues['Nominal'])) $baseValues['Nominal'] = 1;
         if (empty($currencyValues['Nominal'])) $currencyValues['Nominal'] = 1;
-		if (empty($baseValues['Value'])) $baseValues['Value'] = 1;
-		if (empty($currencyValues['Value'])) $currencyValues['Value'] = 1;
+        if (empty($baseValues['Value'])) $baseValues['Value'] = 1;
+        if (empty($currencyValues['Value'])) $currencyValues['Value'] = 1;
 
 
         $baserate = (float)str_replace(",", ".", $baseValues['Value']) / str_replace(",", ".", $baseValues['Nominal']);
@@ -515,7 +520,7 @@ class DB
         return $course;
     }
 
-    public function getListAggregation($statement, $settingsFetch=array(), $currData=array(), $colCurr=false)
+    public function getListAggregation($statement, $settingsFetch = array(), $currData = array(), $colCurr = false)
     {
         /** Получить агрегацию списков - итого таблицы
          * 1 конвертация
@@ -844,7 +849,8 @@ class DB
         $fields = $this->getFields();
         foreach ($fields as $field) {
             if ($field["Field"] == $name)
-                if (strpos($field["Type"], "int") !== false || strpos($field["Type"], "decimal") !== false ||
+                if (
+                    strpos($field["Type"], "int") !== false || strpos($field["Type"], "decimal") !== false ||
                     strpos($field["Type"], "float") !== false || strpos($field["Type"], "double") !== false
                 )
                     return true;

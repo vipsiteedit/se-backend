@@ -111,7 +111,7 @@ class Base extends CustomBase
             }
             if (!empty($this->search) || !empty($this->filters))
                 $u->where($this->getWhereQuery($searchFields));
-            $u->groupBy();
+            $u->groupBy($settingsFetch["groupBy"]);
             if (is_array($this->sortBy)) {
                 foreach ($this->sortBy as $sortField)
                     $u->addOrderBy($sortField, $this->sortOrder == 'desc');
@@ -166,7 +166,7 @@ class Base extends CustomBase
 
             $this->result = $this->correctResultBeforeFetch($this->result);
         } catch (Exception $e) {
-            $this->error = "Не удаётся получить список объектов!";
+            $this->error = "Не удаётся получить список объектов! ".$e;
         }
 
 
@@ -286,6 +286,7 @@ class Base extends CustomBase
         $settingsInfo = $this->getSettingsInfo();
         try {
             $u = $this->createTableForInfo($settingsInfo);
+            if (!empty($settingsInfo['groupBy'])) $u->groupBy($settingsInfo['groupBy']);
             $this->result = $u->getInfo($id);
             if (!$this->result["id"]) {
                 $this->error = "Объект с запрошенными данными не найден!";
@@ -296,7 +297,7 @@ class Base extends CustomBase
                 }
             }
         } catch (Exception $e) {
-            $this->error = "Не удаётся получить информацию об объекте!";
+            $this->error = "Не удаётся получить информацию об объекте! " . $e;
         }
         $this->result['pageCurr'] = $this->pageCurr($this->result["curr"]);
         return $this->result;
@@ -399,7 +400,7 @@ class Base extends CustomBase
         } catch (Exception $e) {
             if ($isTransactionMode)
                 DB::rollBack();
-            $this->error = empty($this->error) ? "Не удаётся сохранить информацию об объекте!" : $this->error;
+            $this->error = empty($this->error) ? "Не удаётся сохранить информацию об объекте! ".$e : $this->error;
         }
     }
 

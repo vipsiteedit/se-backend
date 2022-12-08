@@ -258,5 +258,4 @@ class PaySystem extends Base
         }
         return $result;
     }
-
 }

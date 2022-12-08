@@ -24,11 +24,13 @@ class ProductType extends Base
                     "table" => 'shop_feature sf',
                     "condition" => 'sptf.id_feature = sf.id'
                 )
-            )
+            ),
+            "groupBy" => "spt.id, spt.name, spt.updated_at, spt.created_at"
         );
     }
 
-    private function getFeatures() {
+    private function getFeatures()
+    {
 
         try {
             $id = $this->input["id"];
@@ -44,7 +46,8 @@ class ProductType extends Base
         }
     }
 
-    public function items() {
+    public function items()
+    {
         try {
             $id = $this->input["id"];
 
@@ -72,8 +75,11 @@ class ProductType extends Base
             return true;
 
         try {
-            DB::saveManyToMany($this->input["id"], $this->input["features"],
-                array("table" => "shop_product_type_feature", "key" => "id_type", "link" => "id_feature"));
+            DB::saveManyToMany(
+                $this->input["id"],
+                $this->input["features"],
+                array("table" => "shop_product_type_feature", "key" => "id_type", "link" => "id_feature")
+            );
             return true;
         } catch (Exception $e) {
             $this->error = "Не удаётся сохранить параметры типа!";
@@ -88,5 +94,4 @@ class ProductType extends Base
 
         return $this->saveFeatures();
     }
-
 }

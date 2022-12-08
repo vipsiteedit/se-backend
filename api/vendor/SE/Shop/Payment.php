@@ -36,11 +36,13 @@ class Payment extends Base
                 array(
                     "type" => "left",
                     "table" => 'person p',
-                    "condition" => 'p.id = sop.id_author'),
+                    "condition" => 'p.id = sop.id_author'
+                ),
                 array(
                     "type" => "left",
                     "table" => 'company c',
-                    "condition" => 'c.id = sop.id_company'),
+                    "condition" => 'c.id = sop.id_company'
+                ),
             ),
             "aggregation" => array(
                 "type" => "SUM",
@@ -186,13 +188,13 @@ class Payment extends Base
         return $result;
     } // добавить полученную информацию
 
-    public function fetchByOrder($idOrder, $curr=null)
+    public function fetchByOrder($idOrder, $curr = null)
     {
         /**
          * @param str $curr если валюта страницы отличается от базовой - передаем сюда
          */
         $this->setFilters(array("field" => "idOrder", "value" => $idOrder));
-        if ($curr!=null) $this->input['curr'] = $curr;
+        if ($curr != null) $this->input['curr'] = $curr;
         return $this->fetch();
     } // выбор по заказу
 
@@ -200,5 +202,4 @@ class Payment extends Base
     {
         Order::checkStatusOrder($this->input["idOrder"]);
     }
-
 }

@@ -89,19 +89,19 @@ class Category extends Base
     // получить настройки
     protected function getSettingsFetch()
     {
-		$result["select"] = "sg.*, GROUP_CONCAT(CONCAT_WS(':', sgtp.level, sgt.id_parent) SEPARATOR ';') ids_parents,
-			sgt.level level";
-		$joins[] = array(
-			"type" => "left",
-			"table" => 'shop_group_tree sgt',
-			"condition" => 'sgt.id_child = sg.id AND sg.id <> sgt.id_parent'
-		);
-		$joins[] = array(
-			"type" => "left",
-			"table" => 'shop_group_tree sgtp',
-			"condition" => 'sgtp.id_child = sgt.id_parent'
-		);
-		$result["joins"] = $joins;
+        $result["select"] = "sg.*, GROUP_CONCAT(CONCAT_WS(':', sgtp.level, sgt.id_parent) SEPARATOR ';') ids_parents, sgt.level";
+        $joins[] = array(
+            "type" => "left",
+            "table" => 'shop_group_tree sgt',
+            "condition" => 'sgt.id_child = sg.id AND sg.id <> sgt.id_parent'
+        );
+        $joins[] = array(
+            "type" => "left",
+            "table" => 'shop_group_tree sgtp',
+            "condition" => 'sgtp.id_child = sgt.id_parent'
+        );
+        $result["joins"] = $joins;
+        $result["groupBy"] = "sg.id, sgt.level";
 
         return $result;
     }
@@ -109,7 +109,22 @@ class Category extends Base
     // получить информацию по настройкам
     protected function getSettingsInfo()
     {
-        return $this->getSettingsFetch();
+        $result["select"] = "sg.*, GROUP_CONCAT(CONCAT_WS(':', sgtp.level, sgt.id_parent) SEPARATOR ';') ids_parents";
+        $joins[] = array(
+            "type" => "left",
+            "table" => 'shop_group_tree sgt',
+            "condition" => 'sgt.id_child = sg.id AND sg.id <> sgt.id_parent'
+        );
+        $joins[] = array(
+            "type" => "left",
+            "table" => 'shop_group_tree sgtp',
+            "condition" => 'sgtp.id_child = sgt.id_parent'
+        );
+        $result["joins"] = $joins;
+        $result["groupBy"] = "sg.id";
+
+        return $result;
+        //return $this->getSettingsFetch();
     }
 
     // информация
@@ -127,8 +142,8 @@ class Category extends Base
         $result['similar'] = $u->getList();
         unset($u);
 
-		$arr = $this->setIdMainParent(array($result));
-		$this->result = $arr[0];
+        $arr = $this->setIdMainParent(array($result));
+        $this->result = $arr[0];
 
         $this->result["nameParent"] = $this->getNameParent();
         return $this->result;
@@ -281,11 +296,12 @@ class Category extends Base
     protected function getChilds()
     {
         $idParent = $this->input["id"];
-		$filter = array(
-			array("field" => "upid", "value" => $idParent),
-			array("field" => "level", "value" => ++$this->result["level"]));
-		$category = new Category(array("filters" => $filter));
-		$result = $category->fetch();
+        $filter = array(
+            array("field" => "upid", "value" => $idParent),
+            array("field" => "level", "value" => ++$this->result["level"])
+        );
+        $category = new Category(array("filters" => $filter));
+        $result = $category->fetch();
 
         return $result;
     }
@@ -355,7 +371,6 @@ class Category extends Base
     // сохранить
     public function save($isTransactionMode = true)
     {
-
         if (isset($this->input["codeGr"])) {
             $this->input["codeGr"] = strtolower(se_translite_url($this->input["codeGr"]));
         }
@@ -368,8 +383,11 @@ class Category extends Base
     {
         try {
             foreach ($this->input["ids"] as $id)
-                DB::saveManyToMany($id, $this->input["discounts"],
-                    array("table" => "shop_discount_links", "key" => "id_group", "link" => "discount_id"));
+                DB::saveManyToMany(
+                    $id,
+                    $this->input["discounts"],
+                    array("table" => "shop_discount_links", "key" => "id_group", "link" => "discount_id")
+                );
         } catch (Exception $e) {
             $this->error = "Не удаётся сохранить скидки категории товара!";
             throw new Exception($this->error);
@@ -412,8 +430,10 @@ class Category extends Base
             foreach ($images as $image)
                 if (empty($image["id"]) || ($image["id"] <= 0)) {
                     foreach ($idsGroups as $idProduct) {
-                        $data[] = array('id_group' => $idProduct, 'picture' => $image["imageFile"],
-                            'sort' => (int)$image["sortIndex"], 'picture_alt' => $image["imageAlt"]);
+                        $data[] = array(
+                            'id_group' => $idProduct, 'picture' => $image["imageFile"],
+                            'sort' => (int)$image["sortIndex"], 'picture_alt' => $image["imageAlt"]
+                        );
                         $newImages[] = $image["imageFile"];
                     }
                 }
@@ -486,9 +506,11 @@ class Category extends Base
             foreach ($filters as $filter) {
                 foreach ($idsGroups as $idGroup)
                     if ($filter["id"] || !empty($filter["code"]))
-                        $data[] = array('id_group' => $idGroup, 'id_feature' => $filter["id"],
+                        $data[] = array(
+                            'id_group' => $idGroup, 'id_feature' => $filter["id"],
                             'default_filter' => $filter["code"], 'expanded' => (int)$filter["isActive"],
-                            'sort' => (int)$filter["sortIndex"]);
+                            'sort' => (int)$filter["sortIndex"]
+                        );
             }
             if (!empty($data)) {
                 DB::insertList('shop_group_filter', $data);
@@ -591,7 +613,9 @@ class Category extends Base
         foreach ($idsDB as $k => $i)
             $ids[$i['idChild']] = $i['upid'];
         $ids[$id] = $idParent;
-        unset($idsDB);unset($id);unset($idParent);
+        unset($idsDB);
+        unset($id);
+        unset($idParent);
 
 
         /** 3 циклом сохраняем данные для группы и ее детей в shop_group_tree */
@@ -700,19 +724,15 @@ class Category extends Base
                         if ($idGroup != $similarItem["id"])
                             $data[] = ["id_group" => $idGroup, "id_related" => $similarItem["id"], "is_cross" => 0, "type" => 1];
                     }
-
                 }
             }
 
             if (!empty($data)) {
                 DB::insertList('shop_group_related', $data, true);
             }
-
-
         } catch (Exception $e) {
             $this->error = "Не удаётся сохранить похожие категории!";
             throw new Exception($this->error);
         }
     }
-
 }

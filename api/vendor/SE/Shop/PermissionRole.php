@@ -8,7 +8,7 @@ use SE\DB;
 class PermissionRole extends Base
 {
     protected $tableName = "permission_role";
-    
+
     private function getPermissions()
     {
         $idRole = $this->input["id"];
@@ -55,5 +55,4 @@ class PermissionRole extends Base
         $this->savePermissions();
         return true;
     }
-
 }

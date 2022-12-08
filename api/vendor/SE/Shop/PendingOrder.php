@@ -52,7 +52,6 @@ class PendingOrder extends Base
             }
             $this->result["items"] = $items;
             $this->result["count"] = $u->getListCount();
-
         } catch (Exception $e) {
             $this->error = "Не удаётся получить список объектов!";
         }
@@ -135,7 +134,6 @@ class PendingOrder extends Base
                 $items[] = $row;
             }
             return $items;
-
         } catch (Exception $e) {
             $this->error = "Не удаётся получить список событий!";
         }

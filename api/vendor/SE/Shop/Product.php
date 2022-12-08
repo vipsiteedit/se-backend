@@ -7,10 +7,6 @@ use SE\Exception;
 use SE\Shop\Import;
 use SE\Shop\ProductExport as ProductExport;
 
-//use \PHPExcel as PHPExcel;
-//use \PHPExcel_Writer_Excel2007 as PHPExcel_Writer_Excel2007;
-//use \PHPExcel_Style_Fill as PHPExcel_Style_Fill;
-
 class Product extends Base
 {
     /**
@@ -19,9 +15,11 @@ class Product extends Base
      */
     protected $tableName      = "shop_price";
     protected $tableNameDepen = array(
-        "shop_modifications_img"     => array("field"            =>"id_modification",
-            "intermediaryTable"=>'shop_modifications',
-            "intermediaryField"=>"id_price"),
+        "shop_modifications_img"     => array(
+            "field"            => "id_modification",
+            "intermediaryTable" => 'shop_modifications',
+            "intermediaryField" => "id_price"
+        ),
         "shop_price_group"           => "id_price",
         "shop_modifications"         => "id_price",
         "shop_modifications_feature" => "id_price"
@@ -31,8 +29,8 @@ class Product extends Base
     // руссификация заголовков столбцов
     protected $rusCols = array(
         "category" => "Путь категории", "codeGroup" => "Код категории",
-		"article" => "Артикул", "code" => "Код (URL)", "name" => "Наименование", 
-		"price" => "Цена пр.", "priceOptCorp" => "Цена корп.", "priceOpt" => "Цена опт.", "pricePurchase" => "Цена закуп.", "bonus" => "Цена бал.",
+        "article" => "Артикул", "code" => "Код (URL)", "name" => "Наименование",
+        "price" => "Цена пр.", "priceOptCorp" => "Цена корп.", "priceOpt" => "Цена опт.", "pricePurchase" => "Цена закуп.", "bonus" => "Цена бал.",
         "nameBrand" => "Бренд",
         "images" => 'Изображения', "count" => "Остаток",
         "weight" => "Вес", "volume" => "Объем", "measurement" => "Ед.Изм.", "measuresWeight" => "Меры веса", "measuresVolume" => "Меры объема",
@@ -40,8 +38,8 @@ class Product extends Base
         "codeCurrency" => "КодВалюты",
         "metaHeader" => "MetaHeader", "metaKeywords" => "MetaKeywords", "pageTitle" => "Оглавление страницы", "metaDescription" => "MetaDescription",
         "flagNew" => "Новинки", "flagHit" => "Хиты", "enabled" => "Видимость", "isMarket" => "Маркет",
-        "minCount" => "Мин.кол-во", 
-        "idAcc" => "Сопутствующие товары", 'delivTime'=>'Срок поставки'
+        "minCount" => "Мин.кол-во",
+        "idAcc" => "Сопутствующие товары", 'delivTime' => 'Срок поставки'
     );
 
     // поля для поиска
@@ -62,9 +60,8 @@ class Product extends Base
     // Получить настройки
     protected function getSettingsFetch($isInfo = false)
     {
-        if (CORE_VERSION > 520) {
-            // получаем данные из таблиц БД
-            $select = 'sp.id, sp.id_group shop_id_group, sp.id_brand, sp.code, sp.article, sp.name,
+        // получаем данные из таблиц БД
+        $select = 'sp.id, sp.id_group shop_id_group, sp.id_brand, sp.code, sp.article, sp.name,
                 sp.price, sp.price_opt, sp.price_opt_corp, sp.delivery_time, sp.signal_dt,
                 sp.img_alt, sp.curr, sp.presence, sp.bonus, sp.min_count,
                 sp.presence_count presence_count, sp.special_offer, sp.flag_hit, sp.enabled, sp.flag_new, sp.is_market, sp.note, sp.text,
@@ -76,31 +73,23 @@ class Product extends Base
                 sb.name name_brand, slp.id_label id_label, sp.is_show_feature, sp.market_available,
                 spm.id_weight_view, spm.id_weight_edit, spm.id_volume_view, spm.id_volume_edit, sp.market_category';
 
-            $joins[] = array(
-                "type" => "left",
-                "table" => 'shop_price_group spg',
-                "condition" => $isInfo ? '(spg.id_price = sp.id AND spg.is_main)' : '(spg.id_price = sp.id)'
-            );
+        $joins[] = array(
+            "type" => "left",
+            "table" => 'shop_price_group spg',
+            "condition" => $isInfo ? '(spg.id_price = sp.id AND spg.is_main)' : '(spg.id_price = sp.id)'
+        );
 
-            $joins[] = array(
-                "type" => "left",
-                "table" => 'shop_group sg',
-                "condition" => 'sg.id = sp.id_group'
-            );
-            $joins[] = array(
-                "type" => "left",
-                "table" => 'shop_price_measure spm',
-                "condition" => 'sp.id = spm.id_price'
-            );
-        } else {
-            $select = 'sp.*, sg.name name_group, sg.id_modification_group_def id_modification_group_def,
-                sb.name name_brand';
-            $joins[] = array(
-                "type" => "left",
-                "table" => 'shop_group sg',
-                "condition" => 'sg.id = sp.id_group'
-            );
-        }
+        $joins[] = array(
+            "type" => "left",
+            "table" => 'shop_group sg',
+            "condition" => 'sg.id = sp.id_group'
+        );
+        $joins[] = array(
+            "type" => "left",
+            "table" => 'shop_price_measure spm',
+            "condition" => 'sp.id = spm.id_price'
+        );
+        $groupBy = "sp.id, spg.is_main, spg.id_group,slp.id_label,spm.id_weight_view,spm.id_weight_edit,spm.id_volume_view,spm.id_volume_edit";
         $joins[] = array(
             "type" => "left",
             "table" => 'shop_brand sb',
@@ -120,7 +109,7 @@ class Product extends Base
         $joins[] = array(
             "type" => "left",
             "table" => '(SELECT smf.id_price, smf.id_modification FROM shop_modifications_feature smf
-                           WHERE NOT smf.id_value IS NULL AND NOT smf.id_modification IS NULL GROUP BY smf.id_modification) smf',
+                           WHERE NOT smf.id_value IS NULL AND NOT smf.id_modification IS NULL GROUP BY smf.id_price, smf.id_modification) smf',
             "condition" => 'sp.id = smf.id_price'
         );
 
@@ -133,35 +122,35 @@ class Product extends Base
 
         $result["select"] = $select;
         $result["joins"] = $joins;
+        $result["groupBy"] = $groupBy;
         $result["convertingValues"] = $convertingValues[0];
         return $result;
     }
-	
-	private function reLinkGroups()
-	{
-		$u = new DB('shop_price', 'sp');
-		$u->select('sp.id, sp.id_group');
-		$u->innerJoin('shop_group sg', 'sg.id=sp.id_group');
-		$u->leftJoin('shop_price_group spg', '(sp.id=spg.id_price AND sp.id_group=spg.id_group)');
-		$u->where('sp.id_group>0 AND spg.id IS NULL');
-		$groups = $u->getList();
-		if (!empty($groups))
-		foreach($groups as $group) {
-			$u = new DB('shop_price_group');
-			$data = array('idPrice'=>$group['id'], 'idGroup'=>$group['idGroup'], 'isMain'=>1);
-			$u->setValuesFields($data);
-			$u->save();
-		}
-	
-	}
+
+    private function reLinkGroups()
+    {
+        $u = new DB('shop_price', 'sp');
+        $u->select('sp.id, sp.id_group');
+        $u->innerJoin('shop_group sg', 'sg.id=sp.id_group');
+        $u->leftJoin('shop_price_group spg', '(sp.id=spg.id_price AND sp.id_group=spg.id_group)');
+        $u->where('sp.id_group>0 AND spg.id IS NULL');
+        $groups = $u->getList();
+        if (!empty($groups))
+            foreach ($groups as $group) {
+                $u = new DB('shop_price_group');
+                $data = array('idPrice' => $group['id'], 'idGroup' => $group['idGroup'], 'isMain' => 1);
+                $u->setValuesFields($data);
+                $u->save();
+            }
+    }
 
     // Получить
     public function fetch($isId = false)
     {
-		$u = new DB('shop_price');
+        $u = new DB('shop_price');
         $u->addField('delivery_time', 'varchar(80)');
-		$u->addField('signal_dt', 'varchar(10)');
-		
+        $u->addField('signal_dt', 'varchar(10)');
+
         parent::fetch($isId);
         if (!$isId) {
             $list = $this->result['items'];
@@ -169,7 +158,7 @@ class Product extends Base
             foreach ($list as $item) {
                 if (strpos($item['img'], "://") === false) {
                     if ($item['img'] && file_exists(DOCUMENT_ROOT . '/images/rus/shopprice/' . $item['img']))
-                        $item['imageUrlPreview'] = "http://".HOSTNAME. "/lib/image.php?size=64&img=images/rus/shopprice/" . $item['img'];
+                        $item['imageUrlPreview'] = "http://" . HOSTNAME . "/lib/image.php?size=64&img=images/rus/shopprice/" . $item['img'];
                 } else {
                     $item['imageUrlPreview'] = $item['img'];
                 }
@@ -279,17 +268,17 @@ class Product extends Base
             return $this->result = $this->getDiffFeatures($id_array, true);
         }
 
-		$input = (is_array($this->input['id'])) ? array_shift($this->input['id']) : $this->input['id'];
+        $input = (is_array($this->input['id'])) ? array_shift($this->input['id']) : $this->input['id'];
         parent::info($input);
         $meas = new Measure();
         $measure = $meas->info();
-		if ($this->result['marketCategory']){
-			$catfile = DOCUMENT_ROOT . '/lib/plugins/plugin_shop/market/market_categories.json';
-			if (file_exists($catfile)) {
-				$list = json_decode(file_get_contents($catfile), true);
-				$this->result['nameMarketGroup'] = $list[$this->result['marketCategory']];
-			}
-		}
+        if ($this->result['marketCategory']) {
+            $catfile = DOCUMENT_ROOT . '/lib/plugins/plugin_shop/market/market_categories.json';
+            if (file_exists($catfile)) {
+                $list = json_decode(file_get_contents($catfile), true);
+                $this->result['nameMarketGroup'] = $list[$this->result['marketCategory']];
+            }
+        }
         $this->result['weightEdit'] = $this->result['weight'];
         $this->result['volumeEdit'] = $this->result['volume'];
         foreach ($measure["weights"] as $w) {
@@ -308,7 +297,6 @@ class Product extends Base
                 break;
             }
         }
-
     }
 
     private function calkMeasure($table, $id)
@@ -451,7 +439,6 @@ class Product extends Base
                 $sqlMod .= "`value` + `value` * " . $price / 100;
             $sqlMod .= " WHERE id_price IN ({$idsStr}) AND smg.vtype = 2";
             DB::query($sqlMod);
-
         } catch (Exception $e) {
             $this->error = "Не удаётся произвести наценку выбранных товаров!";
         }
@@ -467,7 +454,7 @@ class Product extends Base
 
         try {
             $u = new DB('shop_modifications_feature', 'smf');
-			$u->addField('is_param', 'tinyint(1)', 0, 1);
+            $u->addField('is_param', 'tinyint(1)', 0, 1);
             $u->select('sfg.id id_group, sfg.name group_name, sf.name, smf.id_modification,
 						sf.type, sf.measure, smf.*, sfvl.value, sfvl.color, sfg.sort index_group');
             $u->innerJoin('shop_feature sf', 'sf.id = smf.id_feature');
@@ -480,7 +467,7 @@ class Product extends Base
             $result = [];
             foreach ($items as $item) {
                 if ($item["type"] == "number")
-                    $item["value"] = (real)$item["valueNumber"];
+                    $item["value"] = (float)$item["valueNumber"];
                 elseif ($item["type"] == "string")
                     $item["value"] = $item["valueString"];
                 elseif ($item["type"] == "bool")
@@ -517,7 +504,7 @@ class Product extends Base
             $similar['name'] = $item['name' . $i];
             $similar['code'] = $item['code' . $i];
             $similar['article'] = $item['article' . $i];
-            $similar['price'] = (real)$item['price' . $i];
+            $similar['price'] = (float)$item['price' . $i];
             $result[] = $similar;
         }
         return $result;
@@ -550,7 +537,7 @@ class Product extends Base
             }
             $accompanying['code'] = $item['code'];
             $accompanying['article'] = $item['article'];
-            $accompanying['price'] = (real)$item['price'];
+            $accompanying['price'] = (float)$item['price'];
             $result[] = $accompanying;
         }
         return $result;
@@ -580,10 +567,10 @@ class Product extends Base
         if (!$id)
             return $result;
 
-		$u = new DB('shop_price_group', 'spg');
-		$u->select('sg.id, sg.name');
-		$u->innerJoin('shop_group sg', 'sg.id = spg.id_group');
-		$u->where('spg.id_price = ? AND NOT spg.is_main', $id);
+        $u = new DB('shop_price_group', 'spg');
+        $u->select('sg.id, sg.name');
+        $u->innerJoin('shop_group sg', 'sg.id = spg.id_group');
+        $u->where('spg.id_price = ? AND NOT spg.is_main', $id);
 
         return $u->getList();
     }
@@ -607,7 +594,7 @@ class Product extends Base
         $u->innerJoin('shop_feature sf', 'sf.id = smf.id_feature');
         $u->where('sm.id_price = ?', $id);
         $u->andWhere('smf.is_param=0');
-		$u->groupBy('smg.id');
+        $u->groupBy('smg.id');
         $u->orderBy('smg.sort');
         $objects = $u->getList();
         $isDefModification = false;
@@ -664,7 +651,7 @@ class Product extends Base
         $u->leftJoin('shop_modifications_img smi', 'sm.id = smi.id_modification');
         $u->leftJoin('shop_img si', 'smi.id_img = si.id');
         $u->where('sm.id_price = ?', $id);
-		$u->andWhere('smf.is_param=0');
+        $u->andWhere('smf.is_param=0');
         $u->groupBy();
         $objects = $u->getList();
         $existFeatures = [];
@@ -675,7 +662,7 @@ class Product extends Base
                 $modification['default'] = $item['default'];
                 $modification['article'] = $item['code'];
                 if ($item['count'] != null)
-                    $modification['count'] = (real)$item['count'];
+                    $modification['count'] = (float)$item['count'];
                 else $modification['count'] = -1;
                 if (!$modification['article'])
                     $modification['article'] = $product["article"];
@@ -685,9 +672,9 @@ class Product extends Base
                     $modification['measuresWeight'] = $product['measuresWeight'];
                 if (!$modification['measuresVolume'])
                     $modification['measuresVolume'] = $product['measuresVolume'];
-                $modification['priceRetail'] = (real)$item['value'];
-                $modification['priceSmallOpt'] = (real)$item['valueOpt'];
-                $modification['priceOpt'] = (real)$item['valueOptCorp'];
+                $modification['priceRetail'] = (float)$item['value'];
+                $modification['priceSmallOpt'] = (float)$item['valueOpt'];
+                $modification['priceOpt'] = (float)$item['valueOptCorp'];
                 $modification['description'] = $item['description'];
                 $features = explode("\n", $item['valuesFeature']);
                 $sorts = [];
@@ -811,15 +798,15 @@ class Product extends Base
 
         # All Mode
         // исправить все
-		if (empty($this->input['note']) && count($this->input['ids']) > 1) {
-			unset($this->input['note']);
-		}
-		if (empty($this->input['text']) && count($this->input['ids']) > 1) {
-			unset($this->input['text']);
-		}
-		
+        if (empty($this->input['note']) && count($this->input['ids']) > 1) {
+            unset($this->input['note']);
+        }
+        if (empty($this->input['text']) && count($this->input['ids']) > 1) {
+            unset($this->input['text']);
+        }
+
         $this->correctAll();
-		$this->correctMeasure();
+        $this->correctMeasure();
 
         // формирование артикля // при создании товара (если отличен от нуля и пуст)
         if (
@@ -854,35 +841,34 @@ class Product extends Base
         file_get_contents('http://' . HOSTNAME . "/lib/shoppreorder_checkCount.php?id={$this->input["id"]}");
 
         parent::save();
-
     }
-	
-	// Преобразование веса при редактировании в зависимости от параметра редактирования веса
-	private function correctMeasure()
-	{
-		if ($this->input["weightEdit"]) {
-			$u = new DB('shop_measure_weight');
-			$u->select('value');
-			$u->where('id=?', intval($this->input["idWeightEdit"]));
-			$res = $u->fetchOne();
-			if ($this->input["weightEdit"] > 0 && $res['value']) {
-				$this->input["weight"] = $this->input["weightEdit"] / $res['value'];
-			} else {
-				$this->input["weight"] = $this->input["weightEdit"];
-			}
-		}
-		if ($this->input["volumeEdit"]) {
-			$u = new DB('shop_measure_volume');
-			$u->select('value');
-			$u->where('id=?', intval($this->input["idVolumeEdit"]));
-			$res = $u->fetchOne();
-			if ($this->input["volumeEdit"] > 0 && $res['value']) {
-				$this->input["volume"] = $this->input["volumeEdit"] / $res['value'];
-			} else {
-				$this->input["volume"] = $this->input["volumeEdit"];
-			}
-		}
-	}
+
+    // Преобразование веса при редактировании в зависимости от параметра редактирования веса
+    private function correctMeasure()
+    {
+        if ($this->input["weightEdit"]) {
+            $u = new DB('shop_measure_weight');
+            $u->select('value');
+            $u->where('id=?', intval($this->input["idWeightEdit"]));
+            $res = $u->fetchOne();
+            if ($this->input["weightEdit"] > 0 && $res['value']) {
+                $this->input["weight"] = $this->input["weightEdit"] / $res['value'];
+            } else {
+                $this->input["weight"] = $this->input["weightEdit"];
+            }
+        }
+        if ($this->input["volumeEdit"]) {
+            $u = new DB('shop_measure_volume');
+            $u->select('value');
+            $u->where('id=?', intval($this->input["idVolumeEdit"]));
+            $res = $u->fetchOne();
+            if ($this->input["volumeEdit"] > 0 && $res['value']) {
+                $this->input["volume"] = $this->input["volumeEdit"] / $res['value'];
+            } else {
+                $this->input["volume"] = $this->input["volumeEdit"];
+            }
+        }
+    }
 
     // сохранить все меры (объемы и веса)
     public function saveMeasure()
@@ -971,9 +957,11 @@ class Product extends Base
             foreach ($images as $image)
                 if (empty($image["id"]) || ($image["id"] <= 0)) {
                     foreach ($idsProducts as $idProduct) {
-                        $data[] = array('id_price' => $idProduct, 'picture' => $image["imageFile"],
+                        $data[] = array(
+                            'id_price' => $idProduct, 'picture' => $image["imageFile"],
                             'sort' => (int)$image["sortIndex"], 'picture_alt' => $image["imageAlt"], 'title' => $image["imageTitle"],
-                            'default' => (int)$image["isMain"]);
+                            'default' => (int)$image["isMain"]
+                        );
                         $newImages[] = $image["imageFile"];
                     }
                 }
@@ -1173,8 +1161,8 @@ class Product extends Base
     {
         $idPrice = intval($this->input["id"]);
         try {
-           
-			$u = new DB('shop_userfields', 'su');
+
+            $u = new DB('shop_userfields', 'su');
             $u->select("cu.id, cu.id_price, cu.value, su.id id_userfield,
                       su.name, su.required, su.enabled, su.type, su.placeholder, su.description, su.values, sug.id id_group, sug.name name_group");
             $u->leftJoin('shop_price_userfields cu', "cu.id_userfield = su.id AND cu.id_price = {$idPrice}");
@@ -1183,9 +1171,9 @@ class Product extends Base
             $u->groupBy('su.id');
             $u->orderBy('sug.sort');
             $u->addOrderBy('su.sort');
-			writeLog($u->getSql());
-			$result = $u->getList();
-		
+            writeLog($u->getSql());
+            $result = $u->getList();
+
 
             $groups = array();
             foreach ($result as $item) {
@@ -1233,7 +1221,7 @@ class Product extends Base
             }
 
             $m = new DB('shop_modifications_feature', 'smf');
-			//$m->addFields('is_mod', 'tinyint(6) default 0', 1);
+            //$m->addFields('is_mod', 'tinyint(6) default 0', 1);
             $m->select('id');
             foreach ($specifications as $specification) {
                 foreach ($idsProducts as $idProduct) {
@@ -1269,14 +1257,15 @@ class Product extends Base
                          */
                     if (($specification["type"] == "colorlist" || $specification["type"] == "list") && empty($specification["idValue"]))
                         continue;
-                    $data[] = array('id_price' => $idProduct, 'id_feature' => $specification["idFeature"],
+                    $data[] = array(
+                        'id_price' => $idProduct, 'id_feature' => $specification["idFeature"],
                         'id_value' => $specification["idValue"],
                         'value_number' => $specification["valueNumber"],
-                        'value_bool' => $specification["valueBool"], 
-						'value_string' => $specification["valueString"],
-						'is_param'=>1,
-						'id_modification'=>$specification["idModification"]
-						);
+                        'value_bool' => $specification["valueBool"],
+                        'value_string' => $specification["valueString"],
+                        'is_param' => 1,
+                        'id_modification' => $specification["idModification"]
+                    );
                 }
             }
             if (!empty($data))
@@ -1369,7 +1358,6 @@ class Product extends Base
                             $idsAcc[] = $t->save();
                         } else $idsAcc[] = $result["id"];
                     }
-
                 }
 
                 $t = new DB("shop_accomp", "sa");
@@ -1408,9 +1396,11 @@ class Product extends Base
                 if ($c["isActive"])
                     $isActive = 'Y';
                 foreach ($idsProducts as $idProduct)
-                    $data[] = array('id_price' => $idProduct, 'date' => $c["date"], 'name' => $c["name"],
+                    $data[] = array(
+                        'id_price' => $idProduct, 'date' => $c["date"], 'name' => $c["name"],
                         'email' => $c["email"], 'commentary' => $c["commentary"], 'response' => $c["response"],
-                        'showing' => $showing, 'is_active' => $isActive);
+                        'showing' => $showing, 'is_active' => $isActive
+                    );
             }
             if (!empty($data))
                 DB::insertList('shop_comm', $data);
@@ -1480,29 +1470,29 @@ class Product extends Base
                 $del = $this->input['delCrosGroups'];
             $idsStr = implode(",", $idsProducts);
 
-                if ($del != "False") {
-                    $u = new DB('shop_price_group', 'spg');
-                    $u->where('NOT is_main AND id_price in (?)', $idsStr)->deleteList();
-                    unset($u);
-                };
-                $chgr = array();
-                foreach ($groups as $group) {
-                    foreach ($idsProducts as $idProduct) {
-                        if (empty($chgr[$idProduct][$group["id"]])) {
-                            $data[] = array(
-                                'id_price' => $idProduct,
-                                'id_group' => $group["id"],
-                                'is_main' => 0
-                            );
-                            $chgr[$idProduct][$group["id"]] = true;
-                        }
+            if ($del != "False") {
+                $u = new DB('shop_price_group', 'spg');
+                $u->where('NOT is_main AND id_price in (?)', $idsStr)->deleteList();
+                unset($u);
+            };
+            $chgr = array();
+            foreach ($groups as $group) {
+                foreach ($idsProducts as $idProduct) {
+                    if (empty($chgr[$idProduct][$group["id"]])) {
+                        $data[] = array(
+                            'id_price' => $idProduct,
+                            'id_group' => $group["id"],
+                            'is_main' => 0
+                        );
+                        $chgr[$idProduct][$group["id"]] = true;
                     }
                 }
-                if (!empty($data)) {
-                    DB::insertList('shop_price_group', $data, 'INSERT IGNORE INTO');
-                }
+            }
+            if (!empty($data)) {
+                DB::insertList('shop_price_group', $data, 'INSERT IGNORE INTO');
+            }
 
-                DB::query("
+            DB::query("
                     DELETE a.* FROM shop_price_group a,
                         (SELECT
                             b.id_price, b.id_group, b.is_main, MIN(b.id) mid
@@ -1539,8 +1529,11 @@ class Product extends Base
         // сохранения по id (к столбцу id_price) скидок в таблицу shop_discount_links
         try {
             foreach ($this->input["ids"] as $id)
-                DB::saveManyToMany($id, $this->input["discounts"],
-                    array("table" => "shop_discount_links", "key" => "id_price", "link" => "discount_id"));
+                DB::saveManyToMany(
+                    $id,
+                    $this->input["discounts"],
+                    array("table" => "shop_discount_links", "key" => "id_price", "link" => "discount_id")
+                );
             return true;
         } catch (Exception $e) {
             $this->error = "Не удаётся сохранить скидки товара!";
@@ -1689,21 +1682,24 @@ class Product extends Base
                                 'value_opt_corp' => $item["priceOpt"],
                                 'count' => $count,
                                 'sort' => (int)$item["sortIndex"],
-                                'description' => $item["description"]);
+                                'description' => $item["description"]
+                            );
 
                             foreach ($item["values"] as $v)
                                 $dataF[] = array(
                                     'id_price' => $idProduct,
                                     'id_modification' => $i,
                                     'id_feature' => $v["idFeature"],
-                                    'id_value' => $v["id"]);
+                                    'id_value' => $v["id"]
+                                );
                             foreach ($item["images"] as $img) {
                                 if ($img["id"] <= 0)
                                     $img["id"] = $namesToIds[$img["imageFile"]];
                                 $newDataI = array(
                                     'id_modification' => $i,
                                     'id_img' => $img["id"],
-                                    'sort' => $img["sortIndex"]);
+                                    'sort' => $img["sortIndex"]
+                                );
                             }
 
                             if (isset($tems) || $ifAdd) {
@@ -1739,7 +1735,6 @@ class Product extends Base
                     }
                     $dataI = null;
                 }
-
             } catch (Exception $e) {
                 throw new Exception();
             }
@@ -1763,8 +1758,10 @@ class Product extends Base
                             foreach ($item["images"] as $img) {
                                 if ($img["id"] <= 0)
                                     $img["id"] = $namesToIds[$img["imageFile"]];
-                                $dataI[] = array('id_modification' => $item["id"], 'id_img' => $img["id"],
-                                    'sort' => $img["sortIndex"]);
+                                $dataI[] = array(
+                                    'id_modification' => $item["id"], 'id_img' => $img["id"],
+                                    'sort' => $img["sortIndex"]
+                                );
                             }
                             if (!empty($dataI))
                                 DB::insertList('shop_modifications_img', $dataI);
@@ -1783,7 +1780,7 @@ class Product extends Base
     // Сохранить категорию товара
     private function saveIdGroup()
     {
-	
+
         if (!isset($this->input["idGroup"]))
             return true;
 
@@ -1852,14 +1849,13 @@ class Product extends Base
     {
         if (!isset($this->input["ids"]))
             return false;
-		$this->reLinkGroups();	
+        $this->reLinkGroups();
 
         return $this->saveImages() && $this->saveSpecifications() && $this->saveSimilarProducts() &&
             $this->saveAccompanyingProducts() && $this->saveComments() && $this->saveReviews() &&
             $this->saveCrossGroups() && $this->saveDiscounts() && $this->saveMeasure() &&
             $this->saveModifications() && $this->saveIdGroup() &&
             $this->saveCustomFields() && $this->saveFiles() && $this->saveOptions() && $this->saveLabels();
-			
     }
 
 
@@ -1974,7 +1970,6 @@ class Product extends Base
             $this->result['url'] = $urlFile;
             $this->result['name'] = $fileName;
             $this->result['headerCSV'] = $headerCSV;
-
         } catch (Exception $e) {
             // ошибка экспорта
             $this->error = $e->getMessage();
@@ -2042,7 +2037,7 @@ class Product extends Base
             $this->result['countPages'] = $_SESSION["countPages"];
             $this->result['cycleNum'] = $_SESSION["cycleNum"];
             $this->result['errors'] = implode('<br/>', $_SESSION['errors']);
-			$this->reLinkGroups();
+            $this->reLinkGroups();
             return true;
         }
     }
@@ -2152,8 +2147,11 @@ class Product extends Base
                 $labelsNew[] = $label;
         try {
             foreach ($this->input["ids"] as $id)
-                DB::saveManyToMany($id, $labelsNew,
-                    array("table" => "shop_label_product", "key" => "id_product", "link" => "id_label"));
+                DB::saveManyToMany(
+                    $id,
+                    $labelsNew,
+                    array("table" => "shop_label_product", "key" => "id_product", "link" => "id_label")
+                );
             return true;
         } catch (Exception $e) {
             $this->error = "Не удаётся сохранить ярлыки товара!";

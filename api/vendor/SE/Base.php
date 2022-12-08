@@ -39,19 +39,19 @@ class Base
             $this->statusAnswer = 500;
         switch ($this->statusAnswer) {
             case 200: {
-                echo json_encode($this->result);
-                exit;
-            }
+                    echo json_encode($this->result);
+                    exit;
+                }
             case 404: {
-                header("HTTP/1.1 404 Not found");
-                echo $this->error;
-                exit;
-            }
+                    header("HTTP/1.1 404 Not found");
+                    echo $this->error;
+                    exit;
+                }
             case 500: {
-                header("HTTP/1.1 500 Internal Server Error");
-                echo $this->error;
-                exit;
-            }
+                    header("HTTP/1.1 500 Internal Server Error");
+                    echo $this->error;
+                    exit;
+                }
         }
     }
 
@@ -66,6 +66,4 @@ class Base
         if (is_array($this->input) && isset($this->input[$name]))
             return $this->input[$name];
     }
-
-
 }
