@@ -44,7 +44,9 @@ if (strpos($api, 'Auth') === 0) {
     $apiClass = $apiPath . "/" . $apiClass;
 }
 if (empty($apiMethod)) {
-    $apiMethod = "get";
+    if ($method == "GET")
+        $apiMethod = "get";
+    else $apiMethod = "post";
 }
 
 //$apiClass = str_replace("api/", "", trim($apiClass['path'], "/"));

@@ -8,6 +8,7 @@
 /lib/database/sql
 /projects
 /www
+/images
 /data
 hostname.dat
 sitelang.dat

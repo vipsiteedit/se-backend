@@ -40,4 +40,12 @@ class Review extends Base
         return $this->fetch();
     }
 
+    public function save($isTransactionMode = true)
+    {
+        if ($this->input["date"] == "") {
+            $this->input["date"] = date("Y-m-d h:i:s");
+        }
+        parent::save();
+    }
+
 }

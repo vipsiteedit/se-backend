@@ -253,12 +253,27 @@ class Image extends Base
                 $file = $fil . '.' . $ext;
                 $uploadFile = $this->dir . '/' . $file;
             }
+            if (!file_exists(dirname($uploadFile))) {
+                mkdir(dirname($uploadFile), 0755, true);
+            }
 
             $fileTemp = $_FILES["file$i"]['tmp_name'];
             if (!getimagesize($fileTemp)) {
                 $this->error = "Ошибка! Найден файл не являющийся изображением!";
                 return;
             }
+            // if (file_exists($fileTemp)) {
+            //     try {
+            //         move_uploaded_file($fileTemp, $uploadFile);
+            //         echo $fileTemp.' '.$uploadFile;
+            //     } catch (Exception $e) {
+            //         echo $e->getMessage();
+            //         exit;
+            //     }
+
+            //     exit;
+            // }
+
             if (!filesize($fileTemp) || move_uploaded_file($fileTemp, $uploadFile)) {
                 if (file_exists($uploadFile)) {
                     $files[] = $uploadFile;
