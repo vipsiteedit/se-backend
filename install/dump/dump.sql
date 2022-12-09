@@ -29,8 +29,8 @@ CREATE TABLE `bank_accounts` (
   `codename` varchar(20) DEFAULT NULL,
   `title` varchar(125) DEFAULT NULL,
   `value` varchar(255) DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `account` (`account`),
   KEY `id_payment` (`id_payment`)
@@ -65,7 +65,7 @@ CREATE TABLE `company` (
   `email` varchar(255) DEFAULT NULL,
   `address` varchar(255) DEFAULT NULL,
   `note` varchar(255) DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -91,7 +91,7 @@ CREATE TABLE `company_person` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `id_company` int(10) unsigned DEFAULT NULL,
   `id_person` int(10) unsigned DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_company` (`id_company`),
@@ -122,7 +122,7 @@ CREATE TABLE `company_userfields` (
   `id_company` int(10) unsigned NOT NULL,
   `id_userfield` int(10) unsigned NOT NULL,
   `value` text,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_company` (`id_company`),
@@ -178,7 +178,7 @@ CREATE TABLE `email_providers` (
   `url` varchar(255) DEFAULT NULL,
   `settings` varchar(255) NOT NULL COMMENT 'настройки email сервиса (JSON формат)',
   `is_active` tinyint(1) DEFAULT '0',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AVG_ROW_LENGTH=8192;
@@ -236,7 +236,7 @@ CREATE TABLE `integration` (
   `url_api` varchar(255) DEFAULT NULL,
   `note` text,
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 AVG_ROW_LENGTH=16384;
@@ -265,7 +265,7 @@ CREATE TABLE `integration_oauth` (
   `token` varchar(255) DEFAULT NULL,
   `expired` datetime DEFAULT NULL,
   `login` varchar(255) DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_integration` (`id_integration`),
@@ -318,8 +318,8 @@ CREATE TABLE `main` (
   `folder` varchar(255) DEFAULT NULL,
   `sms_phone` varchar(255) DEFAULT NULL COMMENT 'Телефон для СМС информирование',
   `sms_sender` varchar(255) DEFAULT NULL COMMENT 'Отправитель SMS по умолчанию',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `lang` (`lang`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
@@ -358,8 +358,8 @@ CREATE TABLE `main_log` (
   `admin` varchar(40) NOT NULL,
   `ip` varchar(16) DEFAULT NULL,
   `status` char(1) DEFAULT 'Y',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_order` (`id_order`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -388,8 +388,8 @@ CREATE TABLE `money` (
   `date_replace` date NOT NULL,
   `kurs` double(20,6) NOT NULL,
   `base_currency` char(3) NOT NULL DEFAULT 'RUB',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `money_title_id` (`money_title_id`),
   CONSTRAINT `money_ibfk_1` FOREIGN KEY (`money_title_id`) REFERENCES `money_title` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -422,8 +422,8 @@ CREATE TABLE `money_title` (
   `name_flang` varchar(10) DEFAULT NULL,
   `cbr_kod` varchar(20) DEFAULT NULL,
   `minsum` double(10,2) NOT NULL DEFAULT '0.01',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `lang` (`lang`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
@@ -460,8 +460,8 @@ CREATE TABLE `news` (
   `url` varchar(255) DEFAULT NULL,
   `sort` int(11) DEFAULT '0',
   `is_date_public` tinyint(1) DEFAULT '0',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `url` (`url`),
   KEY `is_date_public` (`is_date_public`),
@@ -494,8 +494,8 @@ CREATE TABLE `news_category` (
   `title` varchar(125) DEFAULT NULL,
   `lang` char(3) DEFAULT 'rus',
   `sort` int(11) DEFAULT '1',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `parent_id` (`parent_id`),
   CONSTRAINT `news_category_ibfk_1` FOREIGN KEY (`parent_id`) REFERENCES `news_category` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION
@@ -542,6 +542,26 @@ LOCK TABLES `news_gcontacts` WRITE;
 /*!40000 ALTER TABLE `news_gcontacts` ENABLE KEYS */;
 UNLOCK TABLES;
 
+
+--
+-- Table structure for table `news_userfields`
+--
+DROP TABLE IF EXISTS `news_userfields`;
+
+CREATE TABLE `news_userfields` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_news` int(10) UNSIGNED NOT NULL,
+  `id_userfield` int(10) UNSIGNED NOT NULL,
+  `value` text,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `FK_person_userfields_se_user_id` (`id_news`),
+  KEY `FK_person_userfields_shop_userfields_id` (`id_userfield`),
+  CONSTRAINT `news_userfields_ibfk_1` FOREIGN KEY (`id_news`) REFERENCES `news` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `news_userfields_ibfk_2` FOREIGN KEY (`id_userfield`) REFERENCES `shop_userfields` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 --
 -- Table structure for table `news_img`
 --
@@ -556,8 +576,8 @@ CREATE TABLE `news_img` (
   `picture_alt` varchar(255) DEFAULT NULL,
   `title` varchar(255) DEFAULT NULL,
   `sort` int(11) NOT NULL DEFAULT '0',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_news` (`id_news`),
   KEY `sort` (`sort`),
@@ -585,7 +605,7 @@ CREATE TABLE `news_subscriber_se_group` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `id_news` int(10) unsigned DEFAULT NULL,
   `id_group` int(10) unsigned DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_news` (`id_news`),
@@ -614,7 +634,7 @@ CREATE TABLE `permission_object` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `code` varchar(100) NOT NULL,
   `name` varchar(255) NOT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `code` (`code`)
@@ -643,7 +663,7 @@ CREATE TABLE `permission_object_role` (
   `id_object` int(10) unsigned NOT NULL,
   `id_role` int(10) unsigned NOT NULL,
   `mask` smallint(6) unsigned NOT NULL DEFAULT '0' COMMENT 'Маска прав (4 бита)',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_object` (`id_object`),
@@ -674,7 +694,7 @@ CREATE TABLE `permission_role` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   `description` varchar(255) DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='Роли пользователей';
@@ -701,7 +721,7 @@ CREATE TABLE `permission_role_user` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `id_role` int(10) unsigned NOT NULL,
   `id_user` int(10) unsigned DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_role` (`id_role`),
@@ -761,8 +781,8 @@ CREATE TABLE `person` (
   `email_valid` enum('Y','N','C') DEFAULT 'C',
   `referer` text,
   `price_type` smallint(6) unsigned DEFAULT '0',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   UNIQUE KEY `id` (`id`),
   KEY `id_up` (`id_up`),
   KEY `manager_id` (`manager_id`),
@@ -793,7 +813,7 @@ CREATE TABLE `person_userfields` (
   `id_person` int(10) unsigned NOT NULL,
   `id_userfield` int(10) unsigned NOT NULL,
   `value` text,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_person` (`id_person`),
@@ -822,8 +842,8 @@ CREATE TABLE `se_account_operation` (
   `operation_id` int(10) unsigned NOT NULL,
   `lang` char(3) NOT NULL,
   `name` varchar(40) NOT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `operation_id` (`operation_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
@@ -853,8 +873,8 @@ CREATE TABLE `se_group` (
   `title` varchar(255) DEFAULT NULL,
   `id_parent` int(10) unsigned DEFAULT NULL,
   `email_settings` varchar(255) DEFAULT NULL COMMENT 'Настройки для email рассылок',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 AVG_ROW_LENGTH=3276;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -886,7 +906,7 @@ CREATE TABLE `se_loginza` (
   `photo` varchar(255) DEFAULT NULL,
   `real_user_id` int(10) DEFAULT NULL,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uid` (`uid`),
   KEY `user_id` (`user_id`),
@@ -923,7 +943,7 @@ CREATE TABLE `se_search` (
   `searchtext` mediumtext NOT NULL,
   `modules` text NOT NULL,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`project`),
   KEY `page` (`page`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -978,8 +998,8 @@ CREATE TABLE `se_user` (
   `is_manager` tinyint(1) NOT NULL DEFAULT '0',
   `last_login` datetime DEFAULT NULL,
   `id_company` int(10) unsigned DEFAULT NULL COMMENT 'компания пользователя (таблица - company)',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
   KEY `is_active` (`is_active`),
@@ -1017,8 +1037,8 @@ CREATE TABLE `se_user_account` (
   `curr` char(3) DEFAULT 'RUR',
   `operation` int(10) unsigned DEFAULT NULL,
   `docum` text,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   KEY `company_id` (`company_id`),
@@ -1050,8 +1070,8 @@ CREATE TABLE `se_user_group` (
   `user_id` int(10) unsigned DEFAULT NULL,
   `company_id` int(10) unsigned DEFAULT NULL,
   `group_id` int(10) unsigned DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   KEY `group_id` (`group_id`),
@@ -1116,8 +1136,8 @@ CREATE TABLE `shop_accomp` (
   `id_price` int(10) unsigned NOT NULL,
   `id_acc` int(10) unsigned DEFAULT NULL,
   `id_group` int(10) unsigned DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_price` (`id_price`),
   KEY `id_acc` (`id_acc`),
@@ -1186,8 +1206,8 @@ CREATE TABLE `shop_brand` (
   `keywords` varchar(255) DEFAULT NULL,
   `description` text,
   `sort` int(11) DEFAULT '0',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `lang` (`lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -1220,8 +1240,8 @@ CREATE TABLE `shop_comm` (
   `mark` int(11) NOT NULL,
   `showing` enum('Y','N') DEFAULT 'N',
   `is_active` enum('Y','N') DEFAULT 'N',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_price` (`id_price`),
   CONSTRAINT `shop_comm_ibfk_1` FOREIGN KEY (`id_price`) REFERENCES `shop_price` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -1255,7 +1275,7 @@ CREATE TABLE `shop_contacts` (
   `sort` int(10) NOT NULL DEFAULT '0',
   `is_visible` tinyint(1) NOT NULL DEFAULT '1',
   `url` varchar(255) DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 AVG_ROW_LENGTH=512;
@@ -1281,7 +1301,7 @@ CREATE TABLE `shop_contacts_geo` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `id_contact` int(10) unsigned NOT NULL,
   `id_city` int(10) unsigned NOT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_contact` (`id_contact`),
@@ -1313,8 +1333,8 @@ CREATE TABLE `shop_contract` (
   `number` int(10) unsigned DEFAULT NULL,
   `date` date DEFAULT NULL,
   `file` varchar(20) DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_author` (`id_author`),
   KEY `id_order` (`id_order`),
@@ -1352,8 +1372,8 @@ CREATE TABLE `shop_coupons` (
   `count_used` int(10) unsigned NOT NULL DEFAULT '1',
   `only_registered` enum('Y','N') NOT NULL DEFAULT 'N',
   `payment_id` int(10) unsigned DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_user` (`id_user`),
   KEY `code` (`code`),
@@ -1418,7 +1438,7 @@ CREATE TABLE `shop_coupons_history` (
   `id_order` int(10) unsigned NOT NULL,
   `discount` float(10,2) DEFAULT NULL,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_coupon` (`id_coupon`),
   KEY `id_user` (`id_user`),
@@ -1448,8 +1468,8 @@ DROP TABLE IF EXISTS `shop_crossgroup`;
 CREATE TABLE `shop_crossgroup` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `group_id` int(10) unsigned DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `group_id` (`group_id`),
   CONSTRAINT `shop_crossgroup_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `shop_group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -1483,8 +1503,8 @@ CREATE TABLE `shop_delivery` (
   `address` varchar(255) DEFAULT NULL,
   `postindex` varchar(255) DEFAULT NULL,
   `id_city` int(10) DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_city` (`id_city`),
   KEY `shop_delivery_ibfk_1` (`id_order`),
@@ -1519,8 +1539,8 @@ CREATE TABLE `shop_delivery_param` (
   `priority` int(11) DEFAULT '0',
   `operation` enum('=','+','-') DEFAULT '=',
   `type_price` enum('a','s','d') DEFAULT 'a',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1545,8 +1565,8 @@ CREATE TABLE `shop_delivery_payment` (
   `id` int(10) unsigned NOT NULL,
   `id_delivery` int(10) unsigned NOT NULL,
   `id_payment` int(10) unsigned NOT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1573,8 +1593,8 @@ CREATE TABLE `shop_delivery_region` (
   `id_country` int(11) DEFAULT NULL,
   `id_region` int(11) DEFAULT NULL,
   `id_city` int(11) DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_delivery` (`id_delivery`),
   CONSTRAINT `shop_delivery_region_ibfk_1` FOREIGN KEY (`id_delivery`) REFERENCES `shop_deliverytype` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -1629,8 +1649,8 @@ CREATE TABLE `shop_deliverygroup` (
   `id` int(10) unsigned NOT NULL,
   `id_group` int(10) unsigned NOT NULL,
   `id_type` int(10) unsigned NOT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1672,8 +1692,8 @@ CREATE TABLE `shop_deliverytype` (
   `city_from_delivery` varchar(128) DEFAULT NULL,
   `status` enum('Y','N') DEFAULT 'Y',
   `sort` int(11) DEFAULT '0',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_parent` (`id_parent`),
   CONSTRAINT `shop_deliverytype_ibfk_1` FOREIGN KEY (`id_parent`) REFERENCES `shop_deliverytype` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION
@@ -1706,8 +1726,8 @@ CREATE TABLE `shop_discount_links` (
   `id_usergroup` int(10) unsigned DEFAULT NULL,
   `priority` smallint(5) unsigned DEFAULT NULL,
   `type` enum('g','p','o','m','i') NOT NULL DEFAULT 'm',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `discount_id` (`discount_id`),
   KEY `id_price` (`id_price`),
@@ -1757,8 +1777,8 @@ CREATE TABLE `shop_discounts` (
   `summ_type` int(10) unsigned DEFAULT NULL,
   `customer_type` smallint(6) unsigned DEFAULT NULL COMMENT 'Тип контакта: 0 - для всех, 1 - только для физ.лиц, 2 - только для компаний',
   `week_product` tinyint(1) NOT NULL DEFAULT '0',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `sort` (`sort`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -1793,8 +1813,8 @@ CREATE TABLE `shop_feature` (
   `seo` tinyint(1) NOT NULL DEFAULT '1',
   `is_market` tinyint(1) NOT NULL DEFAULT '1',
   `placeholder` varchar(255) DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_feature_group` (`id_feature_group`),
   CONSTRAINT `shop_feature_ibfk_1` FOREIGN KEY (`id_feature_group`) REFERENCES `shop_feature_group` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION
@@ -1824,8 +1844,8 @@ CREATE TABLE `shop_feature_group` (
   `description` text,
   `image` varchar(255) DEFAULT NULL,
   `sort` int(10) NOT NULL DEFAULT '0',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_main` (`id_main`),
   CONSTRAINT `shop_feature_group_ibfk_1` FOREIGN KEY (`id_main`) REFERENCES `main` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -1857,8 +1877,8 @@ CREATE TABLE `shop_feature_value_list` (
   `image` varchar(255) DEFAULT NULL,
   `sort` int(10) NOT NULL DEFAULT '0',
   `default` tinyint(1) NOT NULL DEFAULT '0',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_feature` (`id_feature`),
   CONSTRAINT `shop_feature_value_list_ibfk_1` FOREIGN KEY (`id_feature`) REFERENCES `shop_feature` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -1887,7 +1907,7 @@ CREATE TABLE `shop_files` (
   `file` varchar(255) NOT NULL COMMENT 'Имя файла в папке files',
   `name` varchar(255) DEFAULT NULL COMMENT 'Текст отображаемой ссылки на файл',
   `sort` int(11) DEFAULT '0',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_price` (`id_price`),
@@ -1970,8 +1990,8 @@ CREATE TABLE `shop_group` (
   `compare` tinyint(1) NOT NULL DEFAULT '0',
   `id_modification_group_def` int(10) unsigned DEFAULT NULL COMMENT 'Ид. группы модификаций по умолчанию',
   `is_delete` tinyint(1) DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `code_gr` (`code_gr`),
   KEY `upid` (`upid`),
@@ -2002,8 +2022,8 @@ CREATE TABLE `shop_group_feature` (
   `id_group` int(10) unsigned NOT NULL,
   `id_feature` int(10) unsigned NOT NULL,
   `sort` int(10) NOT NULL DEFAULT '0',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_group` (`id_group`),
   KEY `id_feature` (`id_feature`),
@@ -2036,8 +2056,8 @@ CREATE TABLE `shop_group_filter` (
   `default_filter` enum('price','brand','flag_hit','flag_new','discount') DEFAULT NULL,
   `expanded` tinyint(1) NOT NULL DEFAULT '0',
   `sort` int(10) NOT NULL DEFAULT '0',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_group` (`id_group`),
   KEY `id_feature` (`id_feature`),
@@ -2070,8 +2090,8 @@ CREATE TABLE `shop_group_img` (
   `picture_alt` varchar(255) DEFAULT NULL,
   `title` varchar(255) DEFAULT NULL,
   `sort` int(11) NOT NULL DEFAULT '0',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_group` (`id_group`),
   CONSTRAINT `shop_group_img_ibfk_1` FOREIGN KEY (`id_group`) REFERENCES `shop_group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -2098,8 +2118,8 @@ CREATE TABLE `shop_group_price` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `group_id` int(10) unsigned NOT NULL,
   `price_id` int(10) unsigned NOT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `group_id` (`group_id`),
   KEY `price_id` (`price_id`),
@@ -2160,7 +2180,7 @@ CREATE TABLE `shop_group_tree` (
   `id_parent` int(10) unsigned NOT NULL,
   `id_child` int(10) unsigned NOT NULL,
   `level` tinyint(4) NOT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_parent` (`id_parent`),
@@ -2191,7 +2211,7 @@ CREATE TABLE `shop_group_userfields` (
   `id_shopgroup` int(10) unsigned NOT NULL,
   `id_userfield` int(10) unsigned NOT NULL,
   `value` text,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_shopgroup` (`id_shopgroup`),
@@ -2225,8 +2245,8 @@ CREATE TABLE `shop_img` (
   `title` varchar(255) DEFAULT NULL,
   `sort` int(10) NOT NULL DEFAULT '0',
   `default` tinyint(1) NOT NULL DEFAULT '0',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_price` (`id_price`),
   CONSTRAINT `shop_img_ibfk_1` FOREIGN KEY (`id_price`) REFERENCES `shop_price` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -2337,8 +2357,8 @@ CREATE TABLE `shop_leader` (
   `lang` char(3) NOT NULL DEFAULT 'rus',
   `id_group` int(10) unsigned DEFAULT NULL,
   `id_price` int(10) unsigned DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `lang` (`lang`),
   KEY `id_group` (`id_group`),
@@ -2371,8 +2391,8 @@ CREATE TABLE `shop_license` (
   `serial` varchar(255) DEFAULT NULL,
   `regkey` text,
   `datereg` date DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2401,8 +2421,8 @@ CREATE TABLE `shop_mail` (
   `subject` varchar(250) DEFAULT NULL,
   `mailtype` char(40) DEFAULT 'reguser',
   `itempost` int(11) DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `shop_mail_group_id` (`shop_mail_group_id`),
   CONSTRAINT `shop_mail_ibfk_1` FOREIGN KEY (`shop_mail_group_id`) REFERENCES `shop_mail_group` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
@@ -2430,8 +2450,8 @@ CREATE TABLE `shop_mail_group` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `lang` char(3) NOT NULL DEFAULT 'rus',
   `name` varchar(255) NOT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `lang` (`lang`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
@@ -2458,8 +2478,8 @@ CREATE TABLE `shop_manager` (
   `id` int(10) unsigned NOT NULL,
   `id_admin` int(10) unsigned DEFAULT NULL,
   `id_group` int(10) unsigned DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2482,8 +2502,8 @@ DROP TABLE IF EXISTS `shop_manufacturer`;
 CREATE TABLE `shop_manufacturer` (
   `id` int(10) unsigned NOT NULL,
   `name` varchar(255) NOT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2579,8 +2599,8 @@ CREATE TABLE `shop_modifications` (
   `sort` int(10) NOT NULL DEFAULT '0',
   `default` tinyint(1) NOT NULL DEFAULT '0',
   `id_exchange` varchar(80) DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_mod_group` (`id_mod_group`),
   KEY `id_price` (`id_price`),
@@ -2615,8 +2635,8 @@ CREATE TABLE `shop_modifications_feature` (
   `value_bool` tinyint(1) DEFAULT NULL,
   `value_string` varchar(255) DEFAULT NULL,
   `sort` int(10) NOT NULL DEFAULT '0',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_price` (`id_price`),
   KEY `id_modification` (`id_modification`),
@@ -2651,8 +2671,8 @@ CREATE TABLE `shop_modifications_group` (
   `name` varchar(50) NOT NULL,
   `vtype` smallint(1) unsigned DEFAULT '0',
   `sort` int(10) DEFAULT '0',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_main` (`id_main`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -2679,8 +2699,8 @@ CREATE TABLE `shop_modifications_img` (
   `id_modification` int(10) unsigned NOT NULL,
   `id_img` int(10) unsigned NOT NULL,
   `sort` int(11) NOT NULL DEFAULT '0',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_modification` (`id_modification`),
   KEY `id_img` (`id_img`),
@@ -2710,8 +2730,8 @@ CREATE TABLE `shop_nowlooks` (
   `id` int(10) unsigned NOT NULL,
   `time_expire` int(11) NOT NULL,
   `count_looks` int(10) unsigned DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2861,8 +2881,8 @@ CREATE TABLE `shop_order` (
   `is_delete` enum('N','Y') DEFAULT 'N',
   `id_main` int(10) unsigned DEFAULT '1',
   `managers` text,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -2893,8 +2913,8 @@ CREATE TABLE `shop_order_action` (
   `period` int(11) NOT NULL,
   `active` enum('Y','N') DEFAULT 'N',
   `logaction` text,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_order` (`id_order`),
   CONSTRAINT `shop_order_action_ibfk_1` FOREIGN KEY (`id_order`) REFERENCES `shop_order` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -3018,8 +3038,8 @@ CREATE TABLE `shop_payment` (
   `is_test` enum('Y','N') DEFAULT 'N',
   `customer_type` smallint(6) unsigned DEFAULT NULL COMMENT 'Тип контакта: 0 - для всех, 1 - только для физ.лиц, 2 - только для компаний',
   `is_ticket` tinyint(1) DEFAULT '0',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `ident` (`ident`),
   KEY `lang` (`lang`)
@@ -3056,7 +3076,7 @@ CREATE TABLE `shop_payment_merchant` (
   `host` varchar(255) NOT NULL,
   `date_payee` datetime NOT NULL,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -3084,7 +3104,7 @@ CREATE TABLE `shop_preorder` (
   `email` varchar(255) NOT NULL,
   `phone` varchar(255) DEFAULT NULL,
   `send_mail` tinyint(1) NOT NULL DEFAULT '0',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_price` (`id_price`),
@@ -3164,8 +3184,8 @@ CREATE TABLE `shop_price` (
   `id_exchange` varchar(50) DEFAULT NULL,
   `signal_dt` varchar(10) DEFAULT NULL,
   `delivery_time` varchar(80) DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `code` (`code`),
   UNIQUE KEY `id_exchange` (`id_exchange`) USING BTREE,
@@ -3197,7 +3217,7 @@ CREATE TABLE `shop_price_group` (
   `id_price` int(10) unsigned NOT NULL,
   `id_group` int(10) unsigned NOT NULL,
   `is_main` tinyint(1) NOT NULL DEFAULT '1',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_price` (`id_price`),
@@ -3269,8 +3289,8 @@ CREATE TABLE `shop_price_param` (
   `imgparam` varchar(255) DEFAULT NULL,
   `imgparam_alt` varchar(255) DEFAULT NULL,
   `vtype` enum('add','calc') NOT NULL DEFAULT 'add',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -3368,7 +3388,7 @@ DROP TABLE IF EXISTS `shop_product_type`;
 CREATE TABLE `shop_product_type` (
   `id` int(10) unsigned NOT NULL,
   `name` varchar(255) NOT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Типы товаров';
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -3393,7 +3413,7 @@ CREATE TABLE `shop_product_type_feature` (
   `id` int(10) unsigned NOT NULL,
   `id_type` int(10) unsigned NOT NULL,
   `id_feature` int(10) unsigned NOT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Связка типов товаров с параметрами';
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -3419,8 +3439,8 @@ CREATE TABLE `shop_rating` (
   `id_price` int(10) unsigned NOT NULL,
   `id_user` int(10) unsigned NOT NULL,
   `mark` smallint(1) unsigned NOT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -3444,17 +3464,17 @@ CREATE TABLE `shop_reviews` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `id_price` int(10) unsigned NOT NULL,
   `id_user` int(10) unsigned NOT NULL,
-  `mark` smallint(1) unsigned NOT NULL,
+  `mark` smallint(1) unsigned NOT NULL DEFAULT '0',
   `merits` text,
   `demerits` text,
-  `comment` text NOT NULL,
+  `comment` text,
   `use_time` smallint(1) unsigned NOT NULL DEFAULT '1',
-  `date` datetime NOT NULL,
+  `date` datetime NULL DEFAULT NOW(),
   `likes` int(10) unsigned NOT NULL DEFAULT '0',
   `dislikes` int(10) unsigned NOT NULL DEFAULT '0',
   `active` tinyint(1) unsigned NOT NULL DEFAULT '1',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_price` (`id_price`),
   KEY `id_user` (`id_user`),
@@ -3484,8 +3504,8 @@ CREATE TABLE `shop_reviews_votes` (
   `id_review` int(10) unsigned NOT NULL,
   `id_user` int(10) unsigned NOT NULL,
   `vote` smallint(1) NOT NULL DEFAULT '1',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -3510,8 +3530,8 @@ CREATE TABLE `shop_sameprice` (
   `id_price` int(10) unsigned DEFAULT NULL,
   `id_acc` int(10) unsigned DEFAULT NULL,
   `cross` tinyint(1) NOT NULL DEFAULT '1',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_price` (`id_price`),
   KEY `id_acc` (`id_acc`),
@@ -3646,8 +3666,8 @@ CREATE TABLE `shop_setting_groups` (
   `name` varchar(50) NOT NULL,
   `description` varchar(255) DEFAULT NULL,
   `sort` int(11) NOT NULL DEFAULT '0',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `sort` (`sort`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 AVG_ROW_LENGTH=16384;
@@ -3675,8 +3695,8 @@ CREATE TABLE `shop_setting_values` (
   `id_main` int(10) unsigned DEFAULT NULL,
   `id_setting` int(10) unsigned NOT NULL,
   `value` varchar(100) NOT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_main` (`id_main`),
   KEY `id_setting` (`id_setting`),
@@ -3713,8 +3733,8 @@ CREATE TABLE `shop_settings` (
   `description` text COMMENT 'описание параметра',
   `sort` int(10) NOT NULL DEFAULT '0',
   `enabled` tinyint(1) NOT NULL DEFAULT '1' COMMENT '0 - неактивный параметр',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `code` (`code`),
   KEY `sort` (`sort`),
@@ -3752,8 +3772,8 @@ CREATE TABLE `shop_special` (
   `last_modified` datetime DEFAULT NULL,
   `expires_date` datetime DEFAULT NULL,
   `status` enum('Y','N') DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -3862,7 +3882,7 @@ CREATE TABLE `shop_stat_info` (
   `id_session` int(10) unsigned NOT NULL,
   `ip` varchar(15) DEFAULT NULL,
   `user_agent` varchar(255) DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   KEY `id_session` (`id_session`),
   CONSTRAINT `shop_stat_info_ibfk_1` FOREIGN KEY (`id_session`) REFERENCES `shop_stat_session` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -3958,8 +3978,8 @@ CREATE TABLE `shop_tovarorder` (
   `license` text,
   `commentary` text,
   `action` varchar(125) DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_order` (`id_order`),
   KEY `id_price` (`id_price`),
@@ -4022,7 +4042,7 @@ CREATE TABLE `shop_userfield_groups` (
   `sort` int(10) NOT NULL DEFAULT '0',
   `enabled` tinyint(1) NOT NULL DEFAULT '1',
   `data` enum('contact','order','company','productgroup','product','public') DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AVG_ROW_LENGTH=16384;
@@ -4089,7 +4109,7 @@ CREATE TABLE `shop_variables` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `value` text,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 AVG_ROW_LENGTH=3276 ROW_FORMAT=DYNAMIC;
@@ -4123,7 +4143,7 @@ CREATE TABLE `sms_log` (
   `text` varchar(255) DEFAULT NULL,
   `cost` decimal(19,2) DEFAULT NULL,
   `count` int(11) unsigned DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -4151,7 +4171,7 @@ CREATE TABLE `sms_providers` (
   `url` varchar(255) DEFAULT NULL,
   `settings` varchar(255) NOT NULL COMMENT 'настройки СМС шлюза (JSON формат)',
   `is_active` tinyint(1) DEFAULT '0',
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 AVG_ROW_LENGTH=8192;
@@ -4182,7 +4202,7 @@ CREATE TABLE `sms_templates` (
   `is_active` tinyint(1) DEFAULT '1',
   `phone` varchar(255) DEFAULT NULL COMMENT 'Телефоны получателя по умолчанию',
   `sender` varchar(255) DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `code` (`code`)
@@ -4220,8 +4240,8 @@ CREATE TABLE `spr_numbers` (
   `seven` varchar(20) DEFAULT NULL,
   `eight` varchar(20) DEFAULT NULL,
   `nine` varchar(20) DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -4248,8 +4268,8 @@ CREATE TABLE `user_rekv` (
   `lang` char(3) DEFAULT 'rus',
   `rekv_code` varchar(40) DEFAULT NULL,
   `value` varchar(255) DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id_author` (`id_author`),
   KEY `lang` (`lang`),
@@ -4280,8 +4300,8 @@ CREATE TABLE `user_rekv_type` (
   `code` varchar(20) DEFAULT NULL,
   `size` int(10) unsigned DEFAULT '40',
   `title` varchar(125) DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `code` (`code`),
   KEY `lang` (`lang`)
@@ -4316,8 +4336,8 @@ CREATE TABLE `user_urid` (
   `fizadres` text,
   `tel` varchar(125) DEFAULT NULL,
   `fax` varchar(125) DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   CONSTRAINT `user_urid_ibfk_1` FOREIGN KEY (`id`) REFERENCES `se_user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
