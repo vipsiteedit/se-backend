@@ -119,7 +119,7 @@ class Discount extends Base
         if ($this->input["summTo"] < 0) {
             $this->input["summTo"] = 0;
         }
-        if ($this->input["summFrom"] > $this->input["summTo"]) {
+        if ($this->input["summFrom"] > $this->input["summTo"] && $this->input["summTo"] != 0) {
             $this->input["summTo"] = $this->input["summFrom"] + 1;
         }
         if ($this->input["countFrom"] < 0) {
@@ -128,7 +128,7 @@ class Discount extends Base
         if ($this->input["countTo"] < 0) {
             $this->input["countTo"] = 0;
         }
-        if ($this->input["countFrom"] > $this->input["countTo"]) {
+        if ($this->input["countFrom"] > $this->input["countTo"] && $this->input["countTo"] != 0) {
             $this->input["countTo"] = $this->input["countFrom"] + 1;
         }
 
