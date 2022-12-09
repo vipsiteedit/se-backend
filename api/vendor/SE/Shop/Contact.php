@@ -172,7 +172,7 @@ class Contact extends Base
         $u->leftJoin('person_userfields cu', "cu.id_userfield = su.id AND id_person = {$idContact}");
         $u->leftJoin('shop_userfield_groups sug', 'su.id_group = sug.id');
         $u->where('su.data = "contact"');
-        $u->groupBy('su.id');
+        $u->groupBy('su.id, cu.id');
         $u->orderBy('sug.sort');
         $u->addOrderBy('su.sort');
         $result = $u->getList();
@@ -238,6 +238,7 @@ class Contact extends Base
             $u->leftJoin('user_urid uu', 'uu.id=su.id');
             $u->leftJoin('person pr', 'pr.id=p.id_up');
             $u->leftJoin('person pm', 'pm.id=p.manager_id');
+            $u->orderBy("p.id");
             $contact = $u->getInfo($id);
             $contact["birthDate"] = date("d.m.Y", strtotime($contact["birthDate"]));
             $contact["regDate"] = date("d.m.Y", strtotime($contact["regDate"]));
@@ -252,7 +253,7 @@ class Contact extends Base
                 $contact['balance'] = $contact['personalAccount'][$count - 1]['balance'];
             $this->result = $contact;
         } catch (Exception $e) {
-            $this->error = "Не удаётся получить информацию о контакте!";
+            $this->error = "Не удаётся получить информацию о контакте! ".$e;
         }
 
         return $this->result;
@@ -347,7 +348,7 @@ class Contact extends Base
         $u = new DB('user_rekv_type', 'urt');
         $u->select('ur.id, ur.value, urt.code rekv_code, urt.size, urt.title');
         $u->leftJoin('user_rekv ur', "ur.rekv_code = urt.code AND ur.id_author = {$id}");
-        $u->groupBy('urt.code');
+        $u->groupBy('urt.code, urt.id, ur.id, urt.size, urt.title');
         $u->orderBy('urt.id');
         return $u->getList();
     }
