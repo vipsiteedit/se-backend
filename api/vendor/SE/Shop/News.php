@@ -126,7 +126,7 @@ class News extends Base
           `id_news` int(10) UNSIGNED NOT NULL,
           `id_userfield` int(10) UNSIGNED NOT NULL,
           `value` text,
-          `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+          `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
           `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
           PRIMARY KEY (`id`),
           KEY `FK_person_userfields_se_user_id` (`id_news`),
@@ -193,7 +193,7 @@ class News extends Base
             $u->leftJoin('news_userfields cu', "cu.id_userfield = su.id AND cu.id_news = {$idNews}");
             $u->leftJoin('shop_userfield_groups sug', 'su.id_group = sug.id');
             $u->where('su.data = "public"');
-            $u->groupBy('su.id');
+            $u->groupBy('su.id,cu.id');
             $u->orderBy('sug.sort');
             $u->addOrderBy('su.sort');
             $result = $u->getList();
@@ -212,6 +212,7 @@ class News extends Base
             }
             return $grlist;
         } catch (Exception $e) {
+            $this->error = $e;
             return false;
         }
     }
@@ -222,6 +223,7 @@ class News extends Base
             $u = new DB('news', 'n');
             $u->select('n.*, nc.title AS name_category');
             $u->leftJoin('news_category nc', 'nc.id = n.id_category');
+            $u->groupBy("n.id, nc.title");
             $news = $item = $u->getInfo($this->input["id"]);
             $news['name'] = $item['title'];
             $news['isActive'] = $item['active'] == 'Y';
@@ -251,7 +253,7 @@ class News extends Base
             $news['customFields'] = $this->getCustomFields();
             $this->result = $news;
         } catch (Exception $e) {
-            $this->error = "Не удаётся получить информацию о запрошенной новсти!";
+            $this->error = "Не удаётся получить информацию о запрошенной новости! " . $e->getMessage(); 
         }
         return $this;
     }
@@ -433,7 +435,7 @@ class News extends Base
 
         } catch (Exception $e) {
             DB::rollBack();
-            $this->error = "Не удаётся сохранить публикацию!";
+            $this->error = "Не удаётся сохранить публикацию! ".$e;
         }
 
         return $this;
