@@ -45,7 +45,7 @@
      }
 
      public function getData($query_string = '') {
-         $url = 'http://e-stile.ru/geo/getCity.php' . $query_string;
+         $url = 'http://ewebcms.com/geo/getCity.php' . $query_string;
 
          $content = '';
          if (extension_loaded('curl')){
