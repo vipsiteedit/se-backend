@@ -75,7 +75,7 @@ class XSS
      * Automate state
      * @var integer
      */
-    private $state = XSS_READ_INNER;
+    private $state = self::XSS_READ_INNER;
 
     /**
      * Current tag

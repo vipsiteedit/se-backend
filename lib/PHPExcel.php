@@ -658,7 +658,7 @@ class PHPExcel
         $oldIndex = $this->getIndex($this->getSheetByName($sheetName));
         $pSheet = array_splice(
             $this->_workSheetCollection,
-            $oldIndex,
+            intval($oldIndex),
             1
         );
         array_splice(

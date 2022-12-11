@@ -173,11 +173,11 @@ function &XML_unserialize(&$xml)
 
 function &XMLRPC_parse(&$request)
 {
-    if (defined('XMLRPC_DEBUG') and XMLRPC_DEBUG) {
+    if (defined('XMLRPC_DEBUG') && XMLRPC_DEBUG) {
         XMLRPC_debug('XMLRPC_parse', "<p>Received the following raw request:</p>" . XMLRPC_show($request, 'print_r', true));
     }
     $data = &XML_unserialize($request);
-    if (defined('XMLRPC_DEBUG') and XMLRPC_DEBUG) {
+    if (defined('XMLRPC_DEBUG') && XMLRPC_DEBUG) {
         XMLRPC_debug('XMLRPC_parse', "<p>Returning the following parsed request:</p>" . XMLRPC_show($data, 'print_r', true));
     }
     return $data;
@@ -292,6 +292,7 @@ function &XMLRPC_adjustValue(&$current_node)
         } else {
             $types = array('string', 'int', 'i4', 'double', 'dateTime.iso8601', 'base64', 'boolean');
             $fell_through = true;
+            $temp = 0;
             foreach ($types as $type) {
                 if (array_key_exists($type, $current_node)) {
                     #echo "Getting rid of '$type'<br>\n";
@@ -381,12 +382,12 @@ function XMLRPC_request($site, $location, $methodName, $params = NULL, $user_age
     }
     $data = XML_serialize($data);
 
-    if (defined('XMLRPC_DEBUG') and XMLRPC_DEBUG) {
+    if (defined('XMLRPC_DEBUG') && XMLRPC_DEBUG) {
         XMLRPC_debug('XMLRPC_request', "<p>Received the following parameter list to send:</p>" . XMLRPC_show($params, 'print_r', true));
     }
     $conn = fsockopen($site, $port); #open the connection
     if (!$conn) { #if the connection was not opened successfully
-        if (defined('XMLRPC_DEBUG') and XMLRPC_DEBUG) {
+        if (defined('XMLRPC_DEBUG') && XMLRPC_DEBUG) {
             XMLRPC_debug('XMLRPC_request', "<p>Connection failed: Couldn't make the connection to $site.</p>");
         }
         return array(false, array('faultCode' => 10532, 'faultString' => "Connection failed: Couldn't make the connection to $site."));
@@ -402,7 +403,7 @@ function XMLRPC_request($site, $location, $methodName, $params = NULL, $user_age
         fputs($conn, "$headers");
         fputs($conn, $data);
 
-        if (defined('XMLRPC_DEBUG') and XMLRPC_DEBUG) {
+        if (defined('XMLRPC_DEBUG') && XMLRPC_DEBUG) {
             XMLRPC_debug('XMLRPC_request', "<p>Sent the following request:</p>\n\n" . XMLRPC_show($headers . $data, 'print_r', true));
         }
 
@@ -416,18 +417,18 @@ function XMLRPC_request($site, $location, $methodName, $params = NULL, $user_age
         #strip headers off of response
         $data = XML_unserialize(substr($response, strpos($response, "\r\n\r\n") + 4));
 
-        if (defined('XMLRPC_DEBUG') and XMLRPC_DEBUG) {
+        if (defined('XMLRPC_DEBUG') && XMLRPC_DEBUG) {
             XMLRPC_debug('XMLRPC_request', "<p>Received the following response:</p>\n\n" . XMLRPC_show($response, 'print_r', true) . "<p>Which was serialized into the following data:</p>\n\n" . XMLRPC_show($data, 'print_r', true));
         }
         if (isset($data['methodResponse']['fault'])) {
             $return =  array(false, XMLRPC_adjustValue($data['methodResponse']['fault']['value']));
-            if (defined('XMLRPC_DEBUG') and XMLRPC_DEBUG) {
+            if (defined('XMLRPC_DEBUG') && XMLRPC_DEBUG) {
                 XMLRPC_debug('XMLRPC_request', "<p>Returning:</p>\n\n" . XMLRPC_show($return, 'var_dump', true));
             }
             return $return;
         } else {
             $return = array(true, XMLRPC_adjustValue($data['methodResponse']['params']['param']['value']));
-            if (defined('XMLRPC_DEBUG') and XMLRPC_DEBUG) {
+            if (defined('XMLRPC_DEBUG') && XMLRPC_DEBUG) {
                 XMLRPC_debug('XMLRPC_request', "<p>Returning:</p>\n\n" . XMLRPC_show($return, 'var_dump', true));
             }
             return $return;
@@ -440,7 +441,7 @@ function XMLRPC_response($return_value, $server = NULL)
     $data["methodResponse"]["params"]["param"]["value"] = &$return_value;
     $return = XML_serialize($data);
 
-    if (defined('XMLRPC_DEBUG') and XMLRPC_DEBUG) {
+    if (defined('XMLRPC_DEBUG') && XMLRPC_DEBUG) {
         XMLRPC_debug('XMLRPC_response', "<p>Received the following data to return:</p>\n\n" . XMLRPC_show($return_value, 'print_r', true));
     }
 
@@ -452,7 +453,7 @@ function XMLRPC_response($return_value, $server = NULL)
         header("Server: $server");
     }
 
-    if (defined('XMLRPC_DEBUG') and XMLRPC_DEBUG) {
+    if (defined('XMLRPC_DEBUG') && XMLRPC_DEBUG) {
         XMLRPC_debug('XMLRPC_response', "<p>Sent the following response:</p>\n\n" . XMLRPC_show($return, 'print_r', true));
     }
     echo $return;
@@ -476,7 +477,7 @@ function XMLRPC_error($faultCode, $faultString, $server = NULL)
     if ($server) {
         header("Server: $server");
     }
-    if (defined('XMLRPC_DEBUG') and XMLRPC_DEBUG) {
+    if (defined('XMLRPC_DEBUG') && XMLRPC_DEBUG) {
         XMLRPC_debug('XMLRPC_error', "<p>Sent the following error response:</p>\n\n" . XMLRPC_show($return, 'print_r', true));
     }
     echo $return;
@@ -546,7 +547,7 @@ function XMLRPC_request_CURL($site, $location, $methodName, $params = NULL, $use
     }
     $data = XML_serialize($data);
 
-    if (defined('XMLRPC_DEBUG') and XMLRPC_DEBUG) {
+    if (defined('XMLRPC_DEBUG') && XMLRPC_DEBUG) {
         XMLRPC_debug('XMLRPC_request', "<p>Received the following parameter list to send:</p>" . XMLRPC_show($params, 'print_r', true));
     }
 
@@ -569,24 +570,24 @@ function XMLRPC_request_CURL($site, $location, $methodName, $params = NULL, $use
     else
         curl_close($ch);
 
-    if (defined('XMLRPC_DEBUG') and XMLRPC_DEBUG) {
+    if (defined('XMLRPC_DEBUG') && XMLRPC_DEBUG) {
         XMLRPC_debug('XMLRPC_request', "<p>Sent the following request:</p>\n\n" . XMLRPC_show($headers . $data, 'print_r', true));
     }
 
     $data = XML_unserialize($response);
 
-    if (defined('XMLRPC_DEBUG') and XMLRPC_DEBUG) {
+    if (defined('XMLRPC_DEBUG') && XMLRPC_DEBUG) {
         XMLRPC_debug('XMLRPC_request', "<p>Received the following response:</p>\n\n" . XMLRPC_show($response, 'print_r', true) . "<p>Which was serialized into the following data:</p>\n\n" . XMLRPC_show($data, 'print_r', true));
     }
     if (isset($data['methodResponse']['fault'])) {
         $return =  array(false, XMLRPC_adjustValue($data['methodResponse']['fault']['value']));
-        if (defined('XMLRPC_DEBUG') and XMLRPC_DEBUG) {
+        if (defined('XMLRPC_DEBUG') && XMLRPC_DEBUG) {
             XMLRPC_debug('XMLRPC_request', "<p>Returning:</p>\n\n" . XMLRPC_show($return, 'var_dump', true));
         }
         return $return;
     } else {
         $return = array(true, XMLRPC_adjustValue($data['methodResponse']['params']['param']['value']));
-        if (defined('XMLRPC_DEBUG') and XMLRPC_DEBUG) {
+        if (defined('XMLRPC_DEBUG') && XMLRPC_DEBUG) {
             XMLRPC_debug('XMLRPC_request', "<p>Returning:</p>\n\n" . XMLRPC_show($return, 'var_dump', true));
         }
         return $return;

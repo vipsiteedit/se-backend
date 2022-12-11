@@ -3,11 +3,10 @@ if (!defined('SE_DB_ENABLE') || !SE_DB_ENABLE || !defined('SE_DIR')) return;
 function rss_cenerator($len = 500, $lim = 30, $lng = 'rus')
 {
 	$siterss = $_SERVER['HTTP_HOST'];
-	$timesave = 10;  //����� ��������
+	$timesave = 10;
 	$nn = 0;
-	//   AND (`news`.active='Y') AND (`news`.pub_date<='$thisdate')
 
-	$thisdate = time() + 86400;  //(`news_category`.kod='$kod') AND (`news_category`.lang='$lng')
+	//$thisdate = time() + 86400;  //(`news_category`.kod='$kod') AND (`news_category`.lang='$lng')
 	$category = new seTable('news_category');
 	$category->select('id,ident');
 	$catlist = $category->getlist();

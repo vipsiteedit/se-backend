@@ -10,23 +10,28 @@ class voting
     private $fnameip = '';
     private $fnamedat;
     private $razdel;
+    private $page = '';
     private $width;
     public $number;
     public $summ;
     public $showhtml;
     private $textvoting;
 
-    public function __construct($section, $idVoting, $voting_e = 0, $width = 0, $textvoting = '')
+    public function __construct($section, $idVoting, $voting_e = 0, $width = 0, $textvoting = '', $page = "")
     {
+        if ($page == "") {
+            $page = getRequest('page');
+        }
+
         $this->textvoting = $textvoting;
-        $this->width = intval($width); //������ �������
+        $this->page = $page;
+        $this->width = intval($width);
         if ($this->width < 150) {
             $this->width = 150;
         }
         if ($this->width > 1000) {
             $this->width = 1000;
         }
-
 
         $this->section = $section;
         $this->idVoting = $idVoting;
@@ -36,35 +41,35 @@ class voting
             $this->razdel = intval($this->section->id);
 
 
-        //��������� ������ � ���� IP
         if (!empty($idVoting)) {
             $idVmd5 = substr(md5(str_replace("/", "", $this->idVoting)), 0, 5);
             $this->fnameip = "data/voting_" . $idVmd5 . "_ip.dat";
             $this->fnamedat = "data/voting_" . $idVmd5 . "_stat.dat";
         } else {
-            $this->fnameip = "data/voting_" . $_page . "_" . $razdel . "_ip.dat";
-            $this->fnamedat = "data/voting_" . $_page . "_" . $razdel . "_stat.dat";
+            $razdel = intval($this->section->id);
+            $this->fnameip = "data/voting_" . $this->page . "_" . $this->razdel . "_ip.dat";
+            $this->fnamedat = "data/voting_" . $this->page . "_" . $this->razdel . "_stat.dat";
         }
         $this->showhtml = '';
         $this->start();
     }
 
-    public function start() // php0
+    public function start()
     {
         $razdel = intval($this->section->id);
 
         $this->vot_flag = true;
         $this->vot_act = false;
 
-        if ((isRequest('GoTo_SHOW') && $razdel == $this->razdel) || ($this->checkIP($razdel, $this->idVoting))) { //���� ���� IP, ������� ���������
+        if ((isRequest('GoTo_SHOW') && $razdel == $this->razdel) || ($this->checkIP($razdel, $this->idVoting))) {
 
-            $this->showhtml = $this->GenHTML($width);
+            $this->showhtml = $this->GenHTML($this->width);
             $this->buttonstyle = "style='display:none;'";
             $this->vot_flag = false;
             return;
         }
 
-        if (isRequest('GoTo_VOTING') && $razdel == $this->razdel) {   //���� ������ "����������"
+        if (isRequest('GoTo_VOTING') && $razdel == $this->razdel) {
             $this->vot_act = true;
             $this->vot_flag = false;
             $this->buttonstyle = "style='display:none;'";
@@ -73,15 +78,13 @@ class voting
 
     public function votinglist()
     {
-        $_page = getRequest('page');
         $razdel = intval($this->section->id);
-        $voting_e = intval($this->voting_e); //��������
+        $voting_e = intval($this->voting_e);
         if ($voting_e < 0) $voting_e = 0;
         if ($voting_e > 5) $voting_e = 5;
 
         $objcount = count($this->section->objects);
         $rait = array();
-        //���������, ���� �� ���� ����������, ���� ��� �������, ���������� ����
         if (!file_exists($this->fnamedat)) {
             $f = fopen($this->fnamedat, "w");
             flock($f, LOCK_EX);
@@ -95,13 +98,10 @@ class voting
             fclose($f);
         }
 
-        //������ ����
-
         $number = array();
         if (file_exists($this->fnamedat)) {
             $f = file($this->fnamedat);
             $number = unserialize($f[0]);
-            //���� ��������� ����� ������, ������������ �� � ����
             if (!empty($this->section->objects)) {
                 foreach ($this->section->objects as $line) {
                     if (!isset($number[strval($line->id)])) {
@@ -111,11 +111,7 @@ class voting
             }
         }
 
-
-        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         if ($this->vot_act && isRequest('voting_radio')) {
-            //���� ������ ����������
-            //����� ��������� 1 � ������� � ������������ ����
             $_voting_radio = getRequest('voting_radio');
 
             if (!isset($number[$_voting_radio])) {
@@ -131,7 +127,6 @@ class voting
             flock($f, LOCK_UN);
             fclose($f);
 
-            //��������� ������ � ���� IP
             $ip = $_SERVER['HTTP_X_REAL_IP'];
             $f = fopen($this->fnameip, "a");
             flock($f, LOCK_EX);
@@ -139,7 +134,7 @@ class voting
             fflush($f);
             flock($f, LOCK_UN);
             fclose($f);
-            header("Location: " . seMultiDir() . "/" . $_page . '/');
+            header("Location: " . seMultiDir() . "/" . $this->page . '/');
             exit();
         }
 
@@ -208,15 +203,13 @@ class voting
 
     private function checkIP()
     {
-        // �������� ip ������ ��������� �� ��� ��� ���.
         $ip = $_SERVER['HTTP_X_REAL_IP'];
         if (!file_exists("data")) {
             mkdir("data", 0755);
         }
 
 
-        if (file_exists($this->fnameip)) { //���� ���� ���� IP
-            //���� ���� �� ��������� c �������, �������
+        if (file_exists($this->fnameip)) {
             if (date("d", filemtime($this->fnameip)) != date("d")) {
                 unlink($this->fnameip);
             } else {

@@ -34,8 +34,6 @@ require_once dirname(__FILE__) . "/lib_se_function.php";
 require_once dirname(__FILE__) . "/lib_safe_function.php";
 require_once dirname(__FILE__) . "/lib_images.php";
 require_once dirname(__FILE__) . "/lib_simpleXml.php";
-//if (file_exists(dirname(__FILE__) . "/rss.php"))
-//  require_once dirname(__FILE__) . "/rss.php";
 require_once dirname(__FILE__) . "/lib_voting.php";
 require_once dirname(__FILE__) . "/lib_rating.php";
 require_once dirname(__FILE__) . "/PHPMailer.php";
