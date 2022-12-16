@@ -52,17 +52,15 @@ function safe_function($s)
 
 require_once "function.php";
 
-
 $session = htmlspecialchars(addslashes($_POST['session']));
 $domain = htmlspecialchars(addslashes($_POST['domain']));
 
 if (!checkSID($session)) exit("no");
 
-//chdir("../");
 $path = getcwd() . "/data/";
 
 
-// ������� �����, ������������� � dellist
+//dellist
 
 $fname = $path . $session . ".del";
 chdir("../");
@@ -75,18 +73,15 @@ umask(0000);
 if (file_exists($fname)) {
   $fdels = gzfile($fname);
   foreach ($fdels as $fdel) {
-    $fdel = trim(cutUpDir($fdel)); //�������� ������� "../"
+    $fdel = trim(cutUpDir($fdel));
     $fname = $www . $fdel;
     // dirname
     if (is_dir($fname) && file_exists($fname) && $fdel != "/") {
-      //echo $fname.' '.dirname($fdel)."\r\n";
       ClearDir($fname, true);
       chdir($www);
     }
     if (is_file($fname) && file_exists($fname)) {
       unlink($fname);
-      //if (file_exists($www . "/projects/pages/" . substr($fdel, 7, -4) . ".xml"))
-      //unlink($www . "/projects/pages/" . substr($fdel, 7, -4) . ".xml");
     }
   }
 }
@@ -115,19 +110,12 @@ foreach ($fmap as $str) {
   else $data = fread($fd, $size);
   flock($fd, LOCK_UN);
 
-  $file = cutUpDir($file); //�������� ������� "../"
-  //if (trim($file)=="") continue;
+  $file = cutUpDir($file); 
 
   $fname = $www . $file;
 
 
   if (!(file_exists(dirname($fname)))) createdir(dirname($fname));
-
-
-  //if (strpos($fname, ".php")!==false && $fname!="/account/$domain/www/setpage.php") continue;
-
-
-  //���������� ���� ��� ��������� ����������
 
   if ((preg_match("/\/(\w+)\/\w+\.phtml/i", $file, $matches)) && empty($language))
     $language = $matches[1] . "/";
@@ -139,7 +127,7 @@ foreach ($fmap as $str) {
     strpos($fname, '.php') !== false || strpos($fname, '.tpl') !== false || strpos($fname, '.xml') !== false
     || strpos($fname, '.tag') !== false || strpos($fname, '.tag') !== false || strpos($fname, '.svg') !== false
   )
-    $data = preg_replace('|\xEF\xBB\xBF|', "", $data);
+    $data = trim(preg_replace('|\xEF\xBB\xBF|', "", $data));
 
   $f = fopen($fname, "w+b");
   fwrite($f, $data);
@@ -156,10 +144,6 @@ foreach ($fmap as $str) {
 
   if (is_file($fname)) chmod($fname, SE_FILE_PERMISSIONS);
 }
-
-//require_once "function.php";
-//if (file_exists($www."/system/standard") || file_exists($www."/system/business")) 
-//indexSearch($session,$language);
 
 @unlink($path . $session . '.sid');
 @unlink($path . $session . '.del');
