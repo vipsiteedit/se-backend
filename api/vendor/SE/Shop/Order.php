@@ -51,13 +51,14 @@ class Order extends Base
         };
     }
 
-    public function fetch()
+    public function fetch($isId = false)
     {
-        parent::fetch();
+        parent::fetch($isId);
         foreach ($this->result['items'] as &$item) {
             $item['dateOrderDisplay'] = date('d.m.Y', strtotime($item['dateOrder']));
             $item['amount'] = floatval($item['amount']);
         }
+        return $this->result['items'];
     }
 
     protected function getSettingsFetch()
@@ -449,7 +450,10 @@ class Order extends Base
         $sheet->setCellValue("H1", "Адрес");
         $sheet->setCellValue("I1", "Телефон дост.");
         $sheet->setCellValue("K1", "Время звонка");
-        $sheet->setCellValue("L1", "Примечание");
+        $sheet->setCellValue("L1", "Комментарий");
+        $sheet->setCellValue("M1", "Статус заказа");
+        $sheet->setCellValue("N1", "Статус доставки");
+
 
 
         $sheet->getColumnDimension('A')->setWidth(5);
@@ -463,14 +467,17 @@ class Order extends Base
         $sheet->getColumnDimension('I')->setWidth(20);
         $sheet->getColumnDimension('K')->setWidth(30);
         $sheet->getColumnDimension('L')->setWidth(40);
+        $sheet->getColumnDimension('M')->setWidth(20);
+        $sheet->getColumnDimension('N')->setWidth(20);
 
         $this->limit = null;
         $this->sortOrder = "asc";
         $orders = $this->fetch();
-        foreach ($orders as $k => $i)
-            if ($i['isDelete'] == 'Y') unset($orders[$k]);
-        /** фильтрация удаленных заказов */
+        foreach($orders as $k=>$i)
+            if ($i['isDelete'] == 'Y') unset($orders[$k]); /** фильтрация удаленных заказов */
         $i = 2;
+        $startSym = "O";
+        $codeSym = ord($startSym);
 
         foreach ($orders as $order) {
             $sheet->setCellValue("A$i", $order["id"]);
@@ -482,13 +489,30 @@ class Order extends Base
             $sheet->setCellValue("G$i", $order["deliveryIndex"]);
             $sheet->setCellValue("H$i", $order["deliveryAddress"]);
             $sheet->setCellValue("I$i", $order["deliveryPhone"]);
-            $sheet->setCellValue("K$i", $order["deliverCallTime"]);
-            $sheet->setCellValue("L$i", $order["deliverNote"]);
+            $sheet->setCellValue("K$i", $order["deliveryCallTime"]);
+            $sheet->setCellValue("L$i", $order["commentary"]);
+            $sheet->setCellValue("M$i", $this->orderStatuses[$order["status"]]);
+            $sheet->setCellValue("N$i", $this->deliveryStatuses[$order["deliveryStatus"]]);
 
             $sheet->getStyle("E$i")->getNumberFormat()->setFormatCode('#,##0.00');
-
+            
+            $customFields = $this->getCustomFields($order["id"]);
+            
+            $startSym = "O";
+            $codeSym = ord($startSym);
+            
+            foreach ($customFields as $groupField) {
+                foreach ($groupField['items'] as $item) {
+                    $sheet->setCellValue(chr($codeSym) . 1, $item["name"]);
+                    $sheet->setCellValue(chr($codeSym++) . $i, $item["value"]);
+                }
+            }
+            
             $i++;
-        }
+        } 
+        
+        $sheet->getStyle('A1:' . chr($codeSym-1) . '1')->getFont()->setBold(true);
+        
 
         $objWriter = new PHPExcel_Writer_Excel2007($xls);
         $objWriter->save($filePath);
@@ -564,63 +588,76 @@ class Order extends Base
         $sheet->setCellValue("C10", 'Время звонка:');
         $sheet->setCellValue("D10", $order["calltime"]);
         $sheet->mergeCells('D10:F10');
-        $sheet->setCellValue("A11", 'Примечание:');
-        $sheet->setCellValue("B11", $order["deliveryNoteAdd"]);
+        $sheet->setCellValue("A11", 'Комментарий:');
+        $sheet->setCellValue("B11", $order["commentary"]);
         $sheet->mergeCells('B11:F11');
-        $sheet->setCellValue("C12", 'Сумма товаров и услуг:');
-        $sheet->mergeCells('C12:D12');
-        $sheet->setCellValue("E12", number_format($order["amount"] + $order["discount"] - $order["deliveryPayee"], 2, ',', ' '));
-        $sheet->mergeCells('E12:F12');
-        $sheet->setCellValue("C13", 'Сумма скидки:');
-        $sheet->mergeCells('C13:D13');
-        $sheet->setCellValue("E13", number_format($order["discount"], 2, ',', ' '));
-        $sheet->mergeCells('E13:F13');
-        $sheet->setCellValue("C14", 'ИТОГО:');
-        $sheet->mergeCells('C14:D14');
-        $sheet->setCellValue("E14", number_format($order["amount"], 2, ',', ' '));
-        $sheet->mergeCells('E14:F14');
-        $sheet->getStyle('D7')->getNumberFormat()->setFormatCode('#,##0.00');
-        $sheet->getStyle('E12')->getNumberFormat()->setFormatCode('#,##0.00');
-        $sheet->getStyle('E13')->getNumberFormat()->setFormatCode('#,##0.00');
-        $sheet->getStyle('E14')->getNumberFormat()->setFormatCode('#,##0.00');
-        $sheet->getStyle('A5:F5')->getBorders()->getTop()->setBorderStyle(\PHPExcel_Style_Border::BORDER_THICK);
-        $sheet->getStyle('A7:F7')->getBorders()->getTop()->setBorderStyle(\PHPExcel_Style_Border::BORDER_THICK);
-        $sheet->getStyle('A12:F12')->getBorders()->getTop()->setBorderStyle(\PHPExcel_Style_Border::BORDER_THICK);
-        $sheet->getStyle('A9:F9')->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
-        $sheet->getStyle('A3:A15')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
-        $sheet->getStyle('C3:C15')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
-        $sheet->getStyle('B3:B15')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
-        $sheet->getStyle('D3:D15')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
-        $sheet->getStyle('E3:E15')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
-        $sheet->getStyle('A3:A11')->getFont()->setBold(true);
+        
+        $num = 12;
+        
+        foreach ($order["customFields"] as $groupField) {
+            foreach ($groupField['items'] as $item) {
+                $sheet->setCellValue("A" . $num, $item['name'] . ':');
+                $sheet->setCellValue("B" . $num, $item["value"]); 
+                $num++;
+            }
+        }
+        
+        
+        $sheet->setCellValue("C{$num}", 'Сумма товаров и услуг:');
+        $sheet->mergeCells("C{$num}:D{$num}");
+        $sheet->setCellValue("E{$num}", number_format($order["amount"] + $order["discount"] - $order["deliveryPayee"], 2, ',', ' '));
+        $sheet->mergeCells("E{$num}:F{$num}");
+        $sheet->setCellValue("C" . ($num+1), 'Сумма скидки:');
+        $sheet->mergeCells('C' . ($num+1) . ':D' . ($num+1));
+        $sheet->setCellValue("E" . ($num+1), number_format($order["discount"], 2, ',', ' '));
+        $sheet->mergeCells('E' . ($num+1) . ':F' . ($num+1));
+        $sheet->setCellValue("C" . ($num+2), 'ИТОГО:');
+        $sheet->mergeCells('C' . ($num+2) . ':D' . ($num+2));
+        $sheet->setCellValue("E" . ($num+2), number_format($order["amount"], 2, ',', ' '));
+        $sheet->mergeCells('E' . ($num+2) . ':F' . ($num+2));
+        
+        $sheet->getStyle('A3:A' . ($num-1))->getFont()->setBold(true);
+        $sheet->getStyle('A3:A' . ($num+3))->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+        $sheet->getStyle('B3:B' . ($num+3))->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
         $sheet->getStyle('C3:C11')->getFont()->setBold(true);
-        $sheet->getStyle('C14:F14')->getFont()->setBold(true);
-        $sheet->getStyle('C12:F14')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+        $sheet->getStyle('C3:C' . ($num+3))->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+        $sheet->getStyle('D3:D' . ($num+3))->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
+        $sheet->getStyle('E3:E' . ($num+3))->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
+        $sheet->getStyle('A5:F5')->getBorders()->getTop()->setBorderStyle(\PHPExcel_Style_Border::BORDER_THICK);
+        $sheet->getStyle('D7')->getNumberFormat()->setFormatCode('#,##0.00');
+        $sheet->getStyle('A9:F9')->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
+        $sheet->getStyle('A7:F7')->getBorders()->getTop()->setBorderStyle(\PHPExcel_Style_Border::BORDER_THICK);
+        $sheet->getStyle('E' . ($num))->getNumberFormat()->setFormatCode('#,##0.00');
+        $sheet->getStyle('A' . ($num) . ':F' . ($num))->getBorders()->getTop()->setBorderStyle(\PHPExcel_Style_Border::BORDER_THICK);
+        $sheet->getStyle('C' . ($num) . ':F' . ($num+2))->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+        $sheet->getStyle('E' . ($num+1))->getNumberFormat()->setFormatCode('#,##0.00');
+        $sheet->getStyle('C' . ($num+2) . ':F' . ($num+2))->getFont()->setBold(true);
+        $sheet->getStyle('E' . ($num+2))->getNumberFormat()->setFormatCode('#,##0.00');
 
 
-        $sheet->setCellValue("A17", 'Артикул');
-        $sheet->setCellValue("B17", 'Наименование товара');
-        $sheet->mergeCells('B17:C17');
+        $sheet->setCellValue("A" . ($num+5), 'Артикул');
+        $sheet->setCellValue("B" . ($num+5), 'Наименование товара');
+        $sheet->mergeCells('B' . ($num+5) . ':C' . ($num+5));
         $startSym = "D";
         $codeSym = ord($startSym);
         if ($order["items"]) {
             $product = $order["items"][0];
             foreach ($product["modifications"] as $modification)
-                $sheet->setCellValue(chr($codeSym++) . "17", $modification["name"]);
+                $sheet->setCellValue(chr($codeSym++) . ($num+5), $modification["name"]);
         }
 
         $startSymCount = $codeSym;
-        $sheet->setCellValue(chr($codeSym++) . "17", 'Кол-во');
-        $sheet->setCellValue(chr($codeSym++) . "17", 'Цена');
-        $sheet->setCellValue(chr($codeSym) . "17", 'Сумма');
-        $sheet->setCellValue("A16", 'Товары и услуги заказа');
+        $sheet->setCellValue(chr($codeSym++) . ($num+5), 'Кол-во');
+        $sheet->setCellValue(chr($codeSym++) . ($num+5), 'Цена');
+        $sheet->setCellValue(chr($codeSym) . ($num+5), 'Сумма');
+        $sheet->setCellValue("A" . ($num+4), 'Товары и услуги заказа');
         $endSym = chr($codeSym);
-        $sheet->mergeCells('A16:' . $endSym . '16');
-        $sheet->getStyle('A16:' . $endSym . '16')->getBorders()->getBottom()->setBorderStyle(\PHPExcel_Style_Border::BORDER_THIN);
-        $sheet->getStyle('A16:' . $endSym . '16')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-        $sheet->getStyle('A17:' . $endSym . '17')->getBorders()->getAllBorders()->setBorderStyle(\PHPExcel_Style_Border::BORDER_THIN);
-        $sheet->getStyle('A17:' . $endSym . '17')->getFont()->setBold(true);
-        $i = 18;
+        $sheet->mergeCells('A' . ($num+4) . ':' . $endSym . ($num+4));
+        $sheet->getStyle('A' . ($num+4) . ':' . $endSym . ($num+4))->getBorders()->getBottom()->setBorderStyle(\PHPExcel_Style_Border::BORDER_THIN);
+        $sheet->getStyle('A' . ($num+4) . ':' . $endSym . ($num+4))->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A' . ($num+5) . ':' . $endSym . ($num+5))->getBorders()->getAllBorders()->setBorderStyle(\PHPExcel_Style_Border::BORDER_THIN);
+        $sheet->getStyle('A' . ($num+5) . ':' . $endSym . ($num+5))->getFont()->setBold(true);
+        $i = $num+6;
         foreach ($order["items"] as $product) {
             $codeSym = ord($startSym);
             $sheet->getStyle("E$i:" . $endSym . $i)->getNumberFormat()->setFormatCode('#,##0.00');
@@ -650,5 +687,6 @@ class Order extends Base
 
         $this->result["url"] = $urlFile;
         $this->result["name"] = $fileName;
+
     }
 }
