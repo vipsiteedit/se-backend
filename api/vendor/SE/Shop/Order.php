@@ -54,75 +54,71 @@ class Order extends Base
     public function fetch($isId = false)
     {
         try {
-        $u = new DB('shop_order', 'so');
-        $u->select('so.id, so.date_order, so.status, so.inpayee, so.delivery_status, so.manager_id,
+            $u = new DB('shop_order', 'so');
+            $u->select('so.id, so.date_order, so.status, so.inpayee, so.delivery_status, so.manager_id,
                 so.commentary,
                 IFNULL(c.name, CONCAT_WS(" ", p.last_name, p.first_name, p.sec_name)) customer,
                 IFNULL(c.phone, p.phone) customer_phone, IFNULL(c.email, p.email) customer_email, 
                 (SUM((sto.price-IFNULL(sto.discount, 0))*sto.count)-IFNULL(so.discount, 0) + IFNULL(so.delivery_payee, 0)) amount, 
                 spp.name_payment, sp.name_payment AS name_payment_primary');
-        $u->leftJoin('person p', 'p.id = so.id_author');
-        $u->leftJoin('company c', 'c.id = so.id_company');
-        $u->innerJoin('shop_tovarorder sto', 'sto.id_order = so.id');
-        $u->leftJoin('shop_order_payee sop', 'sop.id_order = so.id');
-        $u->leftJoin('shop_payment spp', 'spp.id = sop.payment_type');
-        $u->leftJoin('shop_payment sp', 'sp.id = so.payment_type');
-        if (!empty($this->input['filters'])) {
-            $filterQuery = $this->getFilterQuery();
-            if ($filterQuery) {
-                $u->Where($filterQuery);
+            $u->leftJoin('person p', 'p.id = so.id_author');
+            $u->leftJoin('company c', 'c.id = so.id_company');
+            $u->innerJoin('shop_tovarorder sto', 'sto.id_order = so.id');
+            $u->leftJoin('shop_order_payee sop', 'sop.id_order = so.id');
+            $u->leftJoin('shop_payment spp', 'spp.id = sop.payment_type');
+            $u->leftJoin('shop_payment sp', 'sp.id = so.payment_type');
+            if (!empty($this->input['filters'])) {
+                $filterQuery = $this->getFilterQuery();
+                if ($filterQuery) {
+                    $u->Where($filterQuery);
+                }
+            } else {
+                $u->where("so.is_delete!='Y'");
             }
-        } else {
-            $u->where("so.is_delete!='Y'");            
-        }
 
-        if ($this->search) {
-            $where = "so.id=".intval($this->search);
-            $where .= " OR CONCAT_WS(' ', p.last_name, p.first_name, p.sec_name) LIKE '%{$this->search}%'";
-            $where .= " OR IFNULL(c.phone, p.phone) LIKE '%{$this->search}%'";
-            $where .= " OR IFNULL(c.email, p.email) LIKE '%{$this->search}%'";
-            
-            $u->andWhere($where);
-        }
-        $u->groupBy('so.id, spp.name_payment');
+            if ($this->search) {
+                $where = "so.id=" . intval($this->search);
+                $where .= " OR CONCAT_WS(' ', p.last_name, p.first_name, p.sec_name) LIKE '%{$this->search}%'";
+                $where .= " OR IFNULL(c.phone, p.phone) LIKE '%{$this->search}%'";
+                $where .= " OR IFNULL(c.email, p.email) LIKE '%{$this->search}%'";
+
+                $u->andWhere($where);
+            }
+            $u->groupBy('so.id, spp.name_payment');
             if (is_array($this->sortBy)) {
                 foreach ($this->sortBy as $sortField)
                     $u->addOrderBy($sortField, $this->sortOrder == 'desc');
-
             } else $u->orderBy($this->sortBy, $this->sortOrder == 'desc');
+            $this->result["items"] = $u->getList($this->input["limit"], $this->input["offset"]);
+            $this->result['count'] = $u->getListCount();
 
-            //$this->result["searchFields"] = $this->searchFields;
-        $this->result["items"] = $u->getList($this->input["limit"], $this->input["offset"]);
-           
-        $this->result['count'] = $u->getListCount();
-           
-           
-        $u = new DB('shop_order', 'so');
-        $u->select('(SUM((sto.price-IFNULL(sto.discount, 0))*sto.count)-IFNULL(so.discount, 0) + IFNULL(so.delivery_payee, 0)) total');
-        $u->innerJoin('shop_tovarorder sto', 'sto.id_order = so.id');
-        $u->leftJoin('person p', 'p.id = so.id_author');
-        $u->leftJoin('company c', 'c.id = so.id_company');
-        if (!empty($this->input['filters'])) {
-            $filterQuery = $this->getFilterQuery();
-            if ($filterQuery) {
-                $u->Where($filterQuery);
+
+            $u = new DB('shop_order', 'so');
+            $u->select('(SUM((sto.price-IFNULL(sto.discount, 0))*sto.count)-IFNULL(so.discount, 0) + IFNULL(so.delivery_payee, 0)) total');
+            $u->innerJoin('shop_tovarorder sto', 'sto.id_order = so.id');
+            $u->leftJoin('person p', 'p.id = so.id_author');
+            $u->leftJoin('company c', 'c.id = so.id_company');
+            if (!empty($this->input['filters'])) {
+                $filterQuery = $this->getFilterQuery();
+                if ($filterQuery) {
+                    $u->Where($filterQuery);
+                }
+            } else {
+                $u->where("so.is_delete!='Y'");
             }
-        } else {
-            $u->where("so.is_delete!='Y'");            
-        }
-        if ($this->search) {
-            $u->andWhere($where);
-        }
+            if ($this->search) {
+                $u->andWhere($where);
+            }
 
-        $r = $u->fetchOne();
-           $this->result['totalAmount'] = $r['total'];
+            $r = $u->fetchOne();
+            $this->result['totalAmount'] = $r['total'];
         } catch (Exception $e) {
             $this->error = $e;
         }
-        
-        
-    
-        
+
+
+
+
         //parent::fetch($isId);
         foreach ($this->result['items'] as &$item) {
             $item['dateOrderDisplay'] = date('d.m.Y', strtotime($item['dateOrder']));
@@ -346,14 +342,16 @@ class Order extends Base
         $this->saveCustomFields();
         return true;
     }
-    
-    public function save() {
-        $result = parent::save();
+
+    public function save($isTransaction = false)
+    {
+        if ($this->input['deliveryDocDate']) $this->input['deliveryDocDate'] = date('Y-m-d', strtotime($this->input['deliveryDocDate']));
+        $result = parent::save($isTransaction);
         $this->send("orduserch");
         return $result;
     }
-    
-    public function Mail() 
+
+    public function Mail()
     {
         $this->input["send"] = true;
         $this->send("orduserch");
@@ -553,8 +551,9 @@ class Order extends Base
         $this->limit = null;
         $this->sortOrder = "asc";
         $orders = $this->fetch();
-        foreach($orders as $k=>$i)
-            if ($i['isDelete'] == 'Y') unset($orders[$k]); /** фильтрация удаленных заказов */
+        foreach ($orders as $k => $i)
+            if ($i['isDelete'] == 'Y') unset($orders[$k]);
+        /** фильтрация удаленных заказов */
         $i = 2;
         $startSym = "O";
         $codeSym = ord($startSym);
@@ -575,24 +574,24 @@ class Order extends Base
             $sheet->setCellValue("N$i", $this->deliveryStatuses[$order["deliveryStatus"]]);
 
             $sheet->getStyle("E$i")->getNumberFormat()->setFormatCode('#,##0.00');
-            
+
             $customFields = $this->getCustomFields($order["id"]);
-            
+
             $startSym = "O";
             $codeSym = ord($startSym);
-            
+
             foreach ($customFields as $groupField) {
                 foreach ($groupField['items'] as $item) {
                     $sheet->setCellValue(chr($codeSym) . 1, $item["name"]);
                     $sheet->setCellValue(chr($codeSym++) . $i, $item["value"]);
                 }
             }
-            
+
             $i++;
-        } 
-        
-        $sheet->getStyle('A1:' . chr($codeSym-1) . '1')->getFont()->setBold(true);
-        
+        }
+
+        $sheet->getStyle('A1:' . chr($codeSym - 1) . '1')->getFont()->setBold(true);
+
 
         $objWriter = new PHPExcel_Writer_Excel2007($xls);
         $objWriter->save($filePath);
@@ -671,73 +670,73 @@ class Order extends Base
         $sheet->setCellValue("A11", 'Комментарий:');
         $sheet->setCellValue("B11", $order["commentary"]);
         $sheet->mergeCells('B11:F11');
-        
+
         $num = 12;
-        
+
         foreach ($order["customFields"] as $groupField) {
             foreach ($groupField['items'] as $item) {
                 $sheet->setCellValue("A" . $num, $item['name'] . ':');
-                $sheet->setCellValue("B" . $num, $item["value"]); 
+                $sheet->setCellValue("B" . $num, $item["value"]);
                 $num++;
             }
         }
-        
-        
+
+
         $sheet->setCellValue("C{$num}", 'Сумма товаров и услуг:');
         $sheet->mergeCells("C{$num}:D{$num}");
         $sheet->setCellValue("E{$num}", number_format($order["amount"] + $order["discount"] - $order["deliveryPayee"], 2, ',', ' '));
         $sheet->mergeCells("E{$num}:F{$num}");
-        $sheet->setCellValue("C" . ($num+1), 'Сумма скидки:');
-        $sheet->mergeCells('C' . ($num+1) . ':D' . ($num+1));
-        $sheet->setCellValue("E" . ($num+1), number_format($order["discount"], 2, ',', ' '));
-        $sheet->mergeCells('E' . ($num+1) . ':F' . ($num+1));
-        $sheet->setCellValue("C" . ($num+2), 'ИТОГО:');
-        $sheet->mergeCells('C' . ($num+2) . ':D' . ($num+2));
-        $sheet->setCellValue("E" . ($num+2), number_format($order["amount"], 2, ',', ' '));
-        $sheet->mergeCells('E' . ($num+2) . ':F' . ($num+2));
-        
-        $sheet->getStyle('A3:A' . ($num-1))->getFont()->setBold(true);
-        $sheet->getStyle('A3:A' . ($num+3))->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
-        $sheet->getStyle('B3:B' . ($num+3))->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
+        $sheet->setCellValue("C" . ($num + 1), 'Сумма скидки:');
+        $sheet->mergeCells('C' . ($num + 1) . ':D' . ($num + 1));
+        $sheet->setCellValue("E" . ($num + 1), number_format($order["discount"], 2, ',', ' '));
+        $sheet->mergeCells('E' . ($num + 1) . ':F' . ($num + 1));
+        $sheet->setCellValue("C" . ($num + 2), 'ИТОГО:');
+        $sheet->mergeCells('C' . ($num + 2) . ':D' . ($num + 2));
+        $sheet->setCellValue("E" . ($num + 2), number_format($order["amount"], 2, ',', ' '));
+        $sheet->mergeCells('E' . ($num + 2) . ':F' . ($num + 2));
+
+        $sheet->getStyle('A3:A' . ($num - 1))->getFont()->setBold(true);
+        $sheet->getStyle('A3:A' . ($num + 3))->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+        $sheet->getStyle('B3:B' . ($num + 3))->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
         $sheet->getStyle('C3:C11')->getFont()->setBold(true);
-        $sheet->getStyle('C3:C' . ($num+3))->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
-        $sheet->getStyle('D3:D' . ($num+3))->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
-        $sheet->getStyle('E3:E' . ($num+3))->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
+        $sheet->getStyle('C3:C' . ($num + 3))->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+        $sheet->getStyle('D3:D' . ($num + 3))->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
+        $sheet->getStyle('E3:E' . ($num + 3))->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
         $sheet->getStyle('A5:F5')->getBorders()->getTop()->setBorderStyle(\PHPExcel_Style_Border::BORDER_THICK);
         $sheet->getStyle('D7')->getNumberFormat()->setFormatCode('#,##0.00');
         $sheet->getStyle('A9:F9')->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_TOP);
         $sheet->getStyle('A7:F7')->getBorders()->getTop()->setBorderStyle(\PHPExcel_Style_Border::BORDER_THICK);
         $sheet->getStyle('E' . ($num))->getNumberFormat()->setFormatCode('#,##0.00');
         $sheet->getStyle('A' . ($num) . ':F' . ($num))->getBorders()->getTop()->setBorderStyle(\PHPExcel_Style_Border::BORDER_THICK);
-        $sheet->getStyle('C' . ($num) . ':F' . ($num+2))->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
-        $sheet->getStyle('E' . ($num+1))->getNumberFormat()->setFormatCode('#,##0.00');
-        $sheet->getStyle('C' . ($num+2) . ':F' . ($num+2))->getFont()->setBold(true);
-        $sheet->getStyle('E' . ($num+2))->getNumberFormat()->setFormatCode('#,##0.00');
+        $sheet->getStyle('C' . ($num) . ':F' . ($num + 2))->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+        $sheet->getStyle('E' . ($num + 1))->getNumberFormat()->setFormatCode('#,##0.00');
+        $sheet->getStyle('C' . ($num + 2) . ':F' . ($num + 2))->getFont()->setBold(true);
+        $sheet->getStyle('E' . ($num + 2))->getNumberFormat()->setFormatCode('#,##0.00');
 
 
-        $sheet->setCellValue("A" . ($num+5), 'Артикул');
-        $sheet->setCellValue("B" . ($num+5), 'Наименование товара');
-        $sheet->mergeCells('B' . ($num+5) . ':C' . ($num+5));
+        $sheet->setCellValue("A" . ($num + 5), 'Артикул');
+        $sheet->setCellValue("B" . ($num + 5), 'Наименование товара');
+        $sheet->mergeCells('B' . ($num + 5) . ':C' . ($num + 5));
         $startSym = "D";
         $codeSym = ord($startSym);
         if ($order["items"]) {
             $product = $order["items"][0];
             foreach ($product["modifications"] as $modification)
-                $sheet->setCellValue(chr($codeSym++) . ($num+5), $modification["name"]);
+                $sheet->setCellValue(chr($codeSym++) . ($num + 5), $modification["name"]);
         }
 
         $startSymCount = $codeSym;
-        $sheet->setCellValue(chr($codeSym++) . ($num+5), 'Кол-во');
-        $sheet->setCellValue(chr($codeSym++) . ($num+5), 'Цена');
-        $sheet->setCellValue(chr($codeSym) . ($num+5), 'Сумма');
-        $sheet->setCellValue("A" . ($num+4), 'Товары и услуги заказа');
+        $sheet->setCellValue(chr($codeSym++) . ($num + 5), 'Кол-во');
+        $sheet->setCellValue(chr($codeSym++) . ($num + 5), 'Цена');
+        $sheet->setCellValue(chr($codeSym) . ($num + 5), 'Сумма');
+        $sheet->setCellValue("A" . ($num + 4), 'Товары и услуги заказа');
         $endSym = chr($codeSym);
-        $sheet->mergeCells('A' . ($num+4) . ':' . $endSym . ($num+4));
-        $sheet->getStyle('A' . ($num+4) . ':' . $endSym . ($num+4))->getBorders()->getBottom()->setBorderStyle(\PHPExcel_Style_Border::BORDER_THIN);
-        $sheet->getStyle('A' . ($num+4) . ':' . $endSym . ($num+4))->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-        $sheet->getStyle('A' . ($num+5) . ':' . $endSym . ($num+5))->getBorders()->getAllBorders()->setBorderStyle(\PHPExcel_Style_Border::BORDER_THIN);
-        $sheet->getStyle('A' . ($num+5) . ':' . $endSym . ($num+5))->getFont()->setBold(true);
-        $i = $num+6;
+        $sheet->mergeCells('A' . ($num + 4) . ':' . $endSym . ($num + 4));
+        $sheet->getStyle('A' . ($num + 4) . ':' . $endSym . ($num + 4))->getBorders()->getBottom()->setBorderStyle(\PHPExcel_Style_Border::BORDER_THIN);
+        $sheet->getStyle('A' . ($num + 4) . ':' . $endSym . ($num + 4))->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A' . ($num + 5) . ':' . $endSym . ($num + 5))->getBorders()->getAllBorders()->setBorderStyle(\PHPExcel_Style_Border::BORDER_THIN);
+        $sheet->getStyle('A' . ($num + 5) . ':' . $endSym . ($num + 5))->getFont()->setBold(true);
+        $i = $num + 6;
         foreach ($order["items"] as $product) {
             $codeSym = ord($startSym);
             $sheet->getStyle("E$i:" . $endSym . $i)->getNumberFormat()->setFormatCode('#,##0.00');
@@ -767,6 +766,5 @@ class Order extends Base
 
         $this->result["url"] = $urlFile;
         $this->result["name"] = $fileName;
-
     }
 }

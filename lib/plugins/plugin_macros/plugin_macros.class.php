@@ -575,7 +575,14 @@ class plugin_macros {
             $text = str_replace($res_math[0],urlencode(iconv('UTF-8', 'CP1251', $res_math[1])), $text);
         }
 
-        while (preg_match("/<noempty:([^>]+)?>(.*)<\/noempty>/iu", $text, $res_math)){
+        while (preg_match("/@noempty\(([^\)]+)?\)(.*)@end/iu", $text, $res_math)){
+            if (!$res_math[1]) {
+                $res_math[2] = '';
+            }
+            $text = str_replace($res_math[0],$res_math[2], $text);
+        }
+
+        while (preg_match("/<noempty:([^>]+)?>( .*)<\/noempty>/iu", $text, $res_math)){
             if (!$res_math[1]) {
                 $res_math[2] = '';
             }
