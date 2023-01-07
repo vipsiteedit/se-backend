@@ -3,14 +3,7 @@ error_reporting(0);
 chdir(dirname(__FILE__) . '/../');
 date_default_timezone_set("Europe/Moscow");
 define('SE_INDEX_INCLUDED', true);
-require_once getcwd() . "/lib/classes/seTable.class.php";
-require_once getcwd() . "/lib/classes/seCurrency.class.php";
 require_once getcwd() . "/system/main/init.php";
-require_once getcwd() . "/lib/plugins/plugin_macros/plugin_macros.class.php";
-require_once getcwd() . "/lib/plugins/plugin_shop/plugin_shopmail.class.php";
-require_once getcwd() . "/lib/plugins/plugin_mail/plugin_mail.class.php";
-require_once getcwd() . "/lib/plugins/plugin_jmail/plugin_jmail.class.php";
-
 
 $order_id = $_POST['idorder'];
 $codemail = $_POST['codemail'];
