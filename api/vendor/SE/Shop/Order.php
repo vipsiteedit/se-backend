@@ -53,7 +53,77 @@ class Order extends Base
 
     public function fetch($isId = false)
     {
-        parent::fetch($isId);
+        try {
+        $u = new DB('shop_order', 'so');
+        $u->select('so.id, so.date_order, so.status, so.inpayee, so.delivery_status, so.manager_id,
+                so.commentary,
+                IFNULL(c.name, CONCAT_WS(" ", p.last_name, p.first_name, p.sec_name)) customer,
+                IFNULL(c.phone, p.phone) customer_phone, IFNULL(c.email, p.email) customer_email, 
+                (SUM((sto.price-IFNULL(sto.discount, 0))*sto.count)-IFNULL(so.discount, 0) + IFNULL(so.delivery_payee, 0)) amount, 
+                spp.name_payment, sp.name_payment AS name_payment_primary');
+        $u->leftJoin('person p', 'p.id = so.id_author');
+        $u->leftJoin('company c', 'c.id = so.id_company');
+        $u->innerJoin('shop_tovarorder sto', 'sto.id_order = so.id');
+        $u->leftJoin('shop_order_payee sop', 'sop.id_order = so.id');
+        $u->leftJoin('shop_payment spp', 'spp.id = sop.payment_type');
+        $u->leftJoin('shop_payment sp', 'sp.id = so.payment_type');
+        if (!empty($this->input['filters'])) {
+            $filterQuery = $this->getFilterQuery();
+            if ($filterQuery) {
+                $u->Where($filterQuery);
+            }
+        } else {
+            $u->where("so.is_delete!='Y'");            
+        }
+
+        if ($this->search) {
+            $where = "so.id=".intval($this->search);
+            $where .= " OR CONCAT_WS(' ', p.last_name, p.first_name, p.sec_name) LIKE '%{$this->search}%'";
+            $where .= " OR IFNULL(c.phone, p.phone) LIKE '%{$this->search}%'";
+            $where .= " OR IFNULL(c.email, p.email) LIKE '%{$this->search}%'";
+            
+            $u->andWhere($where);
+        }
+        $u->groupBy('so.id, spp.name_payment');
+            if (is_array($this->sortBy)) {
+                foreach ($this->sortBy as $sortField)
+                    $u->addOrderBy($sortField, $this->sortOrder == 'desc');
+
+            } else $u->orderBy($this->sortBy, $this->sortOrder == 'desc');
+
+            //$this->result["searchFields"] = $this->searchFields;
+        $this->result["items"] = $u->getList($this->input["limit"], $this->input["offset"]);
+           
+        $this->result['count'] = $u->getListCount();
+           
+           
+        $u = new DB('shop_order', 'so');
+        $u->select('(SUM((sto.price-IFNULL(sto.discount, 0))*sto.count)-IFNULL(so.discount, 0) + IFNULL(so.delivery_payee, 0)) total');
+        $u->innerJoin('shop_tovarorder sto', 'sto.id_order = so.id');
+        $u->leftJoin('person p', 'p.id = so.id_author');
+        $u->leftJoin('company c', 'c.id = so.id_company');
+        if (!empty($this->input['filters'])) {
+            $filterQuery = $this->getFilterQuery();
+            if ($filterQuery) {
+                $u->Where($filterQuery);
+            }
+        } else {
+            $u->where("so.is_delete!='Y'");            
+        }
+        if ($this->search) {
+            $u->andWhere($where);
+        }
+
+        $r = $u->fetchOne();
+           $this->result['totalAmount'] = $r['total'];
+        } catch (Exception $e) {
+            $this->error = $e;
+        }
+        
+        
+    
+        
+        //parent::fetch($isId);
         foreach ($this->result['items'] as &$item) {
             $item['dateOrderDisplay'] = date('d.m.Y', strtotime($item['dateOrder']));
             $item['amount'] = floatval($item['amount']);
@@ -64,7 +134,7 @@ class Order extends Base
     protected function getSettingsFetch()
     {
         return array(
-            "select" => 'so.*, IFNULL(c.name, CONCAT_WS(" ", p.last_name, p.first_name, p.sec_name)) customer, 
+            "select" => 'so.*, IFNULL(c.name, CONCAT_WS(" ", p.last_name, p.first_name, p.sec_name)) customer,
                 IFNULL(c.phone, p.phone) customer_phone, IFNULL(c.email, p.email) customer_email, 
                 (SUM((sto.price-IFNULL(sto.discount, 0))*sto.count)-IFNULL(so.discount, 0) + IFNULL(so.delivery_payee, 0)) amount, 
                 sp.name_payment name_payment_primary, spp.name_payment, sch.id_coupon id_coupon, sch.discount coupon_discount',
@@ -274,8 +344,19 @@ class Order extends Base
         $this->saveDelivery();
         $this->savePayments();
         $this->saveCustomFields();
-        $this->send("orduserch");
         return true;
+    }
+    
+    public function save() {
+        $result = parent::save();
+        $this->send("orduserch");
+        return $result;
+    }
+    
+    public function Mail() 
+    {
+        $this->input["send"] = true;
+        $this->send("orduserch");
     }
 
     private function send($codemail = "orduserch")
@@ -453,7 +534,6 @@ class Order extends Base
         $sheet->setCellValue("L1", "Комментарий");
         $sheet->setCellValue("M1", "Статус заказа");
         $sheet->setCellValue("N1", "Статус доставки");
-
 
 
         $sheet->getColumnDimension('A')->setWidth(5);

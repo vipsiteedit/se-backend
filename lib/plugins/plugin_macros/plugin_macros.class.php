@@ -32,8 +32,9 @@ class plugin_macros {
         $this->main = se_getAdmin();
         if ($this->order_id) {
             $query = se_db_query("SELECT so.id_author, so.id_company, so.payment_type,so.date_order,
-                so.date_payee, so.discount, so.commentary,
-                so.id as account,
+                so.date_payee, so.discount, so.commentary, so.delivery_doc_num, so.delivery_service_name,
+                DATE_FORMAT(so.delivery_doc_date, '%d.%m.%Y') delivery_doc_date,                
+                (SELECT sa.account FROM shop_account sa WHERE sa.id_order=so.id LIMIT 1) as account,
                 so.curr, so.status, so.delivery_payee, 
                 (SELECT dl.name FROM shop_deliverytype dl WHERE dl.id=so.delivery_type) as delivery_name, 
                 so.delivery_status, so.delivery_date,
@@ -123,10 +124,35 @@ class plugin_macros {
             $discount += round(se_money_convert($this->ORDER['discount'], $this->ORDER['curr'], $this->curr), 2);
             $modsumma = explode('.', str_replace(',','.',$summ));
             if (!isset($modsumma[1])) $modsumma[1] = 0;
+            $deliveryStatus = "";
+            $status = "Не олачен";
+            switch ($this->ORDER['delivery_status']) {
+                 case 'Y': $deliveryStatus = ', доставлен'; break;
+                 case 'P': $deliveryStatus = ', отправлен'; break;
+                 case 'M': $deliveryStatus = ', в сборке у продавца'; break;
+            }
+
+            switch ($this->ORDER['status']) {
+                case 'Y': $status = 'Оплачен'.$deliveryStatus; break;
+                case 'A': $status = 'Предоплачен'.$deliveryStatus; break;
+                case 'P': $status = 'В подарок'.$deliveryStatus; break;
+                case 'D': $status = 'Удален'; break;
+                case 'K': {
+                    if (strtotime($this->ORDER['date_exchange'])) {
+                        $status = 'Кредит до '.date('d.m.Y', strtotime($this->ORDER['curr'])).$deliveryStatus;
+                    } else $status = 'Кредит'.$deliveryStatus;
+                    break;
+                }
+                case 'W': $status = 'Ожидание платежа'; break;
+                case 'C': $status = 'Отменен'; break;
+                case 'T': $status = 'Тест';
+            }
+            
 
             $array_change = array('ORDER_DISCOUNT' => se_formatMoney($discount, $this->curr),
                 'SHOP_ORDER_DISCOUNT'=>se_formatMoney($discount, $this->curr),
                 'ORDER_SUMMA'=>se_formatMoney($summ, $this->curr),
+                'ORDER_STATUS'=>trim($status),
                 'SHOP_ORDER_SUMM'=>se_formatMoney($fullsumm, $this->curr),
                 'ORDER_DELIVERY'=>$delivery,
                 'SHOP_ORDER_DEVILERY'=>se_formatMoney($delivery, $this->curr),
@@ -566,12 +592,6 @@ class plugin_macros {
             }
             $text = str_replace($res_math[0], $res_, $text);
             //$text = $this->execute($text);
-        }
-
-        while (preg_match("/\[PAYMENTLINK=([\d]{1,})\]/i", $text, $res_math)) {
-            $res_ = $this->execute($res_math[1]);
-            $res_ = 'invnum/' . $res_ . '_' . $this->order_id . '/' . md5($res_ . '_' . $this->order_id . '3dfgvj') . '/';
-            $text = str_replace($res_math[0], $res_, $text);
         }
 
 
