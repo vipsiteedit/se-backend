@@ -134,7 +134,7 @@ class Feature extends Base
 			$res = $u->fetchOne();
 			unset($u);
 			if (!empty($res['type']) && $this->input["type"]!==$res['type'] && (
-				$this->input["type"]=='list' || $this->input["type"]=='colorlist'
+				$this->input["type"]=='list' || $this->input["type"]=='colorlist' || count($this->input["values"])==0
 			)) {
 				// Делаем переопределение данных
 				$Dlist = array();

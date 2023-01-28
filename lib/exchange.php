@@ -35,8 +35,8 @@ function updImages52()
 }
 
 
-$user = urlencode($_SERVER['PHP_AUTH_USER']);
-$password = urlencode($_SERVER['PHP_AUTH_PW']);
+$user = urldecode($_SERVER['PHP_AUTH_USER']);
+$password = urldecode($_SERVER['PHP_AUTH_PW']);
 
 $datadir = SE_ROOT . 'data';
 

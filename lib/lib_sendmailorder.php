@@ -23,8 +23,6 @@ $order_id = $_POST['idorder'];
 $codemail = $_POST['codemail'];
 $lang = $_POST['lang'];
 
-//$email = 'vip@edgestile.ru';
-
 $tord = new seTable('shop_order', 'so');
 $tord->select('p.id, p.email');
 $tord->innerjoin('person p', 'p.id=so.id_author');

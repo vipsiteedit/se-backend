@@ -29,11 +29,11 @@ function se_goto_subpage($razdel, $subname)
 function authorization()
 {
     global $mes_authorized,
-        $mes_login_back,
-        $mes_login_next,
-        $mes_login,
-        $mes_password,
-        $mes_noauthor;
+    $mes_login_back,
+    $mes_login_next,
+    $mes_login,
+    $mes_password;
+        //$mes_noauthor;
 
     echo '<center>',
     '<div class="base_auth">',
@@ -236,7 +236,7 @@ function logic($val)
 
     $val = str_replace(array("\r\n", '&gt;', '&lt;'), array('', '>', '<'), $val);
     $larr = array('==', '!=', '>', '>=', '<', '<=');
-    // ���� ������� ������, �� ��������� ����
+
     $result = false;
 
     $val = strtolower(str_replace(array('"', '\''), array('', ''), $val));

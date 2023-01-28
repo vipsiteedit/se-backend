@@ -112,7 +112,7 @@ define('SERVICES_JSON_SUPPRESS_ERRORS', 32);
  * $value = $json->decode($input);
  * </code>
  */
-class static Services_JSON
+class Services_JSON
 {
     /**
      * constructs a new JSON instance
@@ -130,6 +130,9 @@ class static Services_JSON
      *                                   bubble up with an error, so all return values
      *                                   from encode() should be checked with isError()
      */
+
+    private $use = 0;
+
     function Services_JSON($use = 0)
     {
         $this->use = $use;
@@ -544,8 +547,7 @@ class static Services_JSON
                     for ($c = 0; $c < $strlen_chrs; ++$c) {
 
                         $substr_chrs_c_2 = substr($chrs, $c, 2);
-                        $ord_chrs_c = ord($chrs{
-                            $c});
+                        $ord_chrs_c = ord($chrs{$c});
 
                         switch (true) {
                             case $substr_chrs_c_2 == '\b':
@@ -576,8 +578,7 @@ class static Services_JSON
                                 if (($delim == '"' && $substr_chrs_c_2 != '\\\'') ||
                                     ($delim == "'" && $substr_chrs_c_2 != '\\"')
                                 ) {
-                                    $utf8 .= $chrs{
-                                        ++$c};
+                                    $utf8 .= $chrs{$c};
                                 }
                                 break;
 

@@ -54,6 +54,8 @@ class seData
     private $linkredirect = false;
     public $startpage = '';
     private $contarr = array();
+    public $URLS = array();
+    public $breadcrumbs = array();
 
 
     private function __construct($namepage = '', $dir = '')
@@ -64,7 +66,7 @@ class seData
         $this->pagename = $namepage;
         if ($this->pagename == 'index') $this->pagename = '';
 
-        // Загрузка языка проекта
+        // Загрузка языка проектаpagename
         if (file_exists(SE_SAFE . 'projects/' . SE_DIR . 'cache/project_lang.dat')) {
             $this->language = join('', file(SE_SAFE . 'projects/' . SE_DIR . 'cache/project_lang.dat'));
         }
@@ -408,7 +410,7 @@ class seData
                     if ($this->req->object == 0) $this->go404();
                 } else $this->req->sub = substr($m[3], 3);
             }
-            $this->req->page = $this->namepage;
+            $this->req->page = $this->pagename;
             return true;
         }
     }
@@ -717,8 +719,10 @@ class seData
         }
         if ($this->skin) {
             $this->page->css = $this->skin;
+        } else if (empty($this->page->css)) {
+            $this->page->css = 'default';
         }
-        if ($this->page->css == '') $this->page->css = 'default';
+
         if (file_exists(SE_SAFE . 'projects/' . SE_DIR . 'cache/map_' . $this->page->css . '.json')) {
             $this->contarr = json_decode(file_get_contents(SE_SAFE . 'projects/' . SE_DIR . 'cache/map_' . $this->page->css . '.json'), true);
         }
@@ -1247,7 +1251,6 @@ class seData
                     break;
                 }
             }
-            $title = $this->section->title;
         }
 
         $getLastElement = end($level_arr);  //  вытаскиваем последний элемент для того, чтобы он далее не стал ссылкой
