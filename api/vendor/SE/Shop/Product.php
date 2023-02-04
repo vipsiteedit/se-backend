@@ -61,63 +61,69 @@ class Product extends Base
     protected function getSettingsFetch($isInfo = false)
     {
         // получаем данные из таблиц БД
-        $select = 'sp.id, sp.id_group shop_id_group, sp.id_brand, sp.code, sp.article, sp.name,
-                sp.price, sp.price_opt, sp.price_opt_corp, sp.delivery_time, sp.signal_dt,
-                sp.img_alt, sp.curr, sp.presence, sp.bonus, sp.min_count,
-                sp.presence_count presence_count, sp.special_offer, sp.flag_hit, sp.enabled, sp.flag_new, sp.is_market, sp.note, sp.text,
-                sp.price_purchase price_purchase, sp.measure, sp.step_count, sp.max_discount, sp.discount,
-                sp.title, sp.keywords, sp.description, sp.page_title, sp.weight, sp.volume, spg.is_main,
-                spg.id_group id_group, sg.name name_group, sg.id_modification_group_def id_modification_group_def,
-                COUNT(DISTINCT(smf.id_modification)) count_modifications,
-                (SELECT picture FROM shop_img WHERE id_price = sp.id LIMIT 1) img,
-                sb.name name_brand, slp.id_label id_label, sp.is_show_feature, sp.market_available,
-                spm.id_weight_view, spm.id_weight_edit, spm.id_volume_view, spm.id_volume_edit, sp.market_category';
+        // $select = 'sp.id, sp.id_group shop_id_group, sp.id_brand, sp.code, sp.article, sp.name,
+        //         sp.price, sp.price_opt, sp.price_opt_corp, sp.delivery_time, sp.signal_dt,
+        //         sp.img_alt, sp.curr, sp.presence, sp.bonus, sp.min_count,
+        //         sp.presence_count presence_count, sp.special_offer, sp.flag_hit, sp.enabled, sp.flag_new, sp.is_market, sp.note, sp.text,
+        //         sp.price_purchase price_purchase, sp.measure, sp.step_count, sp.max_discount, sp.discount,
+        //         sp.title, sp.keywords, sp.description, sp.page_title, sp.weight, sp.volume, spg.is_main,
+        //         spg.id_group id_group, sg.name name_group, sg.id_modification_group_def id_modification_group_def,
+        //         COUNT(DISTINCT(smf.id_modification)) count_modifications,
+        //         (SELECT picture FROM shop_img WHERE id_price = sp.id LIMIT 1) img,
+        //         sb.name name_brand, slp.id_label id_label, sp.is_show_feature, sp.market_available,
+        //         spm.id_weight_view, spm.id_weight_edit, spm.id_volume_view, spm.id_volume_edit, sp.market_category';
 
-        $joins[] = array(
-            "type" => "left",
-            "table" => 'shop_price_group spg',
-            "condition" => $isInfo ? '(spg.id_price = sp.id AND spg.is_main)' : '(spg.id_price = sp.id)'
-        );
+        $select = 'sp.id, sp.code, sp.article, sp.name, sp.price, sp.curr, sp.presence_count presence_count,
+        (SELECT picture FROM shop_img WHERE id_price = sp.id LIMIT 1) img,
+        sb.name name_brand, sp.special_offer, sp.flag_hit, sp.enabled, sp.flag_new, sp.is_market';
+        
+
+        // $joins[] = array(
+        //     "type" => "left",
+        //     "table" => 'shop_price_group spg',
+        //     "condition" => $isInfo ? '(spg.id_price = sp.id AND spg.is_main)' : '(spg.id_price = sp.id)'
+        // );
 
         $joins[] = array(
             "type" => "left",
             "table" => 'shop_group sg',
             "condition" => 'sg.id = sp.id_group'
         );
-        $joins[] = array(
-            "type" => "left",
-            "table" => 'shop_price_measure spm',
-            "condition" => 'sp.id = spm.id_price'
-        );
-        $groupBy = "sp.id, spg.is_main, spg.id_group,slp.id_label,spm.id_weight_view,spm.id_weight_edit,spm.id_volume_view,spm.id_volume_edit";
+        // $joins[] = array(
+        //     "type" => "left",
+        //     "table" => 'shop_price_measure spm',
+        //     "condition" => 'sp.id = spm.id_price'
+        // );
+        //$groupBy = "sp.id, spg.is_main, spg.id_group,slp.id_label,spm.id_weight_view,spm.id_weight_edit,spm.id_volume_view,spm.id_volume_edit";
+        $groupBy = "sp.id";
         $joins[] = array(
             "type" => "left",
             "table" => 'shop_brand sb',
             "condition" => 'sb.id = sp.id_brand'
         );
-        $joins[] = array(
-            "type" => "left",
-            "table" => 'shop_group_price sgp',
-            "condition" => 'sp.id = sgp.price_id'
-        );
-        $joins[] = array(
-            "type" => "left",
-            "table" => 'shop_label_product slp',
-            "condition" => 'sp.id = slp.id_product'
-        );
+        // $joins[] = array(
+        //     "type" => "left",
+        //     "table" => 'shop_group_price sgp',
+        //     "condition" => 'sp.id = sgp.price_id'
+        // );
+        // $joins[] = array(
+        //     "type" => "left",
+        //     "table" => 'shop_label_product slp',
+        //     "condition" => 'sp.id = slp.id_product'
+        // );
 
-        $joins[] = array(
-            "type" => "left",
-            "table" => '(SELECT smf.id_price, smf.id_modification FROM shop_modifications_feature smf
-                           WHERE NOT smf.id_value IS NULL AND NOT smf.id_modification IS NULL GROUP BY smf.id_price, smf.id_modification) smf',
-            "condition" => 'sp.id = smf.id_price'
-        );
+        // $joins[] = array(
+        //     "type" => "left",
+        //     "table" => '(SELECT smf.id_price, smf.id_modification FROM shop_modifications_feature smf
+        //                    WHERE NOT smf.id_value IS NULL AND NOT smf.id_modification IS NULL GROUP BY smf.id_price, smf.id_modification) smf',
+        //     "condition" => 'sp.id = smf.id_price'
+        // );
 
         $convertingValues[] = array(
             "price",
-            "priceOpt",
-            "priceOptCorp",
-            "pricePurchase"
+            // "priceOpt",
+            // "priceOptCorp",
+            // "pricePurchase"
         );
 
         $result["select"] = $select;
