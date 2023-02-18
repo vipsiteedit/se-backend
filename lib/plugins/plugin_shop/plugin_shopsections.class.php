@@ -10,6 +10,9 @@ class plugin_shopsections
 	private static $sections = array();
 	private $count = 0;
 	private static $options = array();
+	private $cache_dir;
+	private $cache_sections;
+	private $cache_count;
 
 	public function __construct($opt = array())
 	{

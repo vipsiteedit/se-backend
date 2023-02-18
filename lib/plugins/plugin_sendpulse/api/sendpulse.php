@@ -9,7 +9,8 @@
  *
  */
 
-class SendpulseApi implements SendpulseApi_Interface {
+class SendpulseApi implements SendpulseApi_Interface
+{
 
     private $apiUrl = 'https://api.sendpulse.com';
 
@@ -38,15 +39,16 @@ class SendpulseApi implements SendpulseApi_Interface {
      *        Types: session, file, memcache
      * @throws Exception
      */
-    public function __construct( $userId, $secret, $storageType = 'file' ) {
-        if( empty( $userId ) || empty( $secret ) ) {
-            throw new Exception( 'Empty ID or SECRET' );
-        }       
+    public function __construct($userId, $secret, $storageType = 'file')
+    {
+        if (empty($userId) || empty($secret)) {
+            throw new Exception('Empty ID or SECRET');
+        }
 
         $this->userId = $userId;
         $this->secret = $secret;
         $this->storageType = $storageType;
-        $hashName = md5( $userId . '::' . $secret );
+        $hashName = md5($userId . '::' . $secret);
 
         switch ($this->storageType) {
             case 'session':
@@ -63,15 +65,15 @@ class SendpulseApi implements SendpulseApi_Interface {
                 }
                 break;
             default:
-                $filePath = $this->apiFilesPath.$hashName;
+                $filePath = $this->apiFilesPath . $hashName;
                 if (file_exists($filePath)) {
                     $this->token = file_get_contents($filePath);
                 }
         }
 
-        if( empty( $this->token ) ) {
-            if( !$this->getToken() ) {
-                throw new Exception( 'Could not connect to api, check your ID and SECRET' );
+        if (empty($this->token)) {
+            if (!$this->getToken()) {
+                throw new Exception('Could not connect to api, check your ID and SECRET');
             }
         }
     }
@@ -81,23 +83,24 @@ class SendpulseApi implements SendpulseApi_Interface {
      *
      * @return bool
      */
-    private function getToken() {
+    private function getToken()
+    {
         $data = array(
             'grant_type'    => 'client_credentials',
             'client_id'     => $this->userId,
             'client_secret' => $this->secret,
         );
 
-        $requestResult = $this->sendRequest( 'oauth/access_token', 'POST', $data, false );
+        $requestResult = $this->sendRequest('oauth/access_token', 'POST', $data, false);
 
-        if( $requestResult->http_code != 200 ) {
+        if ($requestResult->http_code != 200) {
             return false;
         }
 
         $this->refreshToken = 0;
         $this->token = $requestResult->data->access_token;
 
-        $hashName = md5( $this->userId . '::' . $this->secret );
+        $hashName = md5($this->userId . '::' . $this->secret);
         switch ($this->storageType) {
             case 'session':
                 $_SESSION[$hashName] = $this->token;
@@ -108,7 +111,7 @@ class SendpulseApi implements SendpulseApi_Interface {
                 $memcache->set($hashName, $this->token, false, 3600);
                 break;
             default:
-                $tokenFile = fopen($this->apiFilesPath.$hashName, "w");
+                $tokenFile = fopen($this->apiFilesPath . $hashName, "w");
                 fwrite($tokenFile, $this->token);
                 fclose($tokenFile);
         }
@@ -125,54 +128,55 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param bool $useToken
      * @return array|NULL
      */
-    private function sendRequest( $path, $method = 'GET', $data = array(), $useToken = true ) {
+    private function sendRequest($path, $method = 'GET', $data = array(), $useToken = true)
+    {
         $url = $this->apiUrl . '/' . $path;
-        $method = strtoupper( $method );
+        $method = strtoupper($method);
         $curl = curl_init();
 
-        if( $useToken && !empty( $this->token ) ) {
-            $headers = array( 'Authorization: Bearer ' . $this->token );
-            curl_setopt( $curl, CURLOPT_HTTPHEADER, $headers );
+        if ($useToken && !empty($this->token)) {
+            $headers = array('Authorization: Bearer ' . $this->token);
+            curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
         }
 
-        switch( $method ) {
+        switch ($method) {
             case 'POST':
-                curl_setopt( $curl, CURLOPT_POST, count( $data ) );
-                curl_setopt( $curl, CURLOPT_POSTFIELDS, http_build_query( $data ) );
+                curl_setopt($curl, CURLOPT_POST, count($data));
+                curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
                 break;
             case 'PUT':
-                curl_setopt( $curl, CURLOPT_CUSTOMREQUEST, "PUT" );
-                curl_setopt( $curl, CURLOPT_POSTFIELDS, http_build_query( $data ) );
+                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
+                curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
                 break;
             case 'DELETE':
-                curl_setopt( $curl, CURLOPT_CUSTOMREQUEST, 'DELETE' );
-                curl_setopt( $curl, CURLOPT_POSTFIELDS, http_build_query( $data ) );
+                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'DELETE');
+                curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
                 break;
             default:
-                if( !empty( $data ) ) {
-                    $url .= '?' . http_build_query( $data );
+                if (!empty($data)) {
+                    $url .= '?' . http_build_query($data);
                 }
         }
 
-        curl_setopt( $curl, CURLOPT_URL, $url );
-        curl_setopt( $curl, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt( $curl, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1 );
-        curl_setopt( $curl, CURLOPT_HEADER, 1 );
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_HEADER, 1);
 
-        $response = curl_exec( $curl );
-        $header_size = curl_getinfo( $curl, CURLINFO_HEADER_SIZE );
-        $headerCode = curl_getinfo( $curl, CURLINFO_HTTP_CODE );
-        $responseBody = substr( $response, $header_size );
-        curl_close( $curl );
+        $response = curl_exec($curl);
+        $header_size = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
+        $headerCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        $responseBody = substr($response, $header_size);
+        curl_close($curl);
 
-        if( $headerCode == 401 && $this->refreshToken == 0 ) {
+        if ($headerCode == 401 && $this->refreshToken == 0) {
             $this->refreshToken += 1;
             $this->getToken();
-            $return = $this->sendRequest( $path, $method, $data );
+            $return = $this->sendRequest($path, $method, $data);
         } else {
             $return = new stdClass();
-            $return->data = json_decode( $responseBody );
+            $return->data = json_decode($responseBody);
             $return->http_code = $headerCode;
         }
 
@@ -185,11 +189,12 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param $data
      * @return mixed
      */
-    private function handleResult( $data ) {
-        if( empty( $data->data ) ) {
+    private function handleResult($data)
+    {
+        if (empty($data->data)) {
             $data->data = new stdClass();
         }
-        if( $data->http_code != 200 ) {
+        if ($data->http_code != 200) {
             $data->data->is_error = true;
             $data->data->http_code = $data->http_code;
         }
@@ -203,10 +208,11 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param null $customMessage
      * @return stdClass
      */
-    private function handleError( $customMessage = NULL ) {
+    private function handleError($customMessage = NULL)
+    {
         $message = new stdClass();
         $message->is_error = true;
-        if( !is_null( $customMessage ) ) {
+        if (!is_null($customMessage)) {
             $message->message = $customMessage;
         }
 
@@ -225,15 +231,16 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param $bookName
      * @return mixed|stdClass
      */
-    public function createAddressBook( $bookName ) {
-        if( empty( $bookName ) ) {
-            return $this->handleError( 'Empty book name' );
+    public function createAddressBook($bookName)
+    {
+        if (empty($bookName)) {
+            return $this->handleError('Empty book name');
         }
 
-        $data = array( 'bookName' => $bookName );
-        $requestResult = $this->sendRequest( 'addressbooks', 'POST', $data );
+        $data = array('bookName' => $bookName);
+        $requestResult = $this->sendRequest('addressbooks', 'POST', $data);
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -243,15 +250,16 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param $newName
      * @return mixed|stdClass
      */
-    public function editAddressBook( $id, $newName ) {
-        if( empty( $newName ) || empty( $id ) ) {
-            return $this->handleError( 'Empty new name or book id' );
+    public function editAddressBook($id, $newName)
+    {
+        if (empty($newName) || empty($id)) {
+            return $this->handleError('Empty new name or book id');
         }
 
-        $data = array( 'name' => $newName );
-        $requestResult = $this->sendRequest( 'addressbooks/' . $id, 'PUT', $data );
+        $data = array('name' => $newName);
+        $requestResult = $this->sendRequest('addressbooks/' . $id, 'PUT', $data);
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -260,14 +268,15 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param $id
      * @return mixed|stdClass
      */
-    public function removeAddressBook( $id ) {
-        if( empty( $id ) ) {
-            return $this->handleError( 'Empty book id' );
+    public function removeAddressBook($id)
+    {
+        if (empty($id)) {
+            return $this->handleError('Empty book id');
         }
 
-        $requestResult = $this->sendRequest( 'addressbooks/' . $id, 'DELETE' );
+        $requestResult = $this->sendRequest('addressbooks/' . $id, 'DELETE');
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -277,18 +286,19 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param null $offset
      * @return mixed
      */
-    public function listAddressBooks( $limit = NULL, $offset = NULL ) {
+    public function listAddressBooks($limit = NULL, $offset = NULL)
+    {
         $data = array();
-        if( !is_null( $limit ) ) {
+        if (!is_null($limit)) {
             $data['limit'] = $limit;
         }
-        if( !is_null( $offset ) ) {
+        if (!is_null($offset)) {
             $data['offset'] = $offset;
         }
 
-        $requestResult = $this->sendRequest( 'addressbooks', 'GET', $data );
+        $requestResult = $this->sendRequest('addressbooks', 'GET', $data);
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -297,14 +307,15 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param $id
      * @return mixed|stdClass
      */
-    public function getBookInfo( $id ) {
-        if( empty( $id ) ) {
-            return $this->handleError( 'Empty book id' );
+    public function getBookInfo($id)
+    {
+        if (empty($id)) {
+            return $this->handleError('Empty book id');
         }
 
-        $requestResult = $this->sendRequest( 'addressbooks/' . $id );
+        $requestResult = $this->sendRequest('addressbooks/' . $id);
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -313,14 +324,15 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param $id
      * @return mixed|stdClass
      */
-    public function getEmailsFromBook( $id ) {
-        if( empty( $id ) ) {
-            return $this->handleError( 'Empty book id' );
+    public function getEmailsFromBook($id)
+    {
+        if (empty($id)) {
+            return $this->handleError('Empty book id');
         }
 
-        $requestResult = $this->sendRequest( 'addressbooks/' . $id . '/emails' );
+        $requestResult = $this->sendRequest('addressbooks/' . $id . '/emails');
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -330,18 +342,19 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param $emails
      * @return mixed|stdClass
      */
-    public function addEmails( $bookId, $emails ) {
-        if( empty( $bookId ) || empty( $emails ) ) {
-            return $this->handleError( 'Empty book id or emails' );
+    public function addEmails($bookId, $emails)
+    {
+        if (empty($bookId) || empty($emails)) {
+            return $this->handleError('Empty book id or emails');
         }
 
         $data = array(
-            'emails' => serialize( $emails )
+            'emails' => serialize($emails)
         );
 
-        $requestResult = $this->sendRequest( 'addressbooks/' . $bookId . '/emails', 'POST', $data );
+        $requestResult = $this->sendRequest('addressbooks/' . $bookId . '/emails', 'POST', $data);
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -351,18 +364,19 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param $emails
      * @return mixed|stdClass
      */
-    public function removeEmails( $bookId, $emails ) {
-        if( empty( $bookId ) || empty( $emails ) ) {
-            return $this->handleError( 'Empty book id or emails' );
+    public function removeEmails($bookId, $emails)
+    {
+        if (empty($bookId) || empty($emails)) {
+            return $this->handleError('Empty book id or emails');
         }
 
         $data = array(
-            'emails' => serialize( $emails )
+            'emails' => serialize($emails)
         );
 
-        $requestResult = $this->sendRequest( 'addressbooks/' . $bookId . '/emails', 'DELETE', $data );
+        $requestResult = $this->sendRequest('addressbooks/' . $bookId . '/emails', 'DELETE', $data);
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -372,14 +386,15 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param $email
      * @return mixed|stdClass
      */
-    public function getEmailInfo( $bookId, $email ) {
-        if( empty( $bookId ) || empty( $email ) ) {
-            return $this->handleError( 'Empty book id or email' );
+    public function getEmailInfo($bookId, $email)
+    {
+        if (empty($bookId) || empty($email)) {
+            return $this->handleError('Empty book id or email');
         }
 
-        $requestResult = $this->sendRequest( 'addressbooks/' . $bookId . '/emails/' . $email );
+        $requestResult = $this->sendRequest('addressbooks/' . $bookId . '/emails/' . $email);
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -388,14 +403,15 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param $bookId
      * @return mixed|stdClass
      */
-    public function campaignCost( $bookId ) {
-        if( empty( $bookId ) ) {
-            return $this->handleError( 'Empty book id' );
+    public function campaignCost($bookId)
+    {
+        if (empty($bookId)) {
+            return $this->handleError('Empty book id');
         }
 
-        $requestResult = $this->sendRequest( 'addressbooks/' . $bookId . '/cost' );
+        $requestResult = $this->sendRequest('addressbooks/' . $bookId . '/cost');
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -405,17 +421,18 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param null $offset
      * @return mixed
      */
-    public function listCampaigns( $limit = NULL, $offset = NULL ) {
+    public function listCampaigns($limit = NULL, $offset = NULL)
+    {
         $data = array();
-        if( !empty( $limit ) ) {
+        if (!empty($limit)) {
             $data['limit'] = $limit;
         }
-        if( !empty( $offset ) ) {
+        if (!empty($offset)) {
             $data['offset'] = $offset;
         }
-        $requestResult = $this->sendRequest( 'campaigns', 'GET', $data );
+        $requestResult = $this->sendRequest('campaigns', 'GET', $data);
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -424,14 +441,15 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param $id
      * @return mixed|stdClass
      */
-    public function getCampaignInfo( $id ) {
-        if( empty( $id ) ) {
-            return $this->handleError( 'Empty campaign id' );
+    public function getCampaignInfo($id)
+    {
+        if (empty($id)) {
+            return $this->handleError('Empty campaign id');
         }
 
-        $requestResult = $this->sendRequest( 'campaigns/' . $id );
+        $requestResult = $this->sendRequest('campaigns/' . $id);
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -440,14 +458,15 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param $id
      * @return mixed|stdClass
      */
-    public function campaignStatByCountries( $id ) {
-        if( empty( $id ) ) {
-            return $this->handleError( 'Empty campaign id' );
+    public function campaignStatByCountries($id)
+    {
+        if (empty($id)) {
+            return $this->handleError('Empty campaign id');
         }
 
-        $requestResult = $this->sendRequest( 'campaigns/' . $id . '/countries' );
+        $requestResult = $this->sendRequest('campaigns/' . $id . '/countries');
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -456,14 +475,15 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param $id
      * @return mixed|stdClass
      */
-    public function campaignStatByReferrals( $id ) {
-        if( empty( $id ) ) {
-            return $this->handleError( 'Empty campaign id' );
+    public function campaignStatByReferrals($id)
+    {
+        if (empty($id)) {
+            return $this->handleError('Empty campaign id');
         }
 
-        $requestResult = $this->sendRequest( 'campaigns/' . $id . '/referrals' );
+        $requestResult = $this->sendRequest('campaigns/' . $id . '/referrals');
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -478,27 +498,28 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param string $attachments
      * @return mixed
      */
-    public function createCampaign( $senderName, $senderEmail, $subject, $body, $bookId, $name = '', $attachments = '' ) {
-        if( empty( $senderName ) || empty( $senderEmail ) || empty( $subject ) || empty( $body ) || empty( $bookId ) ) {
-            return $this->handleError( 'Not all data.' );
+    public function createCampaign($senderName, $senderEmail, $subject, $body, $bookId, $name = '', $attachments = '')
+    {
+        if (empty($senderName) || empty($senderEmail) || empty($subject) || empty($body) || empty($bookId)) {
+            return $this->handleError('Not all data.');
         }
 
-        if( !empty( $attachments ) ) {
-            $attachments = serialize( $attachments );
+        if (!empty($attachments)) {
+            $attachments = serialize($attachments);
         }
         $data = array(
             'sender_name'  => $senderName,
             'sender_email' => $senderEmail,
             'subject'      => $subject,
-            'body'         => base64_encode( $body ),
+            'body'         => base64_encode($body),
             'list_id'      => $bookId,
             'name'         => $name,
             'attachments'  => $attachments
         );
 
-        $requestResult = $this->sendRequest( 'campaigns', 'POST', $data );
+        $requestResult = $this->sendRequest('campaigns', 'POST', $data);
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -507,14 +528,15 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param $id
      * @return mixed|stdClass
      */
-    public function cancelCampaign( $id ) {
-        if( empty( $id ) ) {
-            return $this->handleError( 'Empty campaign id' );
+    public function cancelCampaign($id)
+    {
+        if (empty($id)) {
+            return $this->handleError('Empty campaign id');
         }
 
-        $requestResult = $this->sendRequest( 'campaigns/' . $id, 'DELETE' );
+        $requestResult = $this->sendRequest('campaigns/' . $id, 'DELETE');
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -522,10 +544,11 @@ class SendpulseApi implements SendpulseApi_Interface {
      *
      * @return mixed
      */
-    public function listSenders() {
-        $requestResult = $this->sendRequest( 'senders' );
+    public function listSenders()
+    {
+        $requestResult = $this->sendRequest('senders');
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -535,9 +558,10 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param $senderEmail
      * @return mixed|stdClass
      */
-    public function addSender( $senderName, $senderEmail ) {
-        if( empty( $senderName ) || empty( $senderEmail ) ) {
-            return $this->handleError( 'Empty sender name or email' );
+    public function addSender($senderName, $senderEmail)
+    {
+        if (empty($senderName) || empty($senderEmail)) {
+            return $this->handleError('Empty sender name or email');
         }
 
         $data = array(
@@ -545,9 +569,9 @@ class SendpulseApi implements SendpulseApi_Interface {
             'name'  => $senderName
         );
 
-        $requestResult = $this->sendRequest( 'senders', 'POST', $data );
+        $requestResult = $this->sendRequest('senders', 'POST', $data);
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -556,18 +580,19 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param $email
      * @return mixed|stdClass
      */
-    public function removeSender( $email ) {
-        if( empty( $email ) ) {
-            return $this->handleError( 'Empty email' );
+    public function removeSender($email)
+    {
+        if (empty($email)) {
+            return $this->handleError('Empty email');
         }
 
         $data = array(
             'email' => $email
         );
 
-        $requestResult = $this->sendRequest( 'senders', 'DELETE', $data );
+        $requestResult = $this->sendRequest('senders', 'DELETE', $data);
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -577,18 +602,19 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param $code
      * @return mixed|stdClass
      */
-    public function activateSender( $email, $code ) {
-        if( empty( $email ) || empty( $code ) ) {
-            return $this->handleError( 'Empty email or activation code' );
+    public function activateSender($email, $code)
+    {
+        if (empty($email) || empty($code)) {
+            return $this->handleError('Empty email or activation code');
         }
 
         $data = array(
             'code' => $code
         );
 
-        $requestResult = $this->sendRequest( 'senders/' . $email . '/code', 'POST', $data );
+        $requestResult = $this->sendRequest('senders/' . $email . '/code', 'POST', $data);
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -597,14 +623,15 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param $email
      * @return mixed|stdClass
      */
-    public function getSenderActivationMail( $email ) {
-        if( empty( $email ) ) {
-            return $this->handleError( 'Empty email' );
+    public function getSenderActivationMail($email)
+    {
+        if (empty($email)) {
+            return $this->handleError('Empty email');
         }
 
-        $requestResult = $this->sendRequest( 'senders/' . $email . '/code' );
+        $requestResult = $this->sendRequest('senders/' . $email . '/code');
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -613,14 +640,15 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param $email
      * @return mixed|stdClass
      */
-    public function getEmailGlobalInfo( $email ) {
-        if( empty( $email ) ) {
-            return $this->handleError( 'Empty email' );
+    public function getEmailGlobalInfo($email)
+    {
+        if (empty($email)) {
+            return $this->handleError('Empty email');
         }
 
-        $requestResult = $this->sendRequest( 'emails/' . $email );
+        $requestResult = $this->sendRequest('emails/' . $email);
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -629,14 +657,15 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param $email
      * @return mixed|stdClass
      */
-    public function removeEmailFromAllBooks( $email ) {
-        if( empty( $email ) ) {
-            return $this->handleError( 'Empty email' );
+    public function removeEmailFromAllBooks($email)
+    {
+        if (empty($email)) {
+            return $this->handleError('Empty email');
         }
 
-        $requestResult = $this->sendRequest( 'emails/' . $email, 'DELETE' );
+        $requestResult = $this->sendRequest('emails/' . $email, 'DELETE');
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -645,14 +674,15 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param $email
      * @return mixed|stdClass
      */
-    public function emailStatByCampaigns( $email ) {
-        if( empty( $email ) ) {
-            return $this->handleError( 'Empty email' );
+    public function emailStatByCampaigns($email)
+    {
+        if (empty($email)) {
+            return $this->handleError('Empty email');
         }
 
-        $requestResult = $this->sendRequest( 'emails/' . $email . '/campaigns' );
+        $requestResult = $this->sendRequest('emails/' . $email . '/campaigns');
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -660,10 +690,11 @@ class SendpulseApi implements SendpulseApi_Interface {
      *
      * @return mixed
      */
-    public function getBlackList() {
-        $requestResult = $this->sendRequest( 'blacklist' );
+    public function getBlackList()
+    {
+        $requestResult = $this->sendRequest('blacklist');
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -673,19 +704,20 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param string $comment
      * @return mixed|stdClass
      */
-    public function addToBlackList( $emails, $comment = '' ) {
-        if( empty( $emails ) ) {
-            return $this->handleError( 'Empty email' );
+    public function addToBlackList($emails, $comment = '')
+    {
+        if (empty($emails)) {
+            return $this->handleError('Empty email');
         }
 
         $data = array(
-            'emails'  => base64_encode( $emails ),
+            'emails'  => base64_encode($emails),
             'comment' => $comment
         );
 
-        $requestResult = $this->sendRequest( 'blacklist', 'POST', $data );
+        $requestResult = $this->sendRequest('blacklist', 'POST', $data);
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -694,18 +726,19 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param $emails - string with emails, separator - ,
      * @return mixed|stdClass
      */
-    public function removeFromBlackList( $emails ) {
-        if( empty( $emails ) ) {
-            return $this->handleError( 'Empty email' );
+    public function removeFromBlackList($emails)
+    {
+        if (empty($emails)) {
+            return $this->handleError('Empty email');
         }
 
         $data = array(
-            'emails' => base64_encode( $emails )
+            'emails' => base64_encode($emails)
         );
 
-        $requestResult = $this->sendRequest( 'blacklist', 'DELETE', $data );
+        $requestResult = $this->sendRequest('blacklist', 'DELETE', $data);
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -714,15 +747,16 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param string $currency
      * @return mixed
      */
-    public function getBalance( $currency = '' ) {
-        $currency = strtoupper( $currency );
+    public function getBalance($currency = '')
+    {
+        $currency = strtoupper($currency);
         $url = 'balance';
-        if( !empty( $currency ) ) {
-            $url .= '/' . strtoupper( $currency );
-        }        
-        $requestResult = $this->sendRequest( $url );        
+        if (!empty($currency)) {
+            $url .= '/' . strtoupper($currency);
+        }
+        $requestResult = $this->sendRequest($url);
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -736,7 +770,8 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param string $recipient
      * @return mixed
      */
-    public function smtpListEmails( $limit = 0, $offset = 0, $fromDate = '', $toDate = '', $sender = '', $recipient = '' ) {
+    public function smtpListEmails($limit = 0, $offset = 0, $fromDate = '', $toDate = '', $sender = '', $recipient = '')
+    {
         $data = array(
             'limit'     => $limit,
             'offset'    => $offset,
@@ -746,9 +781,9 @@ class SendpulseApi implements SendpulseApi_Interface {
             'recipient' => $recipient
         );
 
-        $requestResult = $this->sendRequest( '/smtp/emails', 'GET', $data );
+        $requestResult = $this->sendRequest('/smtp/emails', 'GET', $data);
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -757,14 +792,15 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param $id
      * @return mixed|stdClass
      */
-    public function smtpGetEmailInfoById( $id ) {
-        if( empty( $id ) ) {
-            return $this->handleError( 'Empty id' );
+    public function smtpGetEmailInfoById($id)
+    {
+        if (empty($id)) {
+            return $this->handleError('Empty id');
         }
 
-        $requestResult = $this->sendRequest( '/smtp/emails/' . $id );
+        $requestResult = $this->sendRequest('/smtp/emails/' . $id);
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -773,18 +809,19 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param $emails
      * @return mixed|stdClass
      */
-    public function smtpUnsubscribeEmails( $emails ) {
-        if( empty( $emails ) ) {
-            return $this->handleError( 'Empty emails' );
+    public function smtpUnsubscribeEmails($emails)
+    {
+        if (empty($emails)) {
+            return $this->handleError('Empty emails');
         }
 
         $data = array(
-            'emails' => serialize( $emails )
+            'emails' => serialize($emails)
         );
 
-        $requestResult = $this->sendRequest( '/smtp/unsubscribe', 'POST', $data );
+        $requestResult = $this->sendRequest('/smtp/unsubscribe', 'POST', $data);
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -793,18 +830,19 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param $emails
      * @return mixed|stdClass
      */
-    public function smtpRemoveFromUnsubscribe( $emails ) {
-        if( empty( $emails ) ) {
-            return $this->handleError( 'Empty emails' );
+    public function smtpRemoveFromUnsubscribe($emails)
+    {
+        if (empty($emails)) {
+            return $this->handleError('Empty emails');
         }
 
         $data = array(
-            'emails' => serialize( $emails )
+            'emails' => serialize($emails)
         );
 
-        $requestResult = $this->sendRequest( '/smtp/unsubscribe', 'DELETE', $data );
+        $requestResult = $this->sendRequest('/smtp/unsubscribe', 'DELETE', $data);
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -812,10 +850,11 @@ class SendpulseApi implements SendpulseApi_Interface {
      *
      * @return mixed
      */
-    public function smtpListIP() {
-        $requestResult = $this->sendRequest( 'smtp/ips' );
+    public function smtpListIP()
+    {
+        $requestResult = $this->sendRequest('smtp/ips');
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -823,10 +862,11 @@ class SendpulseApi implements SendpulseApi_Interface {
      *
      * @return mixed
      */
-    public function smtpListAllowedDomains() {
-        $requestResult = $this->sendRequest( 'smtp/domains' );
+    public function smtpListAllowedDomains()
+    {
+        $requestResult = $this->sendRequest('smtp/domains');
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -835,18 +875,19 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param $email
      * @return mixed|stdClass
      */
-    public function smtpAddDomain( $email ) {
-        if( empty( $email ) ) {
-            return $this->handleError( 'Empty email' );
+    public function smtpAddDomain($email)
+    {
+        if (empty($email)) {
+            return $this->handleError('Empty email');
         }
 
         $data = array(
             'email' => $email
         );
 
-        $requestResult = $this->sendRequest( 'smtp/domains', 'POST', $data );
+        $requestResult = $this->sendRequest('smtp/domains', 'POST', $data);
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -855,14 +896,15 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param $email
      * @return mixed|stdClass
      */
-    public function smtpVerifyDomain( $email ) {
-        if( empty( $email ) ) {
-            return $this->handleError( 'Empty email' );
+    public function smtpVerifyDomain($email)
+    {
+        if (empty($email)) {
+            return $this->handleError('Empty email');
         }
 
-        $requestResult = $this->sendRequest( 'smtp/domains/' . $email );
+        $requestResult = $this->sendRequest('smtp/domains/' . $email);
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -871,19 +913,20 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param $email
      * @return mixed|stdClass
      */
-    public function smtpSendMail( $email ) {
-        if( empty( $email ) ) {
-            return $this->handleError( 'Empty email data' );
+    public function smtpSendMail($email)
+    {
+        if (empty($email)) {
+            return $this->handleError('Empty email data');
         }
 
-        $email['html'] = base64_encode( $email['html'] );
+        $email['html'] = base64_encode($email['html']);
         $data = array(
-            'email' => serialize( $email )
+            'email' => serialize($email)
         );
 
-        $requestResult = $this->sendRequest( 'smtp/emails', 'POST', $data );
+        $requestResult = $this->sendRequest('smtp/emails', 'POST', $data);
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -893,18 +936,19 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param null $offset
      * @return mixed
      */
-    public function pushListCampaigns($limit = NULL, $offset = NULL) {
+    public function pushListCampaigns($limit = NULL, $offset = NULL)
+    {
         $data = array();
-        if( !is_null( $limit ) ) {
+        if (!is_null($limit)) {
             $data['limit'] = $limit;
         }
-        if( !is_null( $offset ) ) {
+        if (!is_null($offset)) {
             $data['offset'] = $offset;
         }
 
-        $requestResult = $this->sendRequest( 'push/tasks', 'GET', $data );
+        $requestResult = $this->sendRequest('push/tasks', 'GET', $data);
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -914,18 +958,19 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param null $offset
      * @return mixed
      */
-    public function pushListWebsites( $limit = NULL, $offset = NULL ) {
+    public function pushListWebsites($limit = NULL, $offset = NULL)
+    {
         $data = array();
-        if( !is_null( $limit ) ) {
+        if (!is_null($limit)) {
             $data['limit'] = $limit;
         }
-        if( !is_null( $offset ) ) {
+        if (!is_null($offset)) {
             $data['offset'] = $offset;
         }
 
-        $requestResult = $this->sendRequest( 'push/websites', 'GET', $data );
+        $requestResult = $this->sendRequest('push/websites', 'GET', $data);
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -933,10 +978,11 @@ class SendpulseApi implements SendpulseApi_Interface {
      *
      * @return mixed
      */
-    public function pushCountWebsites() {
-        $requestResult = $this->sendRequest( 'push/websites/total', 'GET' );
+    public function pushCountWebsites()
+    {
+        $requestResult = $this->sendRequest('push/websites/total', 'GET');
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -945,10 +991,11 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param $websiteId
      * @return mixed
      */
-    public function pushListWebsiteVariables( $websiteId ) {
-        $requestResult = $this->sendRequest( 'push/websites/'.$websiteId.'/variables', 'GET' );
+    public function pushListWebsiteVariables($websiteId)
+    {
+        $requestResult = $this->sendRequest('push/websites/' . $websiteId . '/variables', 'GET');
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -957,18 +1004,19 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param $websiteId
      * @return mixed
      */
-    public function pushListWebsiteSubscriptions( $websiteId, $limit = NULL, $offset = NULL ) {
+    public function pushListWebsiteSubscriptions($websiteId, $limit = NULL, $offset = NULL)
+    {
         $data = array();
-        if( !is_null( $limit ) ) {
+        if (!is_null($limit)) {
             $data['limit'] = $limit;
         }
-        if( !is_null( $offset ) ) {
+        if (!is_null($offset)) {
             $data['offset'] = $offset;
         }
 
-        $requestResult = $this->sendRequest( 'push/websites/'.$websiteId.'/subscriptions', 'GET', $data );
+        $requestResult = $this->sendRequest('push/websites/' . $websiteId . '/subscriptions', 'GET', $data);
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -977,10 +1025,11 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param $websiteId
      * @return mixed
      */
-    public function pushCountWebsiteSubscriptions( $websiteId ) {
-        $requestResult = $this->sendRequest( 'push/websites/'.$websiteId.'/subscriptions/total', 'GET' );
+    public function pushCountWebsiteSubscriptions($websiteId)
+    {
+        $requestResult = $this->sendRequest('push/websites/' . $websiteId . '/subscriptions/total', 'GET');
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -990,15 +1039,16 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param $stateValue
      * @return mixed
      */
-    public function pushSetSubscriptionState( $subscriptionId, $stateValue ) {
+    public function pushSetSubscriptionState($subscriptionId, $stateValue)
+    {
         $data = array(
             'id' => $subscriptionId,
             'state' => $stateValue
         );
 
-        $requestResult = $this->sendRequest( 'push/subscriptions/state', 'POST', $data );
+        $requestResult = $this->sendRequest('push/subscriptions/state', 'POST', $data);
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 
     /**
@@ -1008,22 +1058,23 @@ class SendpulseApi implements SendpulseApi_Interface {
      * @param array $additionalParams
      * @return mixed|stdClass
      */
-    public function createPushTask( $taskInfo, $additionalParams = array() ) {
+    public function createPushTask($taskInfo, $additionalParams = array())
+    {
         $data = $taskInfo;
         if (!isset($data['ttl'])) {
             $data['ttl'] = 0;
         }
-        if( empty($data['title']) || empty($data['website_id']) || empty($data['body']) ) {
-            return $this->handleError( 'Not all data' );
+        if (empty($data['title']) || empty($data['website_id']) || empty($data['body'])) {
+            return $this->handleError('Not all data');
         }
         if ($additionalParams) {
-            foreach($additionalParams as $key=>$val) {
+            foreach ($additionalParams as $key => $val) {
                 $data[$key] = $val;
             }
         }
 
-        $requestResult = $this->sendRequest( '/push/tasks', 'POST', $data );
+        $requestResult = $this->sendRequest('/push/tasks', 'POST', $data);
 
-        return $this->handleResult( $requestResult );
+        return $this->handleResult($requestResult);
     }
 }

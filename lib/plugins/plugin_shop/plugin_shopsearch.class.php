@@ -3,6 +3,7 @@
 class plugin_shopsearch
 {
 	private $query = '';
+	private $page;
 
 	public function __construct($page = '')
 	{

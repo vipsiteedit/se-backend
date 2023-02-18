@@ -23,48 +23,48 @@ class plugin_atol extends CurlAbstract
     public function __construct()
     {
         $this->getSettings();
-        
+
         $this->getToken();
     }
-    
+
     private function getSettings()
     {
         $settings = plugin_shopsettings::getInstance();
-        
-        $this->apiLogin = $settings->getValue('atol_login');//'edgestiletest';
-        $this->apiPassword = $settings->getValue('atol_password');//'0wgbyWWSp';
-        $this->apiGroup = $settings->getValue('atol_group');//'Edgestile-Test';
+
+        $this->apiLogin = $settings->getValue('atol_login'); //'edgestiletest';
+        $this->apiPassword = $settings->getValue('atol_password'); //'0wgbyWWSp';
+        $this->apiGroup = $settings->getValue('atol_group'); //'Edgestile-Test';
     }
-    
+
     private function log($text)
     {
         $text = date('[Y-m-d H:i:s]') . ' ' . $text . "\r\n";
-        
+
         $dir = SE_ROOT . 'system/logs/atol/';
-		
+
         if (!is_dir($dir))
-			mkdir($dir);
-        
-		$filename = $dir . date('Y-m-d_') . '.log';
-		
-		$file = fopen($filename, 'ab');
-		fwrite($file, $text);
-		fclose($file);	
+            mkdir($dir);
+
+        $filename = $dir . date('Y-m-d_') . '.log';
+
+        $file = fopen($filename, 'ab');
+        fwrite($file, $text);
+        fclose($file);
     }
 
     private function getToken()
     {
         $data = array(
-            'login' => $this->apiLogin, 
+            'login' => $this->apiLogin,
             'pass' => $this->apiPassword
         );
-        
+
         $url = $this->urlApi . $this->apiVersion . '/getToken';
-        
+
         $result = $this->get($url, $data, 'JSON_POST');
-        
+
         $this->log('result - ' . print_r($result, 1));
-        
+
         if (!empty($result)) {
             $result = json_decode($result, true);
             if ($result['code'] <= 1 && $result['token'])
@@ -75,8 +75,7 @@ class plugin_atol extends CurlAbstract
     public function operation($type = self::OP_SELL, $data = null)
     {
         if (!$this->token) return;
-        switch ($type)
-        {
+        switch ($type) {
             case 1: // Приход
                 $operation = 'sell';
                 break;
@@ -96,30 +95,30 @@ class plugin_atol extends CurlAbstract
                 $operation = 'buy_correction';
                 break;
         }
-        
+
         $url = $this->urlApi . $this->apiVersion . '/' . $this->apiGroup . '/' . $operation . '?tokenid=' . $this->token;
-        
+
         $this->log($url);
-        
+
         $this->log(print_r($data, 1));
-        
+
         $result = $this->get($url, $data, 'JSON_POST');
-        
+
         $this->log($result);
-        
+
         return $result;
     }
-    
+
     public function report($uuid)
     {
         $url = $this->urlApi . $this->apiVersion . '/' . $this->apiGroup . '/report/' . $uuid . '?tokenid=' . $this->token;
-        
+
         $this->log($url);
-        
+
         $result = $this->get($url, '', 'JSON_GET');
-        
+
         $this->log($result);
-        
+
         return $result;
     }
 }

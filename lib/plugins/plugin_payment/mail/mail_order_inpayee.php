@@ -24,5 +24,3 @@ $message=convert_cyr_string($message, "w", "k");
   $headers .="Return-Part: <sales@edgestile.ru>\n";
   $headers .="Content-Type: text/plain; charset=utf-8\n";
 mail($email, "", $message, $headers); //письмо клиенту
-
-?>

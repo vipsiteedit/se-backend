@@ -12,8 +12,6 @@ class plugin_shopgoods
 	private $current_page;
 	private $GroupId;
 	private $string_features = null;
-	private $plugin_groups = null;
-	private $modification_mode = null;
 
 	/** Конструктор
 	 *   @string  page           текущая страница
@@ -141,8 +139,7 @@ class plugin_shopgoods
                     sfg.image AS gimage,
                     sfg.description AS gdescription,
                     GROUP_CONCAT(CASE    
-                        WHEN (sf.type = 'list' OR sf.type = 'colorlist') THEN (SELECT CONCAT_WS('', sfvl.id, '##', sfvl.value, '##', sfvl.color, '##', sfvl.image, '##', sfvl.sort) 
-						FROM shop_feature_value_list sfvl WHERE sfvl.id = smf.id_value)
+                        WHEN (sf.type = 'list' OR sf.type = 'colorlist') THEN (SELECT CONCAT_WS('', sfvl.id, '##', sfvl.value, '##', sfvl.color, '##', sfvl.image, '##', sfvl.sort) FROM shop_feature_value_list sfvl WHERE sfvl.id = smf.id_value)
                         WHEN (sf.type = 'number') THEN CONCAT_WS('##', smf.id, smf.value_number)
                         WHEN (sf.type = 'bool') THEN CONCAT_WS('##', smf.id, smf.value_bool)
                         WHEN (sf.type = 'string') THEN CONCAT_WS('##', smf.id, smf.value_string)
@@ -454,19 +451,15 @@ class plugin_shopgoods
 		if ($on_count) {
 			return $price->getListCount();
 		}
+
 		if (empty($goods_name)) {
-			$SE_NAVIGATOR = '';
-			$page = defined('NEXT_PAGE_PRODUCTS') ? NEXT_PAGE_PRODUCTS : 0;
-			$pricelist = $price->getList($page * $option['limit'], $option['limit'] + 1);
+			$SE_NAVIGATOR = $price->pageNavigator($option['limit']);
+			$pricelist = $price->getList();
 			if (!empty($brand_filter) && $pricelist) {
 				if (class_exists('plugin_router')) {
 					$router = plugin_router::getInstance();
 					$router->registerParams('group', 'brand');
 				}
-			}
-			if (count($pricelist) > $option['limit']) {
-				$SE_NAVIGATOR = '<button class="show-more" data-page="' . ($page + 1) . '">Показать еще</button>';
-				array_pop($pricelist);
 			}
 		} else {
 			$SE_NAVIGATOR = '';
@@ -627,10 +620,14 @@ class plugin_shopgoods
 
 		if (!empty($list)) {
 			foreach ($list as $val) {
-				$val['link'] = '/files/' . $val['file'];
-				if (!file_exists(SE_ROOT . $val['link']))
-					continue;
-				$val['size'] = $this->formatFileSize(filesize(SE_ROOT . $val['link']));
+				if (strpos($val['file'], "://") !== false) {
+					$val['link'] = $val['file'];
+				} else {
+					$val['link'] = '/files/' . $val['file'];
+					if (!file_exists(SE_ROOT . $val['link']))
+						continue;
+					$val['size'] = $this->formatFileSize(filesize(SE_ROOT . $val['link']));
+				}
 				$files[] = $val;
 			}
 		}
@@ -892,6 +889,7 @@ class plugin_shopgoods
 
 		if (empty($goods['page_title']))
 			$goods['page_title'] = $goods['name'];
+
 		return $goods;
 	}
 
@@ -962,62 +960,32 @@ class plugin_shopgoods
 	 **/
 	public function sameGoods($option, $viewgoods, $types)
 	{
+		$same = new seTable('shop_price', 'sp');
+		$same->select('sp.id');
+
+		$same->where("`id` IN (SELECT id_acc from $types WHERE `id_price`='$viewgoods')");
 		if ($types == 'shop_sameprice') {
-			$same = new seTable('shop_price', 'sp');
-			$same->select('sp.id');
+			$same->orWhere("`id` IN (SELECT id_price from $types WHERE `id_acc`='$viewgoods')");
+		}
 
-			$same->where("`id` IN (SELECT id_acc from $types WHERE `id_price`='$viewgoods')");
-			if ($types == 'shop_sameprice') {
-				$same->orWhere("`id` IN (SELECT id_price from $types WHERE `id_acc`='$viewgoods')");
-			}
-
-			/*
-            $same->where("`id` IN (SELECT id_acc from $types WHERE `id_price`='$viewgoods')");
-            $same->orWhere("`id` IN (SELECT id_price from $types WHERE `id_acc`='$viewgoods' AND `cross`<>0)");
-            */
-			$samegoods = $same->getList();
-			$rez = '';
-			if (!empty($samegoods)) {
-				foreach ($samegoods as $item) {
-					if ($rez == '') {
-						$rez .= $item['id'];
-					} else {
-						$rez .= ',' . $item['id'];
-					}
+		/*
+		$same->where("`id` IN (SELECT id_acc from $types WHERE `id_price`='$viewgoods')");
+		$same->orWhere("`id` IN (SELECT id_price from $types WHERE `id_acc`='$viewgoods' AND `cross`<>0)");
+		*/
+		$samegoods = $same->getList();
+		$rez = '';
+		if (!empty($samegoods)) {
+			foreach ($samegoods as $item) {
+				if ($rez == '') {
+					$rez .= $item['id'];
+				} else {
+					$rez .= ',' . $item['id'];
 				}
 			}
-			if ($rez == '') return;
-			$samegoods = $this->getGoods($option, $rez);
-		} else {
-			return $this->getProjectList($viewgoods);
 		}
+		if ($rez == '') return;
+		$samegoods = $this->getGoods($option, $rez);
 		return $samegoods;
-	}
-
-	public function getProjectList($id_product)
-	{
-		$result = array();
-
-		$t = new seTable('shop_price_news', 'spn');
-		$t->select('n.*');
-		$t->innerJoin('news n', 'n.id=spn.id_news');
-		$t->where('spn.id_price=?', $id_product);
-		$list = $t->getList();
-
-		$img_dir = "/images/rus/newsimg/";
-
-		foreach ($list as $val) {
-			$result[] = array(
-				'id' => $val['id'],
-				'name' => $val['title'],
-				'note' => $val['short_txt'],
-				'is_project' => true,
-				'image_prev' => se_getDImage($img_dir . $val['img'], '300x300'),
-				'linkshow' => '/postroennye-obekty/projects/' . $val['url'] . URL_END,
-			);
-		}
-
-		return array($result, array());
 	}
 
 	public function viewgalleryImages($price_id, $size_prev, $size_mid, $size_full, $res = 's', $watermark = '', $pos = 'center', $level = 75)
@@ -1289,10 +1257,13 @@ class plugin_shopgoods
 		$parents = $this->plugin_groups->getParents((int)$id_group, true);
 
 		if (!empty($parents)) {
-			foreach ($parents as $val) {
+			$i = count($parents) + 3;
+			foreach ($parents as $i => $val) {
+				$i--;
 				$dt[] = array(
 					'cat' => $val['code'],
-					'cat_nm' => $val['name']
+					'cat_nm' => $val['name'],
+					'pos' => $i
 				);
 			}
 		}
@@ -1307,34 +1278,36 @@ class plugin_shopgoods
 		}
 		return $label;
 	}
-
-	public function getProductOptions($id_product = 0)
+	public function getGoodsWish($id_user = 0, $id_price)
 	{
-		if (!$id_product)
-			return;
-		return plugin_shopoption::getInstance()->getProductOptions($id_product);
+		$is_wish = false;
+
+		if (!empty($id_price) && $id_user != 0) {
+			$shop_wishlist = new seTable('shop_wishlist', 'sw');
+			$shop_wishlist->select('sw.id_user, sw.id_price, sp.id as id_wish');
+			$shop_wishlist->innerJoin('shop_price sp', 'sp.id = sw.id_price');
+			$shop_wishlist->where('sw.id_user=?', $id_user);
+			$shop_wishlist->andWhere('sw.id_price=?', $id_price);
+			$fetchWish = $shop_wishlist->fetchOne();
+			if ($fetchWish) {
+				$is_wish = true;
+			} else {
+				$is_wish = false;
+			}
+		}
+
+		$result = $is_wish;
+
+		return $result;
 	}
 
-	public function getArticleFeaturesAnalog($id_product = 0, $features = array())
+	public function getGoodsWishCount($id_user = 0)
 	{
+		$table_wish = new seTable('shop_wishlist', 'sw');
+		$table_wish->select('*');
+		$table_wish->where("sw.id_user='?'", $id_user);
+		$count_wish = $table_wish->getListCount();
 
-
-		$u = new seTable("shop_price", 'sp');
-		$u->select('concat_ws("/",sg.code_gr, sp.code) AS url, sfvl.value');
-		$u->innerJoin("shop_group sg", "sg.id=sp.id_group");
-		$u->innerJoin("shop_modifications_feature smf", "(smf.id_price=sp.id AND smf.id_modification IS NULL)");
-		$u->leftJoin('shop_feature_value_list sfvl', 'sfvl.id=smf.id_value');
-		$u->where("sp.article IN (SELECT article FROM shop_price WHERE id=?) AND sp.id<>?", $id_product);
-		$u->andWhere("smf.id_feature IN (?)", join(',', $features));
-		$u->groupBy('smf.id');
-		$u->orderBy('smf.sort', 0);
-		$result = array();
-		foreach ($u->getList() as $item) {
-			$result[] = array(
-				'link' => seMultiDir() . '/' . $this->current_page . '/' . $item['url'] . SE_END,
-				'value' => $item['value']
-			);
-		}
-		return $result;
+		return $count_wish;
 	}
 }

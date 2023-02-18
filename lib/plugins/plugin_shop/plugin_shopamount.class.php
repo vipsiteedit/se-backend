@@ -10,6 +10,8 @@ class plugin_shopamount
     private $step = 1;
     public $sum_cart = 0;
     private $discount = null;
+    private $goods;
+    private $presence_count = 0;
 
     private $retail_price = 0;
 

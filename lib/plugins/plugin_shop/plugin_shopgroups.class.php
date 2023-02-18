@@ -20,7 +20,6 @@ class plugin_shopgroups
 		$this->cache_groups = $this->cache_dir . 'groups.json';
 		$this->cache_tree = $this->cache_dir . 'tree.json';
 		$this->cache_count = $this->cache_dir . 'count.txt';
-		$this->id_main = 1;
 		$this->shoppath = seData::getInstance()->getVirtualPage('shop_vitrine');
 
 		if (!is_dir($this->cache_dir)) {
@@ -474,9 +473,7 @@ class plugin_shopgroups
 			$sg->andWhere('sgt.id_parent = ?', $upid);
 		}
 
-		//$sg->andWhere('sg.lang = "?"', se_getlang());
 		$sg->andWhere('sg.active = "Y"');
-		//$tbl->andWhere('sg.id_main = ?', $this->id_main);
 		$sg->orderby('sg.position');
 		$list = $sg->getList();
 

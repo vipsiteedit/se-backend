@@ -170,4 +170,3 @@ class plugin_jmail
         return mail($this->addr_to, $this->subject, $this->body, $this->headers);
     }
 }
-?>

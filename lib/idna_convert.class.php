@@ -368,7 +368,7 @@ class idna_convert
         if ($delim_pos > strlen($this->_punycode_prefix)) {
             for ($k = strlen($this->_punycode_prefix); $k < $delim_pos; ++$k) {
                 $decoded[] = ord($encoded{
-                $k});
+                    $k});
             }
         }
         $deco_len = count($decoded);
@@ -383,7 +383,7 @@ class idna_convert
         for ($enco_idx = ($delim_pos) ? ($delim_pos + 1) : 0; $enco_idx < $enco_len; ++$deco_len) {
             for ($old_idx = $idx, $w = 1, $k = $this->_base; 1; $k += $this->_base) {
                 $digit = $this->_decode_digit($encoded{
-                $enco_idx++});
+                    $enco_idx++});
                 $idx += $digit * $w;
                 $t = ($k <= $bias) ? $this->_tmin : (($k >= $bias + $this->_tmax) ? $this->_tmax : ($k - $bias));
                 if ($digit < $t) break;
@@ -777,7 +777,7 @@ class idna_convert
         $test = 'none';
         for ($k = 0; $k < $inp_len; ++$k) {
             $v = ord($input{
-            $k}); // Extract byte from input string
+                $k}); // Extract byte from input string
             if ($v < 128) { // We found an ASCII char - put into stirng as is
                 $output[$out_len] = $v;
                 ++$out_len;
@@ -850,20 +850,20 @@ class idna_convert
     {
         $output = '';
         if (strlen($input) > 0)
-        foreach ($input as $k => $v) {
-            if ($v < 128) { // 7bit are transferred literally
-                $output .= chr($v);
-            } elseif ($v < (1 << 11)) { // 2 bytes
-                $output .= chr(192 + ($v >> 6)) . chr(128 + ($v & 63));
-            } elseif ($v < (1 << 16)) { // 3 bytes
-                $output .= chr(224 + ($v >> 12)) . chr(128 + (($v >> 6) & 63)) . chr(128 + ($v & 63));
-            } elseif ($v < (1 << 21)) { // 4 bytes
-                $output .= chr(240 + ($v >> 18)) . chr(128 + (($v >> 12) & 63)) . chr(128 + (($v >> 6) & 63)) . chr(128 + ($v & 63));
-            } else {
-                $this->_error('Conversion from UCS-4 to UTF-8 failed: malformed input at byte ' . $k);
-                return false;
+            foreach ($input as $k => $v) {
+                if ($v < 128) { // 7bit are transferred literally
+                    $output .= chr($v);
+                } elseif ($v < (1 << 11)) { // 2 bytes
+                    $output .= chr(192 + ($v >> 6)) . chr(128 + ($v & 63));
+                } elseif ($v < (1 << 16)) { // 3 bytes
+                    $output .= chr(224 + ($v >> 12)) . chr(128 + (($v >> 6) & 63)) . chr(128 + ($v & 63));
+                } elseif ($v < (1 << 21)) { // 4 bytes
+                    $output .= chr(240 + ($v >> 18)) . chr(128 + (($v >> 12) & 63)) . chr(128 + (($v >> 6) & 63)) . chr(128 + ($v & 63));
+                } else {
+                    $this->_error('Conversion from UCS-4 to UTF-8 failed: malformed input at byte ' . $k);
+                    return false;
+                }
             }
-        }
         return $output;
     }
 
@@ -908,7 +908,7 @@ class idna_convert
                 $output[$out_len] = 0;
             }
             $output[$out_len] += ord($input{
-            $i}) << (8 * (3 - ($i % 4)));
+                $i}) << (8 * (3 - ($i % 4)));
         }
         return $output;
     }

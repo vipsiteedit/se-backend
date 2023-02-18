@@ -13,7 +13,8 @@ class plugin_shopdelivery
     public $delivery_type_id = 0;
     private $not_delivery;
     private $geo_data = array();
-    private $params = array();
+    private $param = array();
+    private $ems_param;
 
     private $services = array(
         'ems' => array(

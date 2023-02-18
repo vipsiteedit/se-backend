@@ -17,16 +17,18 @@ class plugin_news
     private static $options = array();
     private $count = 0;
     private $id_gcontact = 0;
-	private $current_page;
-	private $opts = array();
+    private $current_page;
+    //private $opts = array();
+    private $cache_count;
+    private $cache_group;
 
 
     public function __construct($opt = array(), $pagename = false)
     {
-		$this->current_page = ($pagename) ? $pagename : seData::getInstance()->getPageName();
-		$this->opts = $opt;
-			
-		$this->cache_dir = SE_SAFE . 'projects/' . SE_DIR . 'cache/news/' . $opt['lang'] . '/';
+        $this->current_page = ($pagename) ? $pagename : seData::getInstance()->getPageName();
+        //$this->opts = $opt;
+
+        $this->cache_dir = SE_SAFE . 'projects/' . SE_DIR . 'cache/news/' . $opt['lang'] . '/';
         $this->cache_sections = $this->cache_dir . 'news.json';
         $this->cache_count = $this->cache_dir . 'count.json';
         $this->cache_group = $this->cache_dir . 'groups.json';
@@ -37,9 +39,9 @@ class plugin_news
                 mkdir(SE_SAFE . 'projects/' . SE_DIR . 'cache/news/');
             mkdir($this->cache_dir);
         }
-        
+
         $this->UpdateDB();
-        
+
         $this->checkCache();
         $this->id_gcontact = intval($_SESSION['user_region']['id_city']);
         if ($this->id_gcontact > 0) {
@@ -50,7 +52,7 @@ class plugin_news
             $this->id_gcontact = $gc->id_contact;
         }
     }
-    
+
     public function UpdateDB()
     {
         if (!file_exists(SE_ROOT . '/system/logs/news_public.upd')) {
@@ -66,7 +68,7 @@ class plugin_news
               CONSTRAINT `news_gcontact_ibfk_1` FOREIGN KEY (`id_news`) REFERENCES `news` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
               CONSTRAINT `news_gcontact_ibfk_2` FOREIGN KEY (`id_gcontact`) REFERENCES `shop_contacts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
-            
+
             $sql = "CREATE TABLE IF NOT EXISTS `news_userfields` (
                   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
                   `id_news` int(10) UNSIGNED NOT NULL,
@@ -80,28 +82,27 @@ class plugin_news
                   CONSTRAINT `news_userfields_ibfk_1` FOREIGN KEY (`id_news`) REFERENCES `news` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
                   CONSTRAINT `news_userfields_ibfk_2` FOREIGN KEY (`id_userfield`) REFERENCES `shop_userfields` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
-			
-			$result = se_db_query($sql);
-			
-			file_put_contents(SE_ROOT . '/system/logs/news_public.upd', date('Y-m-d H:i:s - ') . $result);
+
+            $result = se_db_query($sql);
+
+            file_put_contents(SE_ROOT . '/system/logs/news_public.upd', date('Y-m-d H:i:s - ') . $result);
         }
     }
-	
-	public function checkUrl()
-	{
-		global $SE_REQUEST_NAME;
-		$url = explode('?', $_SERVER['REQUEST_URI']);
-		$url = str_replace(seMultiDir() . '/' . $this->current_page . '/', '',  $url[0]);
-		if (substr($url, -1, 1) == URL_END) $url = substr($url, 0, -1);
-		$u = explode('/', $url);
-	    $result = $this->getIdUrl($url);
 
-		if ($result) {
-			$SE_REQUEST_NAME[$u[0]] = 1;
-		}
-		return $result;
-	
-	}
+    public function checkUrl()
+    {
+        global $SE_REQUEST_NAME;
+        $url = explode('?', $_SERVER['REQUEST_URI']);
+        $url = str_replace(seMultiDir() . '/' . $this->current_page . '/', '',  $url[0]);
+        if (substr($url, -1, 1) == URL_END) $url = substr($url, 0, -1);
+        $u = explode('/', $url);
+        $result = $this->getIdUrl($url);
+
+        if ($result) {
+            $SE_REQUEST_NAME[$u[0]] = 1;
+        }
+        return $result;
+    }
 
     private function checkCache()
     {
@@ -186,7 +187,7 @@ class plugin_news
         $newsuf->where('nuf.id_news IN (?)', join(',', $ids));
         $flist = $newsuf->getList();
         $fields = array();
-        foreach($flist as $fld) {
+        foreach ($flist as $fld) {
             $fields[$fld['id_news']][$fld['code']] = $fld['value'];
         }
 
@@ -222,13 +223,6 @@ class plugin_news
         self::$options = $opt;
         if (empty(self::$options['size_image_full'])) self::$options['size_image_full'] = 800;
 
-        /*
-                $this->cache_dir = SE_SAFE . 'projects/' . SE_DIR . 'cache/news/'.$opt['lang'].'/';
-                $this->cache_sections = $this->cache_dir . 'news.json';
-                $this->cache_count = $this->cache_dir . 'count.json';
-                $this->cache_group = $this->cache_dir . 'groups.json';*/
-
-
         if (is_null(self::$instance)) {
             self::$instance = new self($opt, $pagename = false);
         }
@@ -239,10 +233,10 @@ class plugin_news
     {
         $news = new seTable('news', 'n');
         $news->select('n.id');
-		$news->innerjoin("news_category nc", "`n`.id_category = `nc`.id");
+        $news->innerjoin("news_category nc", "`n`.id_category = `nc`.id");
         $news->where("CONCAT_WS('/', nc.ident, n.url)='?'", $url);
-		$news->fetchOne();
-		echo se_db_error();
+        $news->fetchOne();
+        echo se_db_error();
         return $news->id;
     }
 
@@ -281,7 +275,7 @@ class plugin_news
     public function getItem($id)
     {
         $news = new seTable('news', 'n');
-        $news->addField('seotitle', 'varchar(255)'); 
+        $news->addField('seotitle', 'varchar(255)');
         $news->addField('keywords', 'varchar(255)');
         $news->addField('description', 'varchar(255)');
         $news->select("n.id, n.title, n.short_txt as note, n.text, n.img, n.active, n.pub_date, n.news_date,
@@ -305,7 +299,7 @@ class plugin_news
         $newsuf->innerjoin('shop_userfields suf', 'nuf.id_userfield=suf.id');
         $newsuf->where('nuf.id_news=?', $id);
         $fields = $newsuf->getList();
-        foreach($fields as $fld) {
+        foreach ($fields as $fld) {
             $val['field_' . $fld['code']] = $fld['value'];
         }
 
@@ -446,8 +440,8 @@ class plugin_news
                     if ($offset > $ff_id - 1) continue;
                     $item['image_prev'] = ($item['img']) ? $this->getPictimage($item['img'], self::$options['size_image'], 'm') : '';
                     //$item['image'] = ($item['img']) ? $this->getRealImgPath() . $item['img'] : '';
-                    foreach($item['fields'] as $n=>$f){
-                        $item['field_'. $n] = $f;
+                    foreach ($item['fields'] as $n => $f) {
+                        $item['field_' . $n] = $f;
                     }
                     unset($item['img'], $item['fields']);
                     $items[] = $item;
@@ -460,7 +454,7 @@ class plugin_news
 
     public function getList($code = false, $limit = 30)
     {
-		$news = new seTable('news', 'n');
+        $news = new seTable('news', 'n');
         $news->addField('is_date_public', 'tinyint(1)', '0', 1);
         $news->addField('sort', 'integer', '0', 1);
         $news->addField('url', 'varchar(255)', '', 2);
@@ -475,8 +469,8 @@ class plugin_news
         $news->Where("n.active = 'Y'");
         if (!empty($code))
             $news->andWhere("nc.ident IN ('?')", $code);
-		if (self::$options['lang'])
-			$news->andWhere("nc.lang = '?'", self::$options['lang']);	
+        if (self::$options['lang'])
+            $news->andWhere("nc.lang = '?'", self::$options['lang']);
         $news->andWhere("((SELECT COUNT(ngc1.id) FROM news_gcontacts ngc1 WHERE `ngc1`.id_news=`n`.id) < 1 OR ngc.id_gcontact=?)", intval($this->id_gcontact));
         $news->groupBy('n.id');
         $news->orderBy('sort', 0);
@@ -496,7 +490,7 @@ class plugin_news
         $newsuf->where('nuf.id_news IN (?)', join(',', $ids));
         $flist = $newsuf->getList();
         $fields = array();
-        foreach($flist as $fld) {
+        foreach ($flist as $fld) {
             $fields[$fld['id_news']][$fld['code']] = $fld['value'];
         }
         $result = array();
@@ -505,11 +499,9 @@ class plugin_news
             $val['news_date'] = date('Y-m-d H:i:s', $val['news_date']);
             $val['pub_date'] = date('Y-m-d H:i:s', $val['pub_date']);
             $val['fields'] = $fields[$val['id']];
-            $val['url'] = seMultiDir() . '/' . $this->current_page . '/' . $val['ident'] . '/' .$val['url'] . SE_END;
-			$result[] = $val;
+            $val['url'] = seMultiDir() . '/' . $this->current_page . '/' . $val['ident'] . '/' . $val['url'] . SE_END;
+            $result[] = $val;
         }
         return array($result, $pnav);
     }
 }
-
-?>

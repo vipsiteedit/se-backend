@@ -1,28 +1,29 @@
 <?php
-require_once dirname(__FILE__)."/basePayment.class.php"; 
+require_once dirname(__FILE__) . "/basePayment.class.php";
 /**
  * @author Sergey Shchelkonogov
  * @copyright 2013
  * 
  * Плагин платежных систем
  */
- 
-class payment_acquiropay extends basePayment{
-  
+
+class payment_acquiropay extends basePayment
+{
+
   public function setVars()
   {
-		return array('acq_id'=>'Merchant ID', 'acq_prodid'=>'Product ID', 'acq_secret'=>'Secret Word');
-  }   
-  
-  public function startform() 
-  {
-		$macros = new plugin_macros(0, $this->order_id, $this->payment_id);
-		return $macros->execute($this->startform);
+    return array('acq_id' => 'Merchant ID', 'acq_prodid' => 'Product ID', 'acq_secret' => 'Secret Word');
   }
 
-  public function blank($pagename) 
+  public function startform()
   {
-		//$this->blank = preg_replace("/\<payform\>(.+?)\<\/payform\>/imus",'', $this->blank);
+    $macros = new plugin_macros(0, $this->order_id, $this->payment_id);
+    return $macros->execute($this->startform);
+  }
+
+  public function blank($pagename)
+  {
+    //$this->blank = preg_replace("/\<payform\>(.+?)\<\/payform\>/imus",'', $this->blank);
     $macros = new plugin_macros(0, $this->order_id, $this->payment_id);
     $url = "https://secure.acquiropay.com/";
     $merchant_id = $macros->execute('[PAYMENT.ACQ_ID]');
@@ -31,16 +32,16 @@ class payment_acquiropay extends basePayment{
     $cf = $macros->execute('[ORDER.ID]');
     $lastname = $macros->execute('[USER.LASTNAME]');
     $firstname = $macros->execute('[USER.FIRSTNAME]');
-    if (strpos($firstname,' ')!==false){
-       if (!$lastname) {
-           list($lastname, $firstname) = explode(' ', $firstname);
-       }
+    if (strpos($firstname, ' ') !== false) {
+      if (!$lastname) {
+        list($lastname, $firstname) = explode(' ', $firstname);
+      }
     }
 
     $cf2 = $cf3 = '';
     $secret_word = $macros->execute('[PAYMENT.ACQ_SECRET]');
 
-    $token = md5($merchant_id. $product_id  .$amount . $cf . $cf2 .$cf3 . $secret_word);
+    $token = md5($merchant_id . $product_id  . $amount . $cf . $cf2 . $cf3 . $secret_word);
     $blank = '<h3 class="contentTitle">Оплата заказа:&nbsp;[ORDER.ID]&nbsp;- Acquiropay</h3>
     <br>
     Сумма к оплате: [ORDER_SUMMA]<br>
@@ -48,14 +49,14 @@ class payment_acquiropay extends basePayment{
     Для выполения прямого платежа на счет продавца нажмите кнопку "Перейти к оплате"<br>';
 
 
-    $blank .= '<form method="POST" action="'.$url.'">
+    $blank .= '<form method="POST" action="' . $url . '">
     <input name="product_id" value="[PAYMENT.ACQ_PRODID]" type="hidden">
-    <input name="token" value="'.$token.'" type="hidden">
+    <input name="token" value="' . $token . '" type="hidden">
     <input name="amount" value="[ORDER.SUMMA]" type="hidden">
     <input name="product_name" value="Contract:[USER.ID]/ Order:[ORDER.ID]" type="hidden">
     <input name="cf" value="[ORDER.ID]" type="hidden">
-    <input name="first_name" value="'.$firstname.'" type="hidden">
-    <input name="last_name" value="'.$lastname.'" type="hidden">
+    <input name="first_name" value="' . $firstname . '" type="hidden">
+    <input name="last_name" value="' . $lastname . '" type="hidden">
     <input name="zip" value="[USER.POSTCODE]" type="hidden">
     <input name="country" value="RUS" type="hidden">
     <input name="region" value="" type="hidden">
@@ -73,30 +74,30 @@ class payment_acquiropay extends basePayment{
     $this->newPaymentLog();
     return $macros->execute($this->getPathPayment($blank, $pagename));
   }
-  
-  public function result() 
+
+  public function result()
   {
     $this->order_id = intval($_POST['cf']);
     $res = $this->getPaymentLog();
     $macros = new plugin_macros(0, $this->order_id, $this->payment_id);
     //MD5(merchaint_id + payment_id + status8 + cf + cf2 + cf3 + secret_word)
-    $hash = md5($macros->execute("[PAYMENT.ACQ_ID]{$_POST['payment_id']}{$_POST['status']}{$_POST['cf']}{$_PAST['cf2']}{$_POST['cf3']}[PAYMENT.ACQ_SECRET]"));
-    if (strtoupper($hash) == strtoupper($_POST['sign']) && $_POST['status']=='OK') {
-        if ($this->activate($this->order_id, $_POST['amount'], '', $_POST['transaction_id'], $_POST['email'], $this->name_payment)) {
-            echo 'YES';
-        } else {
-            echo 'NO';
-        }
-        exit;
+    $hash = md5($macros->execute("[PAYMENT.ACQ_ID]{$_POST['payment_id']}{$_POST['status']}{$_POST['cf']}{$_POST['cf2']}{$_POST['cf3']}[PAYMENT.ACQ_SECRET]"));
+    if (strtoupper($hash) == strtoupper($_POST['sign']) && $_POST['status'] == 'OK') {
+      if ($this->activate($this->order_id, $_POST['amount'], '', $_POST['transaction_id'], $_POST['email'], $this->name_payment)) {
+        echo 'YES';
+      } else {
+        echo 'NO';
+      }
+      exit;
     }
-    echo 'NO'; 
+    echo 'NO';
     exit;
   }
 
   public function success()
   {
     if (empty($this->success)) {
-        $this->success = '<h4 class="contentTitle">Оплата проведена успешно</h4><br>
+      $this->success = '<h4 class="contentTitle">Оплата проведена успешно</h4><br>
         Ваш заказ № [ORDER.ID] оплачен <table class="tableTable" border="0">
         <tbody class="tableBody">
         <tr><td>Продукт:</td><td>[PAY.PAY_NUM]</td></tr>
@@ -104,15 +105,15 @@ class payment_acquiropay extends basePayment{
         <tr><td>Дата и время платежа:</td><td>[PAY.TRANS_DATE]</td></tr>
         </tbody></table>';
     }
-    $this->success = str_replace(array('[PAY.PAY_NUM]','[PAY.TRANS_NUM]','[PAY.TRANS_DATE]'), array($_POST['product_name'],$_POST['transactionid'], date('Y.m.d H:i:s', strtotime($_POST['date']))), $this->success);
+    $this->success = str_replace(array('[PAY.PAY_NUM]', '[PAY.TRANS_NUM]', '[PAY.TRANS_DATE]'), array($_POST['product_name'], $_POST['transactionid'], date('Y.m.d H:i:s', strtotime($_POST['date']))), $this->success);
     $macros = new plugin_macros(0, $this->order_id, $this->payment_id);
-    $this->success = $macros->execute($this->success);  
+    $this->success = $macros->execute($this->success);
     return $this->success;
   }
 
-  public function fail() 
+  public function fail()
   {
-		$macros = new plugin_macros(0, $this->order_id, $this->payment_id);
-		return $macros->execute($this->fail);
+    $macros = new plugin_macros(0, $this->order_id, $this->payment_id);
+    return $macros->execute($this->fail);
   }
 }

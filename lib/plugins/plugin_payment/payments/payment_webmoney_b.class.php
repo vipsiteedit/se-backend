@@ -1,26 +1,27 @@
 <?php
-require_once dirname(__FILE__)."/basePayment.class.php"; 
+require_once dirname(__FILE__) . "/basePayment.class.php";
 /**
  * @author Sergey Shchelkonogov
  * @copyright 2013
  * 
  * Плагин платежных систем
  */
- 
-class payment_webmoney_b extends basePayment{
-  
-  public function startform() 
-  {
+
+class payment_webmoney_b extends basePayment
+{
+
+	public function startform()
+	{
 		$macros = new plugin_macros(0, $this->order_id, $this->payment_id);
 		return $macros->execute($this->startform);
-  }
+	}
 
-  public function blank($pagename) 
-  {
+	public function blank($pagename)
+	{
 		$macros = new plugin_macros(0, $this->order_id, $this->payment_id);
 		$url = ($this->test) ? "https://api.siteedit.ru:447/merchant/wm/test.php" :  "https://merchant.webmoney.ru/lmi/payment.asp";
 		$blank = $this->blank . '
-		<form method="post" action="'.$url.'"><input name="LMI_MODE" value="1" type="hidden">
+		<form method="post" action="' . $url . '"><input name="LMI_MODE" value="1" type="hidden">
 		<input name="LMI_PAYEE_PURSE" value="[PAYMENT.WMB]" type="hidden">
 		<input name="LMI_PAYMENT_AMOUNT" value="[ORDER.SUMMA]" type="hidden">
 		<input name="LMI_PAYMENT_NO" value="[ORDER.ID]" type="hidden">
@@ -37,11 +38,11 @@ class payment_webmoney_b extends basePayment{
 		<input class="buttonSend  inpayee" value="Перейти к оплате" type="submit">
 		</form>';
 		return $macros->execute($this->getPathPayment($blank, $pagename));
-  }
-  
-  public function result() 
-  {
-		if (empty($_POST['LMI_HASH']) && $_POST['LMI_PREREQUEST']==1) {
+	}
+
+	public function result()
+	{
+		if (empty($_POST['LMI_HASH']) && $_POST['LMI_PREREQUEST'] == 1) {
 			exit("YES");
 		}
 		$macros = new plugin_macros(0, $this->order_id, $this->payment_id);
@@ -54,25 +55,24 @@ class payment_webmoney_b extends basePayment{
 			}
 			exit;
 		}
-		echo 'NO'; 
+		echo 'NO';
 		exit;
-  }
+	}
 
-  public function success()
-  {
-	//print_r($_POST);
+	public function success()
+	{
+		//print_r($_POST);
 		if ($_POST['LMI_PAYMENT_NO'] == $this->order_id) {
-			$this->success = str_replace(array('[PAY.PAY_NUM]','[PAY.TRANS_NUM]','[PAY.TRANS_DATE]'), array($_POST['LMI_SYS_INVS_NO'],$_POST['LMI_SYS_TRANS_NO'], $_POST['LMI_SYS_TRANS_DATE']), $this->success);
+			$this->success = str_replace(array('[PAY.PAY_NUM]', '[PAY.TRANS_NUM]', '[PAY.TRANS_DATE]'), array($_POST['LMI_SYS_INVS_NO'], $_POST['LMI_SYS_TRANS_NO'], $_POST['LMI_SYS_TRANS_DATE']), $this->success);
 		}
 		$macros = new plugin_macros(0, $this->order_id, $this->payment_id);
-		$this->success = $macros->execute($this->success);  
+		$this->success = $macros->execute($this->success);
 		return $this->success;
-		
-  }
+	}
 
-  public function fail() 
-  {
+	public function fail()
+	{
 		$macros = new plugin_macros(0, $this->order_id, $this->payment_id);
 		return $macros->execute($this->fail);
-  }
+	}
 }

@@ -12,6 +12,10 @@ class plugin_ShopImages
 	private $path_imgall;
 	private $_page;
 	private $price;
+	private $type;
+	private $path_imgbrand;
+	private $path_imgfeature;
+	private $path_imgsection;
 
 	public function __construct($type = 'product')
 	{

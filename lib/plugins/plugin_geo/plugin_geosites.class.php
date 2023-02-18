@@ -27,19 +27,12 @@ class plugin_geosites
 
         // Получение базового домена
         $this->basedomain = $this->getBaseDomain();
-        
+
         // Выбираем город когда базовый домен
         if ($this->isDomain($this->basedomain) && !empty($_SERVER['HTTP_REFERER']) || $noGeo || true) {
             // Получаем выбранный ID контакта
             $it = $this->getContactUrl(true);
             $this->storeSession($it);
-            //$this->id_contact = intval($_SESSION['user_region']['id_contact']);
-            //if ($isMulti)
-                //$this->getContactDomain();
-            //   
-            //if (_HOST_ !== $this->basedomain)
-            //    $this->go301($this->basedomain . $_SERVER['REQUEST_URI']);
-            //return;
         } else {
             // Находим город локализации по IP
             $city = $plugin_geoip->getCity();
@@ -63,32 +56,32 @@ class plugin_geosites
                 }
             }
             if ($tmp_it) {
-                    $this->storeSession($tmp_it);
+                $this->storeSession($tmp_it);
             }
         } else {
-            if($it = $this->getContact($this->id_contact)){
+            if ($it = $this->getContact($this->id_contact)) {
                 $this->storeSession($it);
             }
         }
         $this->getContactDomain();
     }
-	
-	private function go301($url)
-	{
-		header("HTTP/1.1 301 Moved Permanently");
+
+    private function go301($url)
+    {
+        header("HTTP/1.1 301 Moved Permanently");
         header("Location: " . $url);
         exit;
-	}
+    }
 
     // Это текущий домен
     private function isDomain($domain)
     {
         $host = str_replace(array('http://', 'https://', '//'), '', $domain);
-        if (strpos($domain, '://')!==false){
-           list($http,) = explode(':', $domain);
-           $http .= '://';
+        if (strpos($domain, '://') !== false) {
+            list($http,) = explode(':', $domain);
+            $http .= '://';
         } else {
-           $http = _HTTP_;
+            $http = _HTTP_;
         }
         return (($http == _HTTP_) && ($host == $_SERVER['HTTP_HOST'] || 'www.' . $host == $_SERVER['HTTP_HOST']));
     }
@@ -98,7 +91,7 @@ class plugin_geosites
         if ($this->isDomain($this->basedomain)) {
             // Это базовый домен
             if ($this->id_contact && !$this->isBot()) {
-                if($it = $this->getContactUrl()) {
+                if ($it = $this->getContactUrl()) {
                     // Если базовый домен есть в списке
                     $this->storeSession($it);
                 } else {
@@ -113,7 +106,7 @@ class plugin_geosites
             }
         } else {
             // Это мультидомен
-            if($it = $this->getContactUrl()) {
+            if ($it = $this->getContactUrl()) {
                 $this->storeSession($it);
             } else {
                 // Домен не найден, редиректимся на базовый домен
@@ -131,7 +124,6 @@ class plugin_geosites
                 $this->basedomain = _HTTP_ . $dm[count($dm) - 2] . '.' . $dm[count($dm) - 1];
             else
                 $this->basedomain = _HTTP_ . $_SERVER['HTTP_HOST'];
-
         }
         $this->domain = $this->basedomain;
         return $this->basedomain;
@@ -185,7 +177,7 @@ class plugin_geosites
     public function getUrl($url)
     {
         if ($url) {
-            if (substr($url, strlen($url) -1, 1) == '/') $url = substr($url, 0, -1);
+            if (substr($url, strlen($url) - 1, 1) == '/') $url = substr($url, 0, -1);
             $thisurl = (strpos($url, '.') === false) ? $url . '.' . str_replace(array('https://', 'http://', '//'), '',  $this->basedomain) : $url;
             //$thisurl = (strpos($thisurl, '://') !== false) ? end(explode('://', $thisurl)) : $thisurl;
             if (strpos($thisurl, '://') === false)
@@ -255,5 +247,4 @@ class plugin_geosites
         }
         return self::$instance;
     }
-
 }

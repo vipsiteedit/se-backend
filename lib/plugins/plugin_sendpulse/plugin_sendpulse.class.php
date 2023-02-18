@@ -5,8 +5,4 @@ require_once(__DIR__ . '/api/sendpulse.php');
 
 class plugin_sendpulse extends SendpulseApi
 {
-	
-	
 }
-
-  

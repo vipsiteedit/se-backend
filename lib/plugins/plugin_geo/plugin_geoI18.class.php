@@ -75,5 +75,3 @@ class plugin_geoI18{
           return $json;
     }
 }
-
-?>

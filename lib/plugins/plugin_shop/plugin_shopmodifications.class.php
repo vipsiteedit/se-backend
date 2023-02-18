@@ -102,25 +102,25 @@ class plugin_shopmodifications
 		$shop_modifications->addOrderBy('sm.sort', 0);
 		$shop_modifications->addOrderBy('sfvl.sort', 0);
 		$shop_modifications->addOrderBy('sfvl.value', 0);
-        $list = $shop_modifications->getList();
-        $ids = $val = array();
+		$list = $shop_modifications->getList();
+		$ids = $val = array();
 		$result = array();
-		foreach($list as $it) {
-		   if (!in_array($it['id'], $ids) && !in_array($it['id_value'], $val)) {
-    		   $ids[] = $it['id'];
-    		   $val[] = $it['id_value'];
-    		   
-    		   $result[] = $it;
-		   } else {
-		       //error_reporting(E_ALL);
-		       $smf = new seTable('shop_modifications_feature', 'smf');
-		       $smf->where('id_price=?', $this->id_price);
-		       $smf->andwhere('id_modification=?', $it['id']);
-		       $smf->andwhere('id_feature=?', $it['id_feature']);
-		       $smf->andwhere('id_value=?', $it['id_value']);
-		       $smf->deleteList();
-		       echo se_db_error();
-		   }
+		foreach ($list as $it) {
+			if (!in_array($it['id'], $ids) && !in_array($it['id_value'], $val)) {
+				$ids[] = $it['id'];
+				$val[] = $it['id_value'];
+
+				$result[] = $it;
+			} else {
+				//error_reporting(E_ALL);
+				$smf = new seTable('shop_modifications_feature', 'smf');
+				$smf->where('id_price=?', $this->id_price);
+				$smf->andwhere('id_modification=?', $it['id']);
+				$smf->andwhere('id_feature=?', $it['id_feature']);
+				$smf->andwhere('id_value=?', $it['id_value']);
+				$smf->deleteList();
+				echo se_db_error();
+			}
 		}
 		return $result;
 	}

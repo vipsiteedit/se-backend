@@ -209,5 +209,4 @@ class plugin_imagewatermark {
 	}
   }
 
-} 
-?>
+}

@@ -4,6 +4,7 @@ include_once __DIR__ . '/yandex_market/AYandexMarket.php';
 
 class yandex_market_loader
 {
+    private $ym = null;
 
     public function __construct($filename = '', $action = 'compare')
     {
@@ -12,10 +13,10 @@ class yandex_market_loader
                 include_once __DIR__ . '/yandex_market/InsertYM.php';
                 $this->ym = new InsertYM();
                 break;
-            // case 'update':
-            //     include_once __DIR__ . '/yandex_market/UpdateYM.php';
-            //     $this->ym = new UpdateYM();
-            //     break;
+                // case 'update':
+                //     include_once __DIR__ . '/yandex_market/UpdateYM.php';
+                //     $this->ym = new UpdateYM();
+                //     break;
             case 'compare':
             default:
                 include_once __DIR__ . '/yandex_market/CompareYM.php';

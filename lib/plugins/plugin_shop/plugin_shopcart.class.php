@@ -20,6 +20,7 @@ class plugin_shopcart
 	private $startcookie = true;
 	private $baseMeasureWeight = array();
 	private $baseMeasureVolume = array();
+	private $startCookie;
 
 	public function __construct($options = array())
 	{

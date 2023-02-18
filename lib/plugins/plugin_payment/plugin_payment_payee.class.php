@@ -220,4 +220,3 @@ class plugin_payment_payee {
         $mainlog->save();
 	}
 }
-?>

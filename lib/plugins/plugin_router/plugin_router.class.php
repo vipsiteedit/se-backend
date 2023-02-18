@@ -1,8 +1,6 @@
 <?php
 
-/**
- * @copyright EDGESTILE
- */
+
 class plugin_router
 {
 
@@ -35,7 +33,7 @@ class plugin_router
         if ($pos = strpos($uri, '?')) {
             $uri = substr($uri, 0, $pos);
         }
-        if (SE_DIR != '' && substr($uri, 1, strlen(SE_DIR)) == SE_DIR && seMultiDir() == ''){
+        if (SE_DIR != '' && substr($uri, 1, strlen(SE_DIR)) == SE_DIR && seMultiDir() == '') {
             $uri = substr($uri, strlen(SE_DIR), strlen($uri));
         }
         return $uri;
@@ -64,30 +62,29 @@ class plugin_router
         }
         $this->routes[$type] = array(
             'type' => $type,
-			'pattern' => $pattern,
+            'pattern' => $pattern,
             'match' => $match,
             'params' => $params,
         );
     }
-	
-	public function registerParams($type, $params = null)
+
+    public function registerParams($type, $params = null)
     {
-		if  (!empty($params) && isset($this->routes[$type])) {
-			if (is_string($params)) {
-				$this->addParam($type, $params);
-			}
-			elseif (is_array($params)) {
-				foreach ($params as $val) {
-					$this->addParam($type, $val);
-				}
-			}
-		}
-	}
-	
-	private function addParam($type, $param = '')
-	{
-		$this->routes[$type]['params'][$param] = $param;
-	}
+        if (!empty($params) && isset($this->routes[$type])) {
+            if (is_string($params)) {
+                $this->addParam($type, $params);
+            } elseif (is_array($params)) {
+                foreach ($params as $val) {
+                    $this->addParam($type, $val);
+                }
+            }
+        }
+    }
+
+    private function addParam($type, $param = '')
+    {
+        $this->routes[$type]['params'][$param] = $param;
+    }
 
     public function getCanonical($url = '')
     {
@@ -98,27 +95,27 @@ class plugin_router
 
         foreach ($this->routes as $route) {
             if (preg_match($route['match'], $url, $m)) {
-				
-				$params = array();
+
+                $params = array();
                 foreach ($m as $key => $val) {
                     $params['$' . $key] = $val;
                 }
                 $url = strtr($route['pattern'], $params);
 
                 $url = preg_replace('#(\[.*\$[a-zA-Z0-9\-_%]+\])|([\[\]]*)#s', '', $url);
-				
-				if (!empty($route['params']) && strpos($_SERVER['REQUEST_URI'], '?') !== false) {
-					list($url, $query_string) = explode('?', $_SERVER['REQUEST_URI']);
-					
-					parse_str($query_string, $query_params);
-					
-					$result = array_intersect_key($query_params, $route['params']);
-					
-					if ($result) {
-						$url .= '?' . http_build_query($result);
-					}
-				}
-				
+
+                if (!empty($route['params']) && strpos($_SERVER['REQUEST_URI'], '?') !== false) {
+                    list($url, $query_string) = explode('?', $_SERVER['REQUEST_URI']);
+
+                    parse_str($query_string, $query_params);
+
+                    $result = array_intersect_key($query_params, $route['params']);
+
+                    if ($result) {
+                        $url .= '?' . http_build_query($result);
+                    }
+                }
+
                 break;
             }
         }
@@ -134,16 +131,15 @@ class plugin_router
 
         if (is_null($this->next_page) && is_null($this->prev_page)) {
             $link = '<link rel="canonical" href="' . $canonical . '">';
-        } 
-		else {
-			if (strpos($canonical, '?') !== false) {
-				if (!is_null($this->next_page))
-					$this->next_page = str_replace('?', '&', $this->next_page);
-				if (!is_null($this->prev_page))
-					$this->prev_page = str_replace('?', '&', $this->prev_page);
-			}
-			
-			if (!is_null($this->next_page))
+        } else {
+            if (strpos($canonical, '?') !== false) {
+                if (!is_null($this->next_page))
+                    $this->next_page = str_replace('?', '&', $this->next_page);
+                if (!is_null($this->prev_page))
+                    $this->prev_page = str_replace('?', '&', $this->prev_page);
+            }
+
+            if (!is_null($this->next_page))
                 $link = '<link rel="next" href="' . $canonical . $this->next_page . '">';
             if (!is_null($this->prev_page))
                 $link .= '<link rel="prev" href="' . $canonical . $this->prev_page . '">';
@@ -189,7 +185,7 @@ class plugin_router
 
         if (!$full)
             $url = $this->host . $url;
-			
+
 
         return $url;
     }

@@ -32,6 +32,8 @@ class plugin_shopOrder
 	public $inpayee = false;
 	public $date_credit = null;
 	public $payment_type = '';
+	private $order_id;
+	private $summ_all = 0;
 
 	/**
 	 * @param integer $user_id   ID пользователя

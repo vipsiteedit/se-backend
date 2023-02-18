@@ -30,17 +30,17 @@ http://forum.siteedit.ru
 http://www.edgestile.ru
 http://www.siteedit.ru";
 
-$message=convert_cyr_string($message, "w", "k");
-  $headers ="Content-Type: text/plain; charset=koi8-r\n";
-  $headers .="From: EDGESTILE <support@edgestile.ru>\n";
-  $headers .="Subject: SiteEdit\n";
-  $headers .="X-Priority: 3\n";
-  $headers .="Return-Part: <support@edgestile.ru>\n";
-  $headers .="Content-Type: text/plain; charset=koi8-r\n";
+$message = convert_cyr_string($message, "w", "k");
+$headers = "Content-Type: text/plain; charset=koi8-r\n";
+$headers .= "From: EDGESTILE <support@edgestile.ru>\n";
+$headers .= "Subject: SiteEdit\n";
+$headers .= "X-Priority: 3\n";
+$headers .= "Return-Part: <support@edgestile.ru>\n";
+$headers .= "Content-Type: text/plain; charset=koi8-r\n";
 mail($email, "", $message, $headers); //письмо клиенту
 
 $message =
-"Продление лицензии:
+  "Продление лицензии:
 
 SiteEdit $version
 
@@ -53,5 +53,5 @@ e-mail:         $email
 
 С уважением, Script.";
 
-$message=convert_cyr_string($message, "w", "k");
+$message = convert_cyr_string($message, "w", "k");
 mail("info@edgestile.ru; edgestile@edgestile.ru", "", $message, $headers); //письмо в службу поддержки

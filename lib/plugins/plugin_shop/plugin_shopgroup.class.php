@@ -14,6 +14,7 @@ class plugin_shopgroup
 	public $title = '';
 	public $keywords = '';
 	public $description = '';
+	private $lang = "rus";
 
 	/** Конструктор
 	 *   @string  page           текущая страница

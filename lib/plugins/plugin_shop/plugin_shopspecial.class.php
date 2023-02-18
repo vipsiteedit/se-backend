@@ -3,6 +3,7 @@
 class plugin_shopspecial
 {
     private $selection = 'all';
+    private $modification_mode;
 
     public function __construct($selection)
     {

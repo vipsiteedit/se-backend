@@ -7,6 +7,9 @@ class plugin_shoplabel
 	private $cache_dir = '';
 	private $labels = array();
 	private $count = 0;
+	private $images_dir;
+	private $cache_count;
+	private $cache_labels;
 
 	public function __construct()
 	{
@@ -14,7 +17,7 @@ class plugin_shoplabel
 		$this->images_dir = '/images/' . se_getLang() . '/labels/';
 		$this->cache_labels = $this->cache_dir . 'labels.json';
 		$this->cache_count = $this->cache_dir . 'count.txt';
-		$this->id_main = 1;
+		//$this->id_main = 1;
 
 		if (!is_dir($this->cache_dir)) {
 			if (!is_dir(SE_SAFE . 'projects/' . SE_DIR . 'cache/'))
