@@ -85,9 +85,12 @@ class Coupon extends Base
     // сохранить группы
     public function saveGroups()
     {
-        try {            
-            DB::saveManyToMany($this->input["id"], $this->input["groups"],
-                array("table" => "shop_coupons_goods", "key" => "coupon_id", "link" => "group_id"));
+        try {
+            DB::saveManyToMany(
+                $this->input["id"],
+                $this->input["groups"],
+                array("table" => "shop_coupons_goods", "key" => "coupon_id", "link" => "group_id")
+            );
         } catch (Exception $e) {
             $this->error = "Не удаётся сохранить назначенные группы товаров для купона!";
             throw new Exception($this->error);
@@ -97,9 +100,12 @@ class Coupon extends Base
     // сохранить продукты
     public function saveProducts()
     {
-        try {            
-            DB::saveManyToMany($this->input["id"], $this->input["products"],
-                array("table" => "shop_coupons_goods", "key" => "coupon_id", "link" => "price_id"));
+        try {
+            DB::saveManyToMany(
+                $this->input["id"],
+                $this->input["products"],
+                array("table" => "shop_coupons_goods", "key" => "coupon_id", "link" => "price_id")
+            );
         } catch (Exception $e) {
             $this->error = "Не удаётся сохранить назначенные товары для купона!";
             throw new Exception($this->error);
@@ -114,6 +120,4 @@ class Coupon extends Base
 
         return true;
     }
-
-
 }

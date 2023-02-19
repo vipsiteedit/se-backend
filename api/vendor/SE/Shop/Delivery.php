@@ -145,7 +145,7 @@ class Delivery extends Base
                 $delivery['idsGroups'] = array();
                 if (!empty($idsGroups)) {
                     //$idsGroups = explode(';', $item['idsGroups']);
-                    foreach($idsGroups as  $gr) {
+                    foreach ($idsGroups as  $gr) {
                         $delivery['idsGroups'][] = intval($gr['idGroup']);
                     }
                 }
@@ -236,7 +236,7 @@ class Delivery extends Base
                 $idsExist[] = $condition["id"];
         $idsExistStr = implode(",", $idsExist);
         $u = new DB('shop_delivery_param', 'sp');
-		$u->addField('name', 'varchar(255)');
+        $u->addField('name', 'varchar(255)');
         if (empty($idsExist))
             $u->where('id_delivery = ?', $idDelivery)->deleteList();
         else $u->where("NOT id IN ({$idsExistStr}) AND id_delivery = ?", $idDelivery)->deleteList();
@@ -271,7 +271,7 @@ class Delivery extends Base
         // вставка новых
         $dataD = array();
         $dataR = array();
-		DB::query('ALTER TABLE `shop_deliverytype` CHANGE `time` `time` VARCHAR(10) NOT NULL;');
+        DB::query('ALTER TABLE `shop_deliverytype` CHANGE `time` `time` VARCHAR(10) NOT NULL;');
         $u = new DB('shop_deliverytype');
         $u->select('MAX(id) max');
         $result = $u->fetchOne();
@@ -282,10 +282,12 @@ class Delivery extends Base
             if (empty($delivery["id"])) {
                 $idNew++;
                 $fl_type = true;
-                $dataD[] = array('id' => $idNew, 'id_parent' => $idDelivery, 'code' => 'region',
-                    'time' => $delivery["period"], 'price' => (real) $delivery["price"],
+                $dataD[] = array(
+                    'id' => $idNew, 'id_parent' => $idDelivery, 'code' => 'region',
+                    'time' => $delivery["period"], 'price' => (float) $delivery["price"],
                     'note' => $delivery["note"], 'max_volume' => $delivery["maxVolume"], 'max_weight' => $delivery["maxWeight"],
-                    'status' => $delivery["isActive"] ? 'Y' : 'N');
+                    'status' => $delivery["isActive"] ? 'Y' : 'N'
+                );
                 if (empty($delivery["idGeo"])) {
                     if (!empty($delivery["idCityTo"])) {
                         $delivery["idCountryTo"] = null;
@@ -298,8 +300,10 @@ class Delivery extends Base
                         $delivery["idCityTo"] = null;
                     }
                     $fl_region = true;
-                    $dataR[] = array('id_delivery' => $idNew, 'id_country' => $delivery["idCountryTo"],
-                        'id_region' => $delivery["idRegionTo"], 'id_city' => $delivery["idCityTo"]);
+                    $dataR[] = array(
+                        'id_delivery' => $idNew, 'id_country' => $delivery["idCountryTo"],
+                        'id_region' => $delivery["idRegionTo"], 'id_city' => $delivery["idCityTo"]
+                    );
                 }
             }
         }
@@ -374,8 +378,10 @@ class Delivery extends Base
                     $region["idCityTo"] = null;
                 }
                 if ($region["idCountryTo"] || $region["idRegionTo"] || $region["idCityTo"])
-                    $data[] = array('id_delivery' => $idDelivery, 'id_country' => $region["idCountryTo"],
-                        'id_region' => $region["idRegionTo"], 'id_city' => $region["idCityTo"]);
+                    $data[] = array(
+                        'id_delivery' => $idDelivery, 'id_country' => $region["idCountryTo"],
+                        'id_region' => $region["idRegionTo"], 'id_city' => $region["idCityTo"]
+                    );
             }
         }
         if (!empty($data))

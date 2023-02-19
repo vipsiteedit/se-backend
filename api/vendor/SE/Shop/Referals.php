@@ -1,4 +1,5 @@
 <?php
+
 namespace SE\Shop;
 
 use SE\DB;
@@ -20,5 +21,4 @@ class Referals extends Base
         $this->result["items"] =  $u->getList($this->limit, $this->offset);
         return $this->result["items"];
     }
-
 }

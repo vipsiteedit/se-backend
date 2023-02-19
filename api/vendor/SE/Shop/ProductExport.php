@@ -13,8 +13,8 @@ use Box\Spout\Common\Type;
 
 
 class ProductExport extends Product
-{	
-	private $fields = []; /*['category', 'codeGroup', 'code', 'article', 'name', 
+{
+    private $fields = []; /*['category', 'codeGroup', 'code', 'article', 'name', 
 		'price', 'priceOptCorp', 'priceOpt', 'pricePurchase', 'bonus', 'nameBrand', 
 		'images', 'codeCurrency', 'measurement', 'count', 'stepCount', 
 		'note', 'text','flagNew', 'flagHit', 'enabled', 'isMarket',
@@ -22,22 +22,22 @@ class ProductExport extends Product
 		'idAcc', 'metaHeader', 'metaKeywords', 'metaDescription', 'features'
 		];
 		*/
-		
-	private function getFields()
-	{
-		list($mainRequest, $pages) = $this->shopPrice(1, 0);
+
+    private function getFields()
+    {
+        list($mainRequest, $pages) = $this->shopPrice(1, 0);
         $goodsL  = $mainRequest->getList(1, 0);  // получение лимитированного списка товаров
 
         /** заголовки (без модификаций) */
         $this->fields = array();
-		// Нужно собрать информацию по полям по всем записям
-		foreach ($goodsL[0] as $k => $v){
+        // Нужно собрать информацию по полям по всем записям
+        foreach ($goodsL[0] as $k => $v) {
             if (!empty($this->rusCols[$k]) && !in_array($k, array('id', 'shopIdGroup'))) {
-				$this->fields[] = $k;
-			}
-		}
-	}
-	
+                $this->fields[] = $k;
+            }
+        }
+    }
+
 
     public function previewExport($temporaryFilePath)
     {
@@ -48,7 +48,7 @@ class ProductExport extends Product
          *  @@     @@ @@  @@       @@@@      @@      @@@@  @@      |
          *  @@     @@  @@ @@@@@@    @@       @@@@@@ @@  @@ @@      |
          */
- 
+
         $this->rmdir_recursive($temporaryFilePath);  // очистка директории с временными файлами
 
         /** получение образца экспорта */
@@ -57,11 +57,11 @@ class ProductExport extends Product
 
         /** заголовки (без модификаций) */
         $headerCSV = array();
-		// Нужно собрать информацию по полям по всем записям
-		foreach ($goodsL[0] as $k => $v)
+        // Нужно собрать информацию по полям по всем записям
+        foreach ($goodsL[0] as $k => $v)
             if (!empty($this->rusCols[$k]) && !in_array($k, array('id', 'shopIdGroup'))) {
-				array_push($headerCSV, $this->rusCols[$k]);
-		}
+                array_push($headerCSV, $this->rusCols[$k]);
+            }
 
         /** прикрепляем столбцы модификаций */
         $modsCols = $this->modsCols();
@@ -116,7 +116,7 @@ class ProductExport extends Product
         // объявление параметров для экспорта
         $cycleNum                = $input['cycleNum'];
         $expModif                = $input['expModif'];
-		$params					 = $input['params'];
+        $params                     = $input['params'];
         $limit                   = 1000;
         $offset                  = $cycleNum * $limit;
         $line                    = 1;
@@ -133,27 +133,47 @@ class ProductExport extends Product
          * сбор данных о $limit товарах за проход __цикла__
          */
         $this->getFields();
-		list($mainRequest, $pages) = $this->shopPrice($limit, $offset, intval($input['idGroup']), $params);
+        list($mainRequest, $pages) = $this->shopPrice($limit, $offset, intval($input['idGroup']), $params);
         $goodsL  = $mainRequest->getList($limit, $offset);  // получение лимитированного списка товаров
 
 
         if (!empty($goodsL)) {
             $this->exportCycle(
-                $writer, $line, $goodsL, $goodsIndex,
-                $filePath, $formData, $cycleNum, $expModif, $column, $pages, $fileName, $input
+                $writer,
+                $line,
+                $goodsL,
+                $goodsIndex,
+                $filePath,
+                $formData,
+                $cycleNum,
+                $expModif,
+                $column,
+                $pages,
+                $fileName,
+                $input
             );  // Запись из БД в файл
         }
 
-        if($cycleNum == $pages-1)
+        if ($cycleNum == $pages - 1)
             $this->assembly($pages, $filePath);
 
         return $pages;   // возврат в Ajax колво страниц в формируемом файле
     } // Экспорт
 
-    public function exportCycle( $writer, $line, $goodsL, $goodsIndex,
-                                 $filePath, $formData, $cycleNum, $expModif, $column, $pages, 
-								 $fileName, $input )
-    {
+    public function exportCycle(
+        $writer,
+        $line,
+        $goodsL,
+        $goodsIndex,
+        $filePath,
+        $formData,
+        $cycleNum,
+        $expModif,
+        $column,
+        $pages,
+        $fileName,
+        $input
+    ) {
 
         /**
          *  @@@@@@ @@  @@ @@@@@@ @@     @@@@@@  | цикл экспорта
@@ -170,30 +190,30 @@ class ProductExport extends Product
             if (!empty($i['stepCount']) && $i['stepCount'] == 1) {
                 $i['stepCount'] = '';
             }
-			if (!empty($i['images'])) {
-				$images = explode(',', $i['images']);
-				$i['images'] = '';
-				foreach($images as $n=>$img) {
-					$ext = explode(".", $img);
-					$ext = end($ext);
-					if (!in_array(strtolower($ext), array('png', 'jpg', 'jpeg', 'gif'))) {
-						unset($images[$n]);
-					}
-				}
-				if (!empty($images))
-					$i['images'] = implode(',', $images);
-			}
+            if (!empty($i['images'])) {
+                $images = explode(',', $i['images']);
+                $i['images'] = '';
+                foreach ($images as $n => $img) {
+                    $ext = explode(".", $img);
+                    $ext = end($ext);
+                    if (!in_array(strtolower($ext), array('png', 'jpg', 'jpeg', 'gif'))) {
+                        unset($images[$n]);
+                    }
+                }
+                if (!empty($images))
+                    $i['images'] = implode(',', $images);
+            }
             array_push($goodsLFilter, $i);
         }
         $goodsL = $goodsLFilter;
-		if ($expModif == 'Y') {
-			$featCols      = $this->featuresCols(array(intval($input['idGroup'])));      // особенности
-			$modsCols      = $this->modsCols(array(intval($input['idGroup'])));      // особенности
-		}
+        if ($expModif == 'Y') {
+            $featCols      = $this->featuresCols(array(intval($input['idGroup'])));      // особенности
+            $modsCols      = $this->modsCols(array(intval($input['idGroup'])));      // особенности
+        }
 
-		if ($cycleNum == 0) {
-			$groups        = $this->groups();        // группы товаров
-		}
+        if ($cycleNum == 0) {
+            $groups        = $this->groups();        // группы товаров
+        }
 
         /** получаем ids товаров для запроса модификаций */
         $idsProducts = array();
@@ -201,11 +221,11 @@ class ProductExport extends Product
             array_push($idsProducts, $l['id']);
 
         if ($expModif == 'Y') {
-			$features = $this->features($idsProducts); // характеристики товаров
-			$modifications = $this->modifications($idsProducts); // модификации товаров
-		}
-		// Получим список всех существующих полей
-		/*
+            $features = $this->features($idsProducts); // характеристики товаров
+            $modifications = $this->modifications($idsProducts); // модификации товаров
+        }
+        // Получим список всех существующих полей
+        /*
 		$header = array();
 		if ($cycleNum == 0)
 		foreach ($goodsL as $good) {
@@ -224,8 +244,8 @@ class ProductExport extends Product
         $rusCols       = $this->rusCols;
         //if ($cycleNum == 0)
         //    $header    = array_keys($goodsL[0]);
-			
-			
+
+
         $headerCSV     = [];
 
         $tempGoodsL = array();
@@ -238,7 +258,8 @@ class ProductExport extends Product
             }
             array_push($tempGoodsL, $good);
         }
-        $goodsL = $tempGoodsL; $tempGoodsL = array();
+        $goodsL = $tempGoodsL;
+        $tempGoodsL = array();
 
 
         foreach ($goodsL as $item) {
@@ -248,13 +269,14 @@ class ProductExport extends Product
             $goodsIndex[$item["id"]] = &$item;
             array_push($tempGoodsL, $item);
         }
-        $goodsL = $tempGoodsL; unset($tempGoodsL);
+        $goodsL = $tempGoodsL;
+        unset($tempGoodsL);
 
         if ($expModif == 'Y') {
-			$goodsL = $this->mergerWithFeatures($goodsL, $features, $featCols); // сливаем списки товаров и их характеристик
-			$goodsL = $this->mergerWithMoffification($goodsL, $modifications, $modsCols); // сливаем списки товаров и их модификаций
-		}
-/*
+            $goodsL = $this->mergerWithFeatures($goodsL, $features, $featCols); // сливаем списки товаров и их характеристик
+            $goodsL = $this->mergerWithMoffification($goodsL, $modifications, $modsCols); // сливаем списки товаров и их модификаций
+        }
+        /*
         if ($cycleNum == 0) {
             foreach ($header as $col)
                 if (!in_array($col, $excludingKeys)) {
@@ -283,15 +305,15 @@ class ProductExport extends Product
          * записываем в файл
          */
 
-        
+
         $column_number             = 0;
         $i                         = 0;
         $header                    = null;
         $lastId                    = null;
         $goodsItem                 = [];
-		// Было numColumn вместо column
+        // Было numColumn вместо column
         list($goodsL, $headerCSV) = $this->customValues($formData, $goodsL, $goodsIndex);
-		$last_column               = count($headerCSV);
+        $last_column               = count($headerCSV);
         if ($cycleNum == 0)
             $column                = $this->columnLayout($column_number, $column, $last_column);
         if ($cycleNum == 0)
@@ -300,19 +322,19 @@ class ProductExport extends Product
         $this->writTempFiles($writer, $cycleNum);
     } // цикл / завершение экспорта
 
-	
-	
-	private function getSearch($search)
+
+
+    private function getSearch($search)
     {
         $searchFields = [
-        ["title" => "Код", "field" => "sp.code"],
-        ["title" => "Наименование", "field" => "sp.name", "active" => true],
-        ["title" => "Артикул", "field" => "sp.article", "active" => true],
-        ["title" => "Группа", "field" => "sg.name"],
-        ["title" => "Бренд", "field" => "sb.name"]
-		];
-		
-		$searchItem = trim($search);
+            ["title" => "Код", "field" => "sp.code"],
+            ["title" => "Наименование", "field" => "sp.name", "active" => true],
+            ["title" => "Артикул", "field" => "sp.article", "active" => true],
+            ["title" => "Группа", "field" => "sg.name"],
+            ["title" => "Бренд", "field" => "sb.name"]
+        ];
+
+        $searchItem = trim($search);
         if (empty($searchItem))
             return array();
         $where = array();
@@ -329,14 +351,14 @@ class ProductExport extends Product
             }
 
             foreach ($searchFields as $field) {
-                 $result[] = $field["field"] . " LIKE '%{$searchItem}%'";
+                $result[] = $field["field"] . " LIKE '%{$searchItem}%'";
             }
             if (!empty($result))
                 $where[] = '(' . implode(" OR ", $result) . ')';
         }
         return implode(" AND ", $where);
     }
-	
+
     private function shopPrice($limit, $offset, $idGroup = 0, $params = array())
     {
         /**
@@ -352,29 +374,29 @@ class ProductExport extends Product
         $u = new DB('shop_price', 'sp');
         $u->reConnection();  // перезагрузка запроса
         $u->select('COUNT(*) `count`');
-		$u->leftJoin('shop_group sg', 'sg.id = sp.id_group');
-		$u->leftJoin('shop_brand sb', 'sb.id = sp.id_brand');
-		if (intval($idGroup) && empty($params['ids']) && empty($params['allModeLastParams']['filters']))
-			$u->where('sp.id_group=?', intval($idGroup));
-		elseif (!empty($params)) {	
-			if (!empty($params['ids'])) {
-				$u->where('sp.id IN (?)', join(',', $params['ids']));
-			} else {
-				$u->where('true');
-				foreach($params['allModeLastParams']['filters'] as $filter) {
-					if ($filter['field'] == 'idGroup') {
-						$u->andWhere('sp.id_group IN (?)', $filter['value']);
-					}
-					if ($filter['field'] == 'idBrand') {
-						$u->andWhere('sp.id_brand IN (?)', $filter['value']);
-					}
-				}
-				if (trim($params['allModeLastParams']['searchText'])) {
-					$u->andWhere($this->getSearch(trim($params['allModeLastParams']['searchText'])));
-				}
-			}
-			//"params":{"allModeLastParams":{"offset":0,"limit":15,"searchText":"","filters":[{"field":"idGroup","sign":"IN","value":"21,278,79,284,80,307,132,131,130,128,129,216,265,266,267,268,269"}]},"allModeParams":{},"allMode":true}}: 		
-		}	
+        $u->leftJoin('shop_group sg', 'sg.id = sp.id_group');
+        $u->leftJoin('shop_brand sb', 'sb.id = sp.id_brand');
+        if (intval($idGroup) && empty($params['ids']) && empty($params['allModeLastParams']['filters']))
+            $u->where('sp.id_group=?', intval($idGroup));
+        elseif (!empty($params)) {
+            if (!empty($params['ids'])) {
+                $u->where('sp.id IN (?)', join(',', $params['ids']));
+            } else {
+                $u->where('true');
+                foreach ($params['allModeLastParams']['filters'] as $filter) {
+                    if ($filter['field'] == 'idGroup') {
+                        $u->andWhere('sp.id_group IN (?)', $filter['value']);
+                    }
+                    if ($filter['field'] == 'idBrand') {
+                        $u->andWhere('sp.id_brand IN (?)', $filter['value']);
+                    }
+                }
+                if (trim($params['allModeLastParams']['searchText'])) {
+                    $u->andWhere($this->getSearch(trim($params['allModeLastParams']['searchText'])));
+                }
+            }
+            //"params":{"allModeLastParams":{"offset":0,"limit":15,"searchText":"","filters":[{"field":"idGroup","sign":"IN","value":"21,278,79,284,80,307,132,131,130,128,129,216,265,266,267,268,269"}]},"allModeParams":{},"allMode":true}}: 		
+        }
 
         $result = $u->getList();
         $count = $result[0]["count"];
@@ -481,48 +503,48 @@ class ProductExport extends Product
 
         $u->orderBy('sp.id');
         $u->groupBy('sp.id');
-		if (intval($idGroup) && empty($params))
-			$u->where('sp.id_group=?', intval($idGroup));
-		elseif (!empty($params)) {	
-			if (!empty($params['ids'])) {
-				$u->where('sp.id IN (?)', join(',', $params['ids']));
-			} else {
-				$u->where('true');
-				foreach($params['allModeLastParams']['filters'] as $filter) {
-				writeLog($filter);
-					if ($filter['field'] == 'idGroup') {
-						$u->andWhere('sp.id_group IN (?)', $filter['value']);
-					}
-					if ($filter['field'] == 'idBrand') {
-						$u->andWhere('sp.id_brand IN (?)', $filter['value']);
-					}
-				}
-				if (trim($params['allModeLastParams']['searchText'])) {
-					$u->andWhere($this->getSearch(trim($params['allModeLastParams']['searchText'])));
-				}
-			}
-			//"params":{"allModeLastParams":{"offset":0,"limit":15,"searchText":"","filters":[{"field":"idGroup","sign":"IN","value":"21,278,79,284,80,307,132,131,130,128,129,216,265,266,267,268,269"}]},"allModeParams":{},"allMode":true}}: 		
-		}	
+        if (intval($idGroup) && empty($params))
+            $u->where('sp.id_group=?', intval($idGroup));
+        elseif (!empty($params)) {
+            if (!empty($params['ids'])) {
+                $u->where('sp.id IN (?)', join(',', $params['ids']));
+            } else {
+                $u->where('true');
+                foreach ($params['allModeLastParams']['filters'] as $filter) {
+                    writeLog($filter);
+                    if ($filter['field'] == 'idGroup') {
+                        $u->andWhere('sp.id_group IN (?)', $filter['value']);
+                    }
+                    if ($filter['field'] == 'idBrand') {
+                        $u->andWhere('sp.id_brand IN (?)', $filter['value']);
+                    }
+                }
+                if (trim($params['allModeLastParams']['searchText'])) {
+                    $u->andWhere($this->getSearch(trim($params['allModeLastParams']['searchText'])));
+                }
+            }
+            //"params":{"allModeLastParams":{"offset":0,"limit":15,"searchText":"","filters":[{"field":"idGroup","sign":"IN","value":"21,278,79,284,80,307,132,131,130,128,129,216,265,266,267,268,269"}]},"allModeParams":{},"allMode":true}}: 		
+        }
         return [$u, $pages];
     } // получение листа товаров
 
-	private function featuresCols($idsGroups = array())
-	{
-		$u = new DB('shop_modifications_feature', 'smf');
+    private function featuresCols($idsGroups = array())
+    {
+        $u = new DB('shop_modifications_feature', 'smf');
         $u->reConnection();  // перезагрузка запроса
         //DB::query('SET group_concat_max_len = 8096;'); // увеличить количество символов в характеристиках до N
         $u->select("CONCAT_WS('#', CONCAT_WS(':', sf.name, sf.measure), sf.type) AS `name`");
         $u->innerJoin('shop_price sp', 'sp.id=smf.id_price');
         $u->innerJoin('shop_feature sf',   'smf.id_feature = sf.id AND smf.id_modification IS NULL');
         $u->groupBy('sf.id');
-		$u->orderBy('smf.sort', 0);
-		if (!empty($idsGroups))
-			$u->where('sp.id_group IN (?)', implode(",", $idsGroups));
-		$features = $u->getList();
+        $u->orderBy('smf.sort', 0);
+        if (!empty($idsGroups))
+            $u->where('sp.id_group IN (?)', implode(",", $idsGroups));
+        $features = $u->getList();
         unset($u); // удаление переменной
         return $features;
-	}
-	
+    }
+
     private function modsCols($idsGroups = array())
     {
         /**
@@ -533,13 +555,13 @@ class ProductExport extends Product
          *     @@    @@@@@@ @@@@@  @@    @@ @@     @@@@@@ @     @     |
          */
 
-//        $u = new DB('shop_modifications', 'sm');
-//        $u->select('GROUP_CONCAT(DISTINCT smg.name, "#", sf.name SEPARATOR "##") AS `name`');
-//        $u->innerJoin('shop_modifications_group smg',   'smg.id = sm.id_mod_group');
-//        $u->innerJoin('shop_modifications_feature smf', 'sm.id = smf.id_modification');
-//        $u->innerJoin('shop_feature sf',                'sf.id = smf.id_feature');
-//        $tempModHeader = $u->getList();
-//        $tempModHeader = explode("##", $tempModHeader[0]['name']);
+        //        $u = new DB('shop_modifications', 'sm');
+        //        $u->select('GROUP_CONCAT(DISTINCT smg.name, "#", sf.name SEPARATOR "##") AS `name`');
+        //        $u->innerJoin('shop_modifications_group smg',   'smg.id = sm.id_mod_group');
+        //        $u->innerJoin('shop_modifications_feature smf', 'sm.id = smf.id_modification');
+        //        $u->innerJoin('shop_feature sf',                'sf.id = smf.id_feature');
+        //        $tempModHeader = $u->getList();
+        //        $tempModHeader = explode("##", $tempModHeader[0]['name']);
 
 
 
@@ -548,13 +570,13 @@ class ProductExport extends Product
         $u->select('sf.id Id, CONCAT_WS(\'#\', smg.name, sf.name) name');
         $u->innerJoin('shop_group_feature sgf', 'sgf.id_feature = sf.id');
         $u->innerJoin('shop_modifications_group smg', 'smg.id = sgf.id_group');
-		$u->innerJoin('shop_modifications_feature smf', 'sf.id=smf.id_feature AND smf.id_modification>0');
-		$u->innerJoin('shop_price sp', 'sp.id=smf.id_price');
+        $u->innerJoin('shop_modifications_feature smf', 'sf.id=smf.id_feature AND smf.id_modification>0');
+        $u->innerJoin('shop_price sp', 'sp.id=smf.id_price');
         $u->groupBy('sgf.id');
         $u->orderBy('smg.name');
-		if (!empty($idsGroups))
-			$u->where('sp.id_group IN (?)', implode(",", $idsGroups));
-		//$u->where();
+        if (!empty($idsGroups))
+            $u->where('sp.id_group IN (?)', implode(",", $idsGroups));
+        //$u->where();
         $modsCols = $u->getList();
         unset($u);
         return $modsCols;
@@ -570,7 +592,8 @@ class ProductExport extends Product
 
         /** 1 запрос на получение данных */
         $u = new DB('shop_group', 'sg');
-        $u->reConnection();  /** перезагрузка запроса */
+        $u->reConnection();
+        /** перезагрузка запроса */
         if (CORE_VERSION != "5.2") {
             $u->select('sg.id, sg.name endname, sgt.level,
                         GROUP_CONCAT(CONCAT_WS(\':\', sgtp.level, sgp.name) SEPARATOR \';\') name');
@@ -600,11 +623,12 @@ class ProductExport extends Product
                 $pathArray[$ki[0]] = $ki[1];
             }
 
-            foreach (range(0, count($pathArray)-1, 1) as $number)
-                $path .= $pathArray[$number]."/";
+            foreach (range(0, count($pathArray) - 1, 1) as $number)
+                $path .= $pathArray[$number] . "/";
 
             /** подстановка окончания, а в родительской - удаление слеша */
-            if ($i["level"] == 0)  $path  = substr($path, 0, -1); /** удаление последнего знака (в родительской группе) */
+            if ($i["level"] == 0)  $path  = substr($path, 0, -1);
+            /** удаление последнего знака (в родительской группе) */
             else                   $path .= $i["endname"];
 
             unset($groups[$k]['level']);
@@ -616,7 +640,7 @@ class ProductExport extends Product
         return $groups;
     } // Группы товаров
 
-	/*private function features($idsProducts)
+    /*private function features($idsProducts)
         $u = new DB('shop_modifications_feature', 'smf');
         $u->reConnection();  // перезагрузка запроса
         DB::query('SET group_concat_max_len = 8096;'); // увеличить количество символов в характеристиках до N
@@ -641,7 +665,7 @@ class ProductExport extends Product
         return $features;
     }
 	*/
-	
+
     private function features($idsProducts)
     {
         /** ХАРАКТЕРИСТИКИ ТОВАРА (оптимизированный) */
@@ -668,8 +692,6 @@ class ProductExport extends Product
         $features = $u->getList();
         unset($u); // удаление переменной
         return $features;
-
-
     } // характеристики товара
 
     private function modifications($idsProducts)
@@ -713,9 +735,11 @@ class ProductExport extends Product
         return $modifications;
     } // модификации товара
 
-    private function customValues( $formData,
-                                   $goodsL, $goodsIndex)
-    {
+    private function customValues(
+        $formData,
+        $goodsL,
+        $goodsIndex
+    ) {
         /**
          *  @@@@@@ @@@@@@ @@     @@@@@@  | формирование, запись файла
          *  @@       @@   @@     @@      |
@@ -724,72 +748,72 @@ class ProductExport extends Product
          *  @@     @@@@@@ @@@@@@ @@@@@@  |
          */
 
-        if(count($formData) > 1) {
+        if (count($formData) > 1) {
             $nameColumn = array();
-			$is_features = false;
-			foreach($formData as $k => $v) {
-				if ($v['checkbox'] == 'Y')
+            $is_features = false;
+            foreach ($formData as $k => $v) {
+                if ($v['checkbox'] == 'Y')
                     array_push($nameColumn, $this->fields[$k]);
-			}
-			if (!empty($goodsL))
-			foreach($goodsL[0] as $k => $v) {
-				if (substr($k, 0, 1) == '#')
-					array_push($nameColumn, $k);
-			}
+            }
+            if (!empty($goodsL))
+                foreach ($goodsL[0] as $k => $v) {
+                    if (substr($k, 0, 1) == '#')
+                        array_push($nameColumn, $k);
+                }
 
             $goodsLNew = array();
-            foreach($goodsL as $key => $value) {
-				
-                unset($value['idModification'],$value['idGroup']); // приходят из shopPrice запроса
+            foreach ($goodsL as $key => $value) {
+
+                unset($value['idModification'], $value['idGroup']); // приходят из shopPrice запроса
 
                 /** при неограниченном количестве - подставлять "текст при неограниченном" */
-                if ($value['count']<0 or $value['count']=='') {
+                if ($value['count'] < 0 or $value['count'] == '') {
                     $value['count'] = $value['presence'];
                     unset($value['presence']);
                 }
                 $unit    = array();
-                foreach($value as $k => $v) {				
-					if (in_array($k, $nameColumn)) {
-						$unit[$k] = $v;
-					}
+                foreach ($value as $k => $v) {
+                    if (in_array($k, $nameColumn)) {
+                        $unit[$k] = $v;
+                    }
                 }
 
-                if(count($unit) > 1) array_push($goodsLNew, $unit);
+                if (count($unit) > 1) array_push($goodsLNew, $unit);
             }
             $goodsL        = $goodsLNew;
             $headerCSV = array();
-            foreach($goodsL as $key => $value) {
-                foreach($value as $k => $v) {
-					if (($it = array_search($k, $this->fields)) !== false) {
-						$headerCSV[] = $formData[$it]['column'];
-					} else 
-						$headerCSV[] = $k;
+            foreach ($goodsL as $key => $value) {
+                foreach ($value as $k => $v) {
+                    if (($it = array_search($k, $this->fields)) !== false) {
+                        $headerCSV[] = $formData[$it]['column'];
+                    } else
+                        $headerCSV[] = $k;
                 }
-				break;
+                break;
             }
             return [$goodsL, $headerCSV];
         }
     } // замена значений на пользовательские
 
-    private function columnLayout( $column_number, $column, $last_column )
+    private function columnLayout($column_number, $column, $last_column)
     {
         do {
-            $column_name = (($t = floor($column_number / 26)) == 0 ? '' : chr(ord('A')+$t-1)).
-                chr(ord('A')+floor($column_number % 26));
+            $column_name = (($t = floor($column_number / 26)) == 0 ? '' : chr(ord('A') + $t - 1)) .
+                chr(ord('A') + floor($column_number % 26));
             array_push($column, "{$column_name}");
             $column_number++;
         } while ($column_number != $last_column);
         return $column;
     } // разметка по столбцам (координаты)
 
-    private function recordHeaders( $writer, $headerCSV, $line )
+    private function recordHeaders($writer, $headerCSV, $line)
     {
-       $writer[] = $headerCSV;
+        $writer[] = $headerCSV;
         $line++;
         return [$writer, $line];
     } // записываем заголовки
 
-    private function recorRow( $writer, $goodsL, $excludingKeys, $column, $line )
+    private function recorRow($writer, $goodsL, $excludingKeys, $column, $line)
     {
         foreach ($goodsL as $row) {
             $out = [];
@@ -832,28 +856,28 @@ class ProductExport extends Product
             unset($features[$k]);
         }
         unset($features);
-		
-		foreach ($goodsL as $k => $v) {
-			foreach($fields as $f) {
-				$v = array_merge($v, array(strval('#'.$f['name']) => ''));
-			}
-			if (!empty($idsFeatsName[$v['id']])) {
-				$feats = explode('||', $idsFeatsName[$v['id']]['features']);
-				// Список характеристик товара
-				foreach($feats as $feat) {
-					$har = explode('#', $feat);
-					$name = '#'.$har[0].'#'.$har[2];
-					$v[$name] = $har[1];
-					//array_merge($v, array($name => $har[1]));
-				}
-	
-			}
-			array_push($tempGoodsL, $v);
-            unset($idsFeatsName[$v['id']]); unset($goodsL[$k]);
+
+        foreach ($goodsL as $k => $v) {
+            foreach ($fields as $f) {
+                $v = array_merge($v, array(strval('#' . $f['name']) => ''));
+            }
+            if (!empty($idsFeatsName[$v['id']])) {
+                $feats = explode('||', $idsFeatsName[$v['id']]['features']);
+                // Список характеристик товара
+                foreach ($feats as $feat) {
+                    $har = explode('#', $feat);
+                    $name = '#' . $har[0] . '#' . $har[2];
+                    $v[$name] = $har[1];
+                    //array_merge($v, array($name => $har[1]));
+                }
+            }
+            array_push($tempGoodsL, $v);
+            unset($idsFeatsName[$v['id']]);
+            unset($goodsL[$k]);
         }
 
         /** 2 */
-/*
+        /*
         foreach ($goodsL as $k => $v) {
             if ($idsFeatsName[$v['id']]) $newItem = array_merge($v, $idsFeatsName[$v['id']]);
             else $newItem = $v;
@@ -900,7 +924,7 @@ class ProductExport extends Product
                 unset($idsModsName[$i['id']]);
             }
         }
-        unset($goodsL,$idsModsName);
+        unset($goodsL, $idsModsName);
 
         /** 3 */
         foreach ($modifications as $item) {
@@ -917,24 +941,26 @@ class ProductExport extends Product
                     $item['priceOpt']     = $item['priceOpt'] * $product['priceOpt'];
                     $item['priceOptCorp'] = $item['priceOptCorp'] * $product['priceOptCorp'];
                     break;
-                case 2: break;
-                default: break;
+                case 2:
+                    break;
+                default:
+                    break;
             }
             unset($item['id']);
 
             $modFeature = explode("##", $item['values']);
             foreach ($modFeature as $kMF => $vMF) {
                 $feat = explode("--", $vMF);
-                $item[ $item['nameGroup'].'#'.$feat[0] ] = $feat[1];
+                $item[$item['nameGroup'] . '#' . $feat[0]] = $feat[1];
             }
-            unset($item['nameGroup'],$item['values'],$item['idProduct'],$item['typeGroup']);
+            unset($item['nameGroup'], $item['values'], $item['idProduct'], $item['typeGroup']);
 
             $newItem = array_merge($product, $item);
             array_push($tempGoodsL, $newItem);
 
             unset($product);
         }
-        unset($goodsLName,$modifications);
+        unset($goodsLName, $modifications);
 
         /** 4 */
         $tempGoodsL = array_merge($goodsWithoutModification, $tempGoodsL);

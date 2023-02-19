@@ -47,5 +47,4 @@ class Review extends Base
         }
         parent::save();
     }
-
 }

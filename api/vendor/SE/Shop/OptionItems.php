@@ -31,7 +31,7 @@ class OptionItems extends Base
     {
         parent::fetch();
 
-        foreach($this->result['items'] as &$item){
+        foreach ($this->result['items'] as &$item) {
             if ($item['image']) {
                 if (strpos($item['image'], "://") === false) {
                     $item['imageUrl'] = 'http://' . $this->hostname . "/images/rus/options/" . $item['image'];
@@ -44,5 +44,4 @@ class OptionItems extends Base
         }
         return $this->result["items"];
     }
-
 }

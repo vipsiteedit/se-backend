@@ -1,15 +1,16 @@
 <?php
 
 namespace SE\Shop;
+
 use SE\DB;
 
 // модификация
 class Modification extends Base
 {
-    protected $tableName = "shop_modifications_group";
-    protected $sortBy = "sort";
+	protected $tableName = "shop_modifications_group";
+	protected $sortBy = "sort";
 
-    // получить натройки
+	// получить натройки
 	protected function getSettingsFetch()
 	{
 		return array(
@@ -79,8 +80,11 @@ class Modification extends Base
 	private function saveValues()
 	{
 		try {
-			DB::saveManyToMany($this->input["id"], $this->input["values"],
-				array("table" => "shop_group_feature", "key" => "id_group", "link" => "id_feature"));
+			DB::saveManyToMany(
+				$this->input["id"],
+				$this->input["values"],
+				array("table" => "shop_group_feature", "key" => "id_group", "link" => "id_feature")
+			);
 		} catch (Exception $e) {
 			$this->error = "Не удаётся сохранить элементы группы!";
 			throw new Exception($this->error);
@@ -93,5 +97,4 @@ class Modification extends Base
 		$this->saveValues();
 		return true;
 	}
-
 }

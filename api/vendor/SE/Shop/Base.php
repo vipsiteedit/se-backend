@@ -115,7 +115,6 @@ class Base extends CustomBase
             if (is_array($this->sortBy)) {
                 foreach ($this->sortBy as $sortField)
                     $u->addOrderBy($sortField, $this->sortOrder == 'desc');
-
             } else $u->orderBy($this->sortBy, $this->sortOrder == 'desc');
 
             $this->result["searchFields"] = $this->searchFields;
@@ -166,7 +165,7 @@ class Base extends CustomBase
 
             $this->result = $this->correctResultBeforeFetch($this->result);
         } catch (Exception $e) {
-            $this->error = "Не удаётся получить список объектов! ".$e;
+            $this->error = "Не удаётся получить список объектов! " . $e;
         }
 
 
@@ -223,7 +222,7 @@ class Base extends CustomBase
             if (!empty($settingsFetch["convertingValues"])) {                              // 5
                 $course = DB::getCourse($this->currData["name"], $item["curr"]);
                 foreach ($settingsFetch["convertingValues"] as $key => $i) {
-                    $item[$i] = (float)str_replace(" ","",$item[$i]);
+                    $item[$i] = (float)str_replace(" ", "", $item[$i]);
                     $item[$i] = round($item[$i] * $course, 2);
                 }
                 if ($this->currData["name"])      $item["curr"] = $this->currData["name"];
@@ -240,14 +239,15 @@ class Base extends CustomBase
             }
         };
 
-        $this->result["currTotal"] = array ( // 7
+        $this->result["currTotal"] = array( // 7
             "curr"      => $this->currData["name"],
             "titleCurr" => $this->currData["title"],
             "nameFront" => $this->currData["nameFront"]
         );
     }
 
-    public function getCurrData() {
+    public function getCurrData()
+    {
         $u = new DB('main', 'm');
         $u->select('mt.name, mt.title, mt.name_front');
         $u->innerJoin('money_title mt', 'm.basecurr = mt.name');
@@ -350,9 +350,8 @@ class Base extends CustomBase
 
                         $u = new DB($tabNameDepen, $tabNameDepen);
                         $ids = implode(",", $this->input["ids"]);
-                        $u->where($field.' IN (?)', $ids)->deleteList();
+                        $u->where($field . ' IN (?)', $ids)->deleteList();
                         unset($u);
-
                     } elseif ($this->input["ids"] && !empty($tabNameDepen) && is_array($field)) {
 
                         $ids          = implode(",", $this->input["ids"]);
@@ -366,7 +365,6 @@ class Base extends CustomBase
                             INNER JOIN $intTab t2 ON t2.id = $tabNameDepen.$initialField
                             WHERE t2.$intFie IN ($ids);
                         ");
-
                     }
                 }
             }
@@ -400,7 +398,7 @@ class Base extends CustomBase
         } catch (Exception $e) {
             if ($isTransactionMode)
                 DB::rollBack();
-            $this->error = empty($this->error) ? "Не удаётся сохранить информацию об объекте! ".$e : $this->error;
+            $this->error = empty($this->error) ? "Не удаётся сохранить информацию об объекте! " . $e : $this->error;
         }
     }
 
@@ -722,7 +720,7 @@ class Base extends CustomBase
      */
     public function rmdir_recursive($dir)
     {
-        foreach(scandir($dir) as $file) {
+        foreach (scandir($dir) as $file) {
             if ('.' === $file || '..' === $file) continue;
             if (is_dir("$dir/$file")) $this->rmdir_recursive("$dir/$file");
             else unlink("$dir/$file");
@@ -778,7 +776,7 @@ class Base extends CustomBase
     public function pyMethods($nameFile, $nameMethod, $dataArray)
     {
         $param = array('method' => $nameMethod, 'data' => $dataArray);
-        $result = shell_exec('python ' . __DIR__.'/'.$nameFile.' '.escapeshellarg(json_encode($param)));
+        $result = shell_exec('python ' . __DIR__ . '/' . $nameFile . ' ' . escapeshellarg(json_encode($param)));
         $resultData = json_decode($result, true);
         return $resultData;
     } // запуск Python 2.7 методов

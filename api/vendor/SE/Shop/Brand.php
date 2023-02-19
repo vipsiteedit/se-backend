@@ -31,7 +31,8 @@ class Brand extends Base
                 $u->where($search);
             }
 
-            $patterns = array('id' => 'sb.id',
+            $patterns = array(
+                'id' => 'sb.id',
                 'code' => 'sb.code',
                 'article' => 'sp.article',
                 'name' => 'sb.name'
@@ -71,7 +72,6 @@ class Brand extends Base
 
             $this->result['count'] = sizeof($items);
             $this->result['items'] = $items;
-
         } catch (Exception $e) {
             $this->error = "Не удаётся получить список брендов!";
         }

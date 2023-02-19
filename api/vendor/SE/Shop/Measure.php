@@ -6,7 +6,8 @@ use SE\DB as seTable;
 use SE\Exception;
 
 // ВЕСА (получение единиц веса из БД)
-class Measure extends Base {
+class Measure extends Base
+{
 
     // получить веса/объемы
     public function info($id = null)
@@ -43,6 +44,4 @@ class Measure extends Base {
             $this->result = "Не удаётся получить список мер!";
         }
     }
-
-
 }

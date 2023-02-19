@@ -19,7 +19,6 @@ class UserAccount extends Base
          * @return array $this->result['items'] массив операций по счетам
          *   num => [id, operation, inPay, outPay, name, curr]
          */
-        $this->debugging('funct', __FUNCTION__.' '.__LINE__, __CLASS__, '[comment]');
 
         return array(
             "select" => 'p.id,
@@ -80,12 +79,12 @@ class UserAccount extends Base
          * @return $this->result
          */
 
-        $this->debugging('funct', __FUNCTION__.' '.__LINE__, __CLASS__, '[comment]');
+        $this->debugging('funct', __FUNCTION__ . ' ' . __LINE__, __CLASS__, '[comment]');
 
         parent::fetch();                                               // 1
 
         $balances = array();
-        foreach($this->result['items'] as $fld=>$item){                // 3
+        foreach ($this->result['items'] as $fld => $item) {                // 3
 
             $this->result['items'][$fld]['inPay']   = round((float) $this->result['items'][$fld]['inPay'], 2); // 5
             $this->result['items'][$fld]['outPay']  = round((float) $this->result['items'][$fld]['outPay'], 2);
@@ -98,16 +97,16 @@ class UserAccount extends Base
             $this->result['items'][$fld]['balanse'] = round($balances[$this->currData["name"]], 2);
 
             /** закоментированно: небыло данных $this->currData + валюты прибавлялись в shop/base dataCurrencies */
-//            $this->result['items'][$fld]['nameFlang'] = $this->currData["name"]; // 7
-//            $this->result['items'][$fld]['titleCurr'] = $this->currData["title"];
-//            $this->result['items'][$fld]['nameFront'] = $this->currData["nameFront"];
+            //            $this->result['items'][$fld]['nameFlang'] = $this->currData["name"]; // 7
+            //            $this->result['items'][$fld]['titleCurr'] = $this->currData["title"];
+            //            $this->result['items'][$fld]['nameFront'] = $this->currData["nameFront"];
             unset($this->result['items'][$fld]['curr']);
         }
     }
 
     public function export()
     {
-        $this->debugging('funct', __FUNCTION__.' '.__LINE__, __CLASS__, '[comment]');
+        $this->debugging('funct', __FUNCTION__ . ' ' . __LINE__, __CLASS__, '[comment]');
         if (!class_exists("PHPExcel")) {
             $this->result = "Отсутствуют необходимые библиотеки для экспорта!";
             return;
@@ -147,7 +146,7 @@ class UserAccount extends Base
         $i = 2;
 
 
-        foreach ($items as $Contact){
+        foreach ($items as $Contact) {
             $sheet->setCellValue("A$i", $Contact['id']);
             $sheet->setCellValue("B$i", $Contact['name']);
             $sheet->setCellValue("C$i", $Contact['inPay']);
@@ -162,7 +161,7 @@ class UserAccount extends Base
         $sheet->setCellValue("E$i", $totalBalansePay);
         /*$sheet->getStyle('A1:F1')->getAlignment()->setHorizontal(
             PHPExcel_Style_Alignment::HORIZONTAL_CENTER);*/
-        $sheet->getStyle('A2:E'.$i)->getFont()->setSize(12);
+        $sheet->getStyle('A2:E' . $i)->getFont()->setSize(12);
 
         $objWriter = new PHPExcel_Writer_Excel2007($xls);
         $objWriter->save($filePath);
@@ -172,5 +171,4 @@ class UserAccount extends Base
             $this->result['name'] = $fileName;
         } else $this->result = "Не удаётся экспортировать данные контакта!";
     }
-
 }

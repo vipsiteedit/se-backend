@@ -158,7 +158,6 @@ class Image extends Base
                             $usedImages[] = $fileName;
                     }
                 }
-
             }
 
             $u = new DB('shop_img', 'si');
@@ -182,7 +181,7 @@ class Image extends Base
                 if ($image['name'])
                     $usedImages[] = $image['name'];
         }
-        if ($this->section== 'shopbrand' && $isUnused) {
+        if ($this->section == 'shopbrand' && $isUnused) {
             $u = new DB('shop_brand', 'sb');
             $u->select('image name, text, content');
             $brands = $u->getList();
@@ -302,13 +301,15 @@ class Image extends Base
     }
 
     // конвертировать имя
-    private function convertName($name) {
+    private function convertName($name)
+    {
         $chars = array(" ", "#", ":", "!", "+", "?", "&", "@", "~", "%");
         return str_replace($chars, "_", $name);
     }
 
     // получить новое имя
-    private function getNewName($dir, $name) {
+    private function getNewName($dir, $name)
+    {
         $i = 0;
         $newName = $name = $this->convertName(trim($name));
         while (true) {
@@ -344,6 +345,4 @@ class Image extends Base
         }
         $this->result['items'] = $items;
     }
-
-
 }

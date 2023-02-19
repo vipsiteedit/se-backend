@@ -5,7 +5,7 @@ namespace SE\Shop;
 use SE\DB as seTable;
 use SE\Exception;
 
-IF (IS_EXT)
+if (IS_EXT)
     $dirRoot = $_SERVER['DOCUMENT_ROOT'];
 else $dirRoot = $_SERVER['DOCUMENT_ROOT'] . '/api';
 $dirLib = $dirRoot . "/lib";
@@ -107,7 +107,8 @@ class Currency extends Base
         }
     }
 
-    public function convert() {
+    public function convert()
+    {
 
         $this->baseCurr = $this->input["target"];
         $source = $this->input["source"];
@@ -124,7 +125,5 @@ class Currency extends Base
                 break;
             }
         }
-
     }
-
 }

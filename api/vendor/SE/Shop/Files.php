@@ -46,7 +46,7 @@ class Files extends Base
 
                 if ($count <= $this->limit + $this->offset) {
                     $item = [];
-                    $item["name"] = 'Скачать '.$file;
+                    $item["name"] = 'Скачать ' . $file;
                     $item["file"] = $file;
                     $listFiles[] = $item;
                 }
@@ -111,14 +111,13 @@ class Files extends Base
                     $item = array();
                     $item["name"] = $file;
                     $item["file"] = $file;
-                    $item["ext"] = strtoupper(substr(strrchr($file,'.'), 1));
+                    $item["ext"] = strtoupper(substr(strrchr($file, '.'), 1));
                     $item['url'] = 'http://' . HOSTNAME . "/files/" . $item["file"];
                     $items[] = $item;
                     //writeLog($item);
                 }
                 $ups++;
             }
-
         }
         if ($ups == $countFiles)
             $this->result['items'] = $items;
@@ -128,13 +127,15 @@ class Files extends Base
     }
 
     // конвертировать имя
-    private function convertName($name) {
+    private function convertName($name)
+    {
         $chars = array(" ", "#", ":", "!", "+", "?", "&", "@", "~", "%");
         return str_replace($chars, "_", $name);
     }
 
     // получить имя
-    private function getNewName($dir, $name) {
+    private function getNewName($dir, $name)
+    {
         $i = 0;
         $newName = $name = $this->convertName(trim($name));
         while (true) {
@@ -170,6 +171,4 @@ class Files extends Base
         }
         $this->result['items'] = $items;
     }
-
-
 }

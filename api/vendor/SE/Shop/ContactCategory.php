@@ -104,11 +104,11 @@ class ContactCategory extends Base
 
             $list = $u->getList();
             $emails = array();
-            foreach($list as $email) {
+            foreach ($list as $email) {
                 if (se_CheckMail($email['email']))
                     $emails[] = array(
-                        'email' =>$email['email'],
-                        'variables'=>array('name'=>$email['name'])
+                        'email' => $email['email'],
+                        'variables' => array('name' => $email['name'])
                     );
             }
             $emailService = new EmailProvider();

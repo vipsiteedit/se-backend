@@ -53,13 +53,13 @@ class PermissionUser extends Base
     {
         try {
             if ($this->input["allMode"]) {
-                DB::query("UPDATE se_user SET is_manager = 0"); 
+                DB::query("UPDATE se_user SET is_manager = 0");
             } else {
-              $ids = $this->input["ids"];
-              if ($ids) {
-                $idsStr = implode(",", $ids);
-                DB::query("UPDATE se_user SET is_manager = 0 WHERE id IN ({$idsStr})"); 
-              }
+                $ids = $this->input["ids"];
+                if ($ids) {
+                    $idsStr = implode(",", $ids);
+                    DB::query("UPDATE se_user SET is_manager = 0 WHERE id IN ({$idsStr})");
+                }
             }
         } catch (Exception $e) {
             $this->error = "Не удаётся исключить контакты из пользователей!";

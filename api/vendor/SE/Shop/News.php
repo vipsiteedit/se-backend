@@ -43,12 +43,12 @@ class News extends Base
 
             $filter = array();
             if (!empty($this->input["filters"])) {
-                foreach($this->input["filters"] as $f) {
+                foreach ($this->input["filters"] as $f) {
                     $filter[] = '(' . $this->convertFields($f['field']) . '=' . $f['value'] . ')';
                 }
             }
 
-            if(!empty($this->input["searchText"])){
+            if (!empty($this->input["searchText"])) {
                 $s = trim($this->input["searchText"]);
                 $filter[] = "(n.text LIKE '%{$s}%' OR n.short_txt LIKE '%{$s}%' OR n.title LIKE '%{$s}%')";
             }
@@ -95,7 +95,6 @@ class News extends Base
 
             $this->result['count'] = $count;
             $this->result['items'] = $items;
-
         } catch (Exception $e) {
             $this->error = "Не удаётся получить список новостей!";
         }
@@ -230,7 +229,7 @@ class News extends Base
             $news['imageFile'] = $item['img'];
             //$news['description'] = $item['short_txt'];
             //$news['fullDescription'] = $item['text'];
-            if (!empty($item['newsDate'])){
+            if (!empty($item['newsDate'])) {
                 $news['newsDate'] = date('Y-m-d', $item['newsDate']);
                 $news['newsDateDisplay'] = date('d.m.Y', $item['newsDate']);
             }
@@ -253,7 +252,7 @@ class News extends Base
             $news['customFields'] = $this->getCustomFields();
             $this->result = $news;
         } catch (Exception $e) {
-            $this->error = "Не удаётся получить информацию о запрошенной новости! " . $e->getMessage(); 
+            $this->error = "Не удаётся получить информацию о запрошенной новости! " . $e->getMessage();
         }
         return $this;
     }
@@ -267,8 +266,10 @@ class News extends Base
         $u = new DB('news_img');
         $u->where('id_news = (?)', $this->input["id"])->deleteList();
         foreach ($this->input["images"] as $image)
-            $data[] = array('id_news' => $this->input["id"], 'picture' => $image["imageFile"],
-                'sort' => (int)$image["sortIndex"], 'picture_alt' => $image["imageAlt"]);
+            $data[] = array(
+                'id_news' => $this->input["id"], 'picture' => $image["imageFile"],
+                'sort' => (int)$image["sortIndex"], 'picture_alt' => $image["imageAlt"]
+            );
         if ($data)
             DB::insertList('news_img', $data);
     }
@@ -277,8 +278,11 @@ class News extends Base
     {
         if (!$this->input["id"] || !isset($this->input["subscribersGroups"]))
             return;
-        DB::saveManyToMany($this->input["id"], $this->input["subscribersGroups"],
-            array("table" => "news_subscriber_se_group", "key" => "id_news", "link" => "id_group"));
+        DB::saveManyToMany(
+            $this->input["id"],
+            $this->input["subscribersGroups"],
+            array("table" => "news_subscriber_se_group", "key" => "id_news", "link" => "id_group")
+        );
     }
 
     private function createCampaignForMails()
@@ -369,7 +373,6 @@ class News extends Base
 
     private function deleteCampaignForMails()
     {
-
     }
 
     public function save($isTransactionMode = true)
@@ -432,13 +435,11 @@ class News extends Base
             $this->createCampaignForMails();
             $this->info();
             DB::commit();
-
         } catch (Exception $e) {
             DB::rollBack();
-            $this->error = "Не удаётся сохранить публикацию! ".$e;
+            $this->error = "Не удаётся сохранить публикацию! " . $e;
         }
 
         return $this;
     }
-
 }

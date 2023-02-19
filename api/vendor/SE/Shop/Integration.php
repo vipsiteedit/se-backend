@@ -113,7 +113,5 @@ class Integration extends Base
         } catch (Exception $e) {
             $this->error = "Не удаётся сохранить значения параметров!";
         }
-
     }
-
 }

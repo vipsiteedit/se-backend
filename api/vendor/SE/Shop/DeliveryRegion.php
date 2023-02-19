@@ -79,5 +79,4 @@ class DeliveryRegion extends Base
             $this->error = "Не удаётся получить информацию о регионе доставки!";
         }
     }
-
 }

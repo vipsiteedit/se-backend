@@ -22,5 +22,4 @@ class CustomFieldGroup extends Base
         }
         parent::save();
     }
-    
 }

@@ -65,7 +65,7 @@ class Product extends Base
                 COUNT(DISTINCT(smf.id_modification)) count_modifications,
                 (SELECT picture FROM shop_img WHERE id_price = sp.id LIMIT 1) img,
                 sb.name name_brand, slp.id_label id_label, sp.is_show_feature, sp.market_available,
-                spm.id_weight_view, spm.id_weight_edit, spm.id_volume_view, spm.id_volume_edit, sp.market_category';        
+                spm.id_weight_view, spm.id_weight_edit, spm.id_volume_view, spm.id_volume_edit, sp.market_category';
 
         $joins[] = array(
             "type" => "left",
@@ -130,7 +130,7 @@ class Product extends Base
         $select = 'sp.id, sp.code, sp.article, sp.name, sp.price, sp.curr, sp.presence_count presence_count,
         (SELECT picture FROM shop_img WHERE id_price = sp.id LIMIT 1) img, sg.name name_group,
         sb.name name_brand, sp.special_offer, sp.flag_hit, sp.enabled, sp.flag_new, sp.is_market';
-        
+
 
 
         $joins[] = array(

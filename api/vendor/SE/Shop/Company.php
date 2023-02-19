@@ -67,7 +67,7 @@ class Company extends Base
     // получить заказы
     public function getOrders($idCompany)
     {
-       return (new Order())->fetchByCompany($idCompany);
+        return (new Order())->fetchByCompany($idCompany);
     }
 
     // получить пользовательские поля
@@ -89,7 +89,7 @@ class Company extends Base
             $isNew = true;
             $newGroup = array();
             $newGroup["id"] = $item["idGroup"];
-            $newGroup["name"] = empty($item["nameGroup"]) ? "Без категории": $item["nameGroup"];
+            $newGroup["name"] = empty($item["nameGroup"]) ? "Без категории" : $item["nameGroup"];
             foreach ($groups as $group)
                 if ($group["id"] == $item["idGroup"]) {
                     $isNew = false;
@@ -148,8 +148,11 @@ class Company extends Base
 
         try {
             $idCompany = $this->input["id"];
-            DB::saveManyToMany($idCompany, $this->input["contacts"],
-                array("table" => "company_person", "key" => "id_company", "link" => "id_person"));
+            DB::saveManyToMany(
+                $idCompany,
+                $this->input["contacts"],
+                array("table" => "company_person", "key" => "id_company", "link" => "id_person")
+            );
             return true;
         } catch (Exception $e) {
             $this->error = "Не удаётся сохранить контакты компании!";
@@ -197,5 +200,4 @@ class Company extends Base
     {
         return $this->saveLogin() && $this->saveContacts() && $this->saveCustomFields();
     }
-
 }

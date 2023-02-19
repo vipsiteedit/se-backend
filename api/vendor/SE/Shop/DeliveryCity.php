@@ -14,10 +14,9 @@ class DeliveryCity extends Base
         $this->result['items'] = array();
         $citys = json_decode(file_get_contents(dirname(__FILE__) . '/delivery/sdek/rus.json'), true);
         //asort($citys);
-        foreach($citys as $city=>$id) {
-            $this->result['items'][] = array('id'=>$id, 'city'=>$city);
+        foreach ($citys as $city => $id) {
+            $this->result['items'][] = array('id' => $id, 'city' => $city);
         }
         $this->result['count'] = count($this->result['items']);
     }
-
 }

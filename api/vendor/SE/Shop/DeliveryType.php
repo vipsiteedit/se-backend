@@ -37,7 +37,7 @@ class DeliveryType extends Base
         $type['isIn'] = true;
         $types[] = $type;
 
-        $res = $this->postRequest('lib/delivery.php', array('get_services'=>1, 'token' => md5(DB::$dbSerial.DB::$dbPassword)));
+        $res = $this->postRequest('lib/delivery.php', array('get_services' => 1, 'token' => md5(DB::$dbSerial . DB::$dbPassword)));
         if ($res) {
             $res = json_decode($res, true);
             foreach ($res as $item) {
@@ -77,12 +77,12 @@ class DeliveryType extends Base
     // информация
     public function info($id = NULL)
     {
-        switch($this->input['type']){
+        switch ($this->input['type']) {
             case 'city':
                 if ($res = $this->postRequest('lib/delivery.php', array(
                     'get_cities' => $this->input['value'],
                     'limit' => 10,
-                    'token' => md5(DB::$dbSerial.DB::$dbPassword)
+                    'token' => md5(DB::$dbSerial . DB::$dbPassword)
                 ))) {
                     return $this->result = json_decode($res, true);
                 }
@@ -92,18 +92,18 @@ class DeliveryType extends Base
                     'get_settings' => 1,
                     'id_delivery' => $this->input['id_delivery'],
                     'code' => $this->input['code'],
-                    'token' => md5(DB::$dbSerial.DB::$dbPassword)
+                    'token' => md5(DB::$dbSerial . DB::$dbPassword)
                 ))) {
                     return $this->result = json_decode($res, true);
                 }
                 break;
             case 'save':
-                if(!empty($this->input['fields']) and isset($this->input['fields'])){
+                if (!empty($this->input['fields']) and isset($this->input['fields'])) {
                     if ($res = $this->postRequest('lib/delivery.php', array(
                         'save_settings' => 1,
                         'id_delivery' => $this->input['id_delivery'],
-                        'settings' => json_encode($this->input['fields'],JSON_PRETTY_PRINT),
-                        'token' => md5(DB::$dbSerial.DB::$dbPassword)
+                        'settings' => json_encode($this->input['fields'], JSON_PRETTY_PRINT),
+                        'token' => md5(DB::$dbSerial . DB::$dbPassword)
                     ))) {
                         return $this->result = $res;
                     }
@@ -131,6 +131,5 @@ class DeliveryType extends Base
         } catch (Exception $e) {
             $this->error = "Не удаётся созранить позиции доставки!";
         }
-
     }
 }

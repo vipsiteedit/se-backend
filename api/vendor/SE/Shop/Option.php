@@ -27,7 +27,7 @@ class Option extends Base
     {
         parent::fetch();
 
-        foreach($this->result['items'] as &$item){
+        foreach ($this->result['items'] as &$item) {
             if ($item['image']) {
                 if (strpos($item['image'], "://") === false) {
                     $item['imageUrl'] = 'http://' . $this->hostname . "/images/rus/options/" . $item['image'];
@@ -43,10 +43,8 @@ class Option extends Base
     public function save()
     {
         if (!$this->input['idGroup']) $this->input['idGroup'] = null;
-		if (!$this->input["code"])
-			$this->input["code"] = se_translite_url($this->input["groupName"] . ' ' . $this->input["name"]);
+        if (!$this->input["code"])
+            $this->input["code"] = se_translite_url($this->input["groupName"] . ' ' . $this->input["name"]);
         parent::save();
     }
-
-
 }

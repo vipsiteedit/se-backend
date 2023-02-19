@@ -14,11 +14,7 @@ class Contact extends Base
 {
     protected $tableName = "person";
 
-    // @@@@@@ @@@@@@    @@    @@  @@ @@  @@   @@  @@    @@    @@@@@@ @@@@@@@@ @@@@@@ @@@@@@ @@    @@
-    // @@  @@ @@  @@   @@@@   @@  @@ @@  @@   @@  @@   @@@@   @@        @@    @@  @@ @@  @@ @@   @@@
-    // @@  @@ @@  @@  @@  @@   @@@@  @@@@@@   @@@@@@  @@  @@  @@        @@    @@@@@@ @@  @@ @@  @@@@
-    // @@  @@ @@  @@ @@    @@   @@       @@   @@  @@ @@@@@@@@ @@        @@    @@     @@  @@ @@@@  @@
-    // @@  @@ @@@@@@ @@    @@   @@       @@   @@  @@ @@    @@ @@@@@@    @@    @@     @@@@@@ @@@   @@
+
     // получить настройки
     protected function getSettingsFetch()
     {
@@ -253,7 +249,7 @@ class Contact extends Base
                 $contact['balance'] = $contact['personalAccount'][$count - 1]['balance'];
             $this->result = $contact;
         } catch (Exception $e) {
-            $this->error = "Не удаётся получить информацию о контакте! ".$e;
+            $this->error = "Не удаётся получить информацию о контакте! " . $e;
         }
 
         return $this->result;

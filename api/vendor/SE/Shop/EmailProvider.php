@@ -104,7 +104,7 @@ class EmailProvider extends Base
     public function fetch()
     {
         parent::fetch();
-        foreach($this->result['items'] as &$item) {
+        foreach ($this->result['items'] as &$item) {
             if ($item['name'] == 'sendpulse') {
                 $settings = $item['settings'];
                 if (!empty($item['settings'])) {
@@ -151,8 +151,14 @@ class EmailProvider extends Base
                 $this->getInstanceSendPulseApi()->addSender($senderName, $senderEmail);
                 $senderEmail = $senderEmailDef;
             }
-            $this->getInstanceSendPulseApi()->createCampaign($senderName, $senderEmail,
-                $subject, $body, $idBook, $sendDate);
+            $this->getInstanceSendPulseApi()->createCampaign(
+                $senderName,
+                $senderEmail,
+                $subject,
+                $body,
+                $idBook,
+                $sendDate
+            );
         }
     }
 

@@ -52,5 +52,4 @@ class SmsLog extends Base
             curl_exec($ch);
         }
     }
-
 }

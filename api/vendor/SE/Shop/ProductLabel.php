@@ -1,4 +1,5 @@
 <?php
+
 namespace SE\Shop;
 
 use SE\DB as DB;
@@ -80,13 +81,15 @@ class ProductLabel extends Base
     private function saveProducts()
     {
         try {
-            DB::saveManyToMany($this->input["id"], $this->input["products"],
-                array("table" => "shop_label_product", "key" => "id_label", "link" => "id_product"));
+            DB::saveManyToMany(
+                $this->input["id"],
+                $this->input["products"],
+                array("table" => "shop_label_product", "key" => "id_label", "link" => "id_product")
+            );
             return true;
         } catch (Exception $e) {
             $this->error = "Не удаётся сохранить назначенные товары для ярлыка!";
             throw new Exception($this->error);
         }
     }
-
 }

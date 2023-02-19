@@ -53,19 +53,19 @@ class GeoTargeting extends Base
         $this->createDbGeoVariables();
         $sv = new DB('shop_variables', 'sv');
         $sv->select('sgv.id, sv.id AS id_variable, sv.name, sgv.value');
-        $sv->leftJoin('shop_geo_variables sgv', 'sv.id=sgv.id_variable AND sgv.id_contact='.intval($this->input['id']));
+        $sv->leftJoin('shop_geo_variables sgv', 'sv.id=sgv.id_variable AND sgv.id_contact=' . intval($this->input['id']));
         return $sv->getList();
     }
-	
-	private function getPages()
-	{
-		try {
-			$sc = new DB('shop_geo_pages', 'sgp');
-			$sc->select('sgp.*');
-			$sc->where('sgp.id_contact=' . intval($this->input['id']));
-			return $sc->getList();
-		} catch (Exception $ex) {
-			DB::query("CREATE TABLE IF NOT EXISTS `shop_geo_pages` (
+
+    private function getPages()
+    {
+        try {
+            $sc = new DB('shop_geo_pages', 'sgp');
+            $sc->select('sgp.*');
+            $sc->where('sgp.id_contact=' . intval($this->input['id']));
+            return $sc->getList();
+        } catch (Exception $ex) {
+            DB::query("CREATE TABLE IF NOT EXISTS `shop_geo_pages` (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `page` varchar(255) NOT NULL,
   `altpage` varchar(255) NOT NULL DEFAULT '',
@@ -77,9 +77,9 @@ class GeoTargeting extends Base
   KEY `id_contact` (`id_contact`),
   CONSTRAINT `shop_geo_pages_ibfk_1` FOREIGN KEY (`id_contact`) REFERENCES `shop_contacts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
-			//$ex->getMessage();
-		}
-	}
+            //$ex->getMessage();
+        }
+    }
 
     // добавить полученную информацию
     protected function getAddInfo()
@@ -92,7 +92,7 @@ class GeoTargeting extends Base
         }
         $result["variables"] = $this->getVariables();
         $result["pages"] = $this->getPages();
-		return $result;
+        return $result;
     }
 
     // создать Db гео-переменные
@@ -126,7 +126,7 @@ class GeoTargeting extends Base
         $data = $this->input;
         unset($data["ids"]);
         try {
-            foreach($data['variables'] as $variable) {
+            foreach ($data['variables'] as $variable) {
                 $variable["idContact"] = $data["id"];
                 $t = new DB('shop_geo_variables');
                 $t->setValuesFields($variable);
@@ -138,12 +138,12 @@ class GeoTargeting extends Base
         }
         return false;
     }
-	private function savePages()
-	{
+    private function savePages()
+    {
         $data = $this->input;
         unset($data["ids"]);
         try {
-            foreach($data['pages'] as $page) {
+            foreach ($data['pages'] as $page) {
                 $page["idContact"] = $data["id"];
                 $t = new DB('shop_geo_pages');
                 $t->setValuesFields($page);
@@ -180,8 +180,10 @@ class GeoTargeting extends Base
     // получить IDs городов
     private function getCitiesByIds($ids = array())
     {
-        $data = array('action' => 'city',
-            'ids' => $ids);
+        $data = array(
+            'action' => 'city',
+            'ids' => $ids
+        );
         $data = http_build_query($data);
         $url = "https://api.siteedit.ru/api/geo/?" . $data;
         $curl = curl_init($url);

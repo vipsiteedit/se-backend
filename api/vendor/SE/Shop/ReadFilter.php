@@ -3,6 +3,7 @@
 namespace SE\Shop;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/api/lib/PHPExcel/Classes/PHPExcel/Reader/IReadFilter.php';
+
 use PHPExcel_Reader_IReadFilter;
 
 
@@ -13,12 +14,14 @@ class ReadFilter implements PHPExcel_Reader_IReadFilter
     private $_endRow = 0;
 
     /**  Задайте список строк, которые мы хотим прочитать.  */
-    public function setRows($startRow, $chunksize) {
+    public function setRows($startRow, $chunksize)
+    {
         $this->_startRow    = $startRow;
         $this->_endRow      = $startRow + $chunksize;
     }
 
-    public function readCell($column, $row, $worksheetName = '') {
+    public function readCell($column, $row, $worksheetName = '')
+    {
         //  Только прочитайте строку заголовка и строки, которые настроены в $ this -> _ startRow и $ this -> _ endRow
         if (($row >= $this->_startRow && $row < $this->_endRow)) {
             return true;

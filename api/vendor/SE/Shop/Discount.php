@@ -32,8 +32,8 @@ class Discount extends Base
     protected function getAddInfo()
     {
         $result["dateFrom"] = (!empty($this->result["dateFrom"])) ? date('Y-m-d H:i', strtotime($this->result["dateFrom"])) : '';
-		$result["dateTo"] = (!empty($this->result["dateTo"])) ? date('Y-m-d H:i', strtotime($this->result["dateTo"])) : '';
-		$result["listGroupsProducts"] = $this->getListGroupsProducts($this->result["id"]);
+        $result["dateTo"] = (!empty($this->result["dateTo"])) ? date('Y-m-d H:i', strtotime($this->result["dateTo"])) : '';
+        $result["listGroupsProducts"] = $this->getListGroupsProducts($this->result["id"]);
         $result["listProducts"] = $this->getListProducts($this->result["id"]);
         $result['listContacts'] = $this->getListContacts($this->result["id"]);
         $result['listGroupsContacts'] = $this->getListGroupsContacts($this->result["id"]);
@@ -43,11 +43,11 @@ class Discount extends Base
     // сохранить информацию
     protected function saveAddInfo()
     {
-		$u = new DB('shop_discounts');
-		$u->addField('action_price', "int(6)", "0", 1);
-		
-		DB::query("ALTER TABLE `shop_discounts` CHANGE `type_discount` `type_discount` ENUM('percent','absolute','optcorp','opt') CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'percent';");
-        return $this->saveProducts() && $this->saveGroupsProducts() && $this->saveContacts() && $this->saveGroupsContacts() ;
+        $u = new DB('shop_discounts');
+        $u->addField('action_price', "int(6)", "0", 1);
+
+        DB::query("ALTER TABLE `shop_discounts` CHANGE `type_discount` `type_discount` ENUM('percent','absolute','optcorp','opt') CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'percent';");
+        return $this->saveProducts() && $this->saveGroupsProducts() && $this->saveContacts() && $this->saveGroupsContacts();
     }
 
     // получить список продуктов
@@ -144,12 +144,15 @@ class Discount extends Base
         try {
             foreach ($this->input["ids"] as $id) {
                 //writeLog($this->input["listProducts"]); // сохраняемые в базу значения товара
-                DB::saveManyToMany($id, $this->input["listProducts"],
-                    array("table" => "shop_discount_links", "key" => "discount_id", "link" => "id_price"));
+                DB::saveManyToMany(
+                    $id,
+                    $this->input["listProducts"],
+                    array("table" => "shop_discount_links", "key" => "discount_id", "link" => "id_price")
+                );
             }
             // перевод переключателя скидки (в товаре) в вкл
             foreach ($this->input["listProducts"] as $prod) {
-                $data = array('id'=> $prod['id'], 'discount'=>'Y');
+                $data = array('id' => $prod['id'], 'discount' => 'Y');
                 $u = new DB('shop_price');
                 $u->setValuesFields($data);
                 $u->save();
@@ -161,7 +164,6 @@ class Discount extends Base
             $this->error = "Не удаётся сохранить товары для скидки!";
             throw new Exception($this->error);
         }
-
     }
 
     // сохранить группы продуктов
@@ -172,8 +174,11 @@ class Discount extends Base
 
         try {
             foreach ($this->input["ids"] as $id)
-                DB::saveManyToMany($id, $this->input["listGroupsProducts"],
-                    array("table" => "shop_discount_links", "key" => "discount_id", "link" => "id_group"));
+                DB::saveManyToMany(
+                    $id,
+                    $this->input["listGroupsProducts"],
+                    array("table" => "shop_discount_links", "key" => "discount_id", "link" => "id_group")
+                );
             return true;
         } catch (Exception $e) {
             $this->error = "Не удаётся сохранить группы для скидки!";
@@ -189,8 +194,11 @@ class Discount extends Base
 
         try {
             foreach ($this->input["ids"] as $id)
-                DB::saveManyToMany($id, $this->input["listContacts"],
-                    array("table" => "shop_discount_links", "key" => "discount_id", "link" => "id_user"));
+                DB::saveManyToMany(
+                    $id,
+                    $this->input["listContacts"],
+                    array("table" => "shop_discount_links", "key" => "discount_id", "link" => "id_user")
+                );
             return true;
         } catch (Exception $e) {
             $this->error = "Не удаётся сохранить контакт для скидки!";
@@ -206,15 +214,15 @@ class Discount extends Base
 
         try {
             foreach ($this->input["ids"] as $id)
-                DB::saveManyToMany($id, $this->input["listGroupsContacts"],
-                    array("table" => "shop_discount_links", "key" => "discount_id", "link" => "id_usergroup"));
+                DB::saveManyToMany(
+                    $id,
+                    $this->input["listGroupsContacts"],
+                    array("table" => "shop_discount_links", "key" => "discount_id", "link" => "id_usergroup")
+                );
             return true;
         } catch (Exception $e) {
             $this->error = "Не удаётся сохранить группы контакт для скидки!";
             throw new Exception($this->error);
         }
     }
-
-
-
 }

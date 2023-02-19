@@ -18,7 +18,7 @@ class FeatureType extends Base
         $items[1]["name"] = "Цвет";
         $items[1]["code"] = "colorlist";
         $items[1]["valueType"] = "CL";
-        if(!$isList) {
+        if (!$isList) {
             $items[2]["id"] = "2";
             $items[2]["name"] = "Число";
             $items[2]["code"] = "number";
