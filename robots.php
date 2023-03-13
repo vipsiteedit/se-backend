@@ -24,7 +24,7 @@ function getHost()
         if (empty($thisdomain)) {
             $thisdomain = trim(file_get_contents('system/domain.dat'));
             list(, $base) = explode('//', $thisdomain);
-        }
+        } 
     } else {
         $thisdomain = _HTTP_ . $_SERVER['HTTP_HOST'];
     }
@@ -75,6 +75,8 @@ if (file_exists('hostname.dat') && filesize('hostname.dat') > 0) {
         }
         if (!empty($langswitch)) {
             $sitedir = trim($langswitch) . '/';
+        } else {
+            $sitedir = trim($def) . '/';
         }
     }
 } else {
