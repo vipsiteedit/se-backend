@@ -85,7 +85,7 @@ class Feature extends Base
 	protected function getSettingsFetch()
 	{
 		return array(
-			"select" => 'sf.*, sfg.name name_group, count(smf.id) AS valCount',
+			"select" => 'sf.*, sfg.name name_group, count(smf.id) AS val_count',
 			"joins" => array(
 				array(
 					"type" => "left",
