@@ -812,8 +812,7 @@ class seData
             header('HTTP/1.0 404 File not found');
             print $this->getHTTP(_HOST_ . seMultiDir() . '/page404/');
         } else {
-            header("Location: https://e-stile.ru/404.php");
-            //print preg_replace("/[\"](images|skin)\//", '"http://e-stile.ru/$1/', $this->getHTTP("http://e-stile.ru/404.html"));
+            header('HTTP/1.0 404 File not found');
         }
         exit;
     }
