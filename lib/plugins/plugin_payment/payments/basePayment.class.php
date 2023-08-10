@@ -205,12 +205,12 @@ class basePayment extends CurlAbstract
 	{
 		$multidir = (function_exists('seMultiDir')) ? seMultiDir() : '';
 		if ($this->ident) {
-			$str = str_replace('[MERCHANT_RESULT]', 'http://' . $_SERVER['HTTP_HOST'] . '/lib/merchant/result.php?payment=' . $this->ident, $str);
+			$str = str_replace('[MERCHANT_RESULT]', _HTTP_ . $_SERVER['HTTP_HOST'] . '/lib/merchant/result.php?payment=' . $this->ident, $str);
 		} else {
-			$str = str_replace('[MERCHANT_RESULT]', 'http://' . $_SERVER['HTTP_HOST'] . '/' . $multidir . $pagename . '/merchant/success/', $str);
+			$str = str_replace('[MERCHANT_RESULT]', _HTTP_ . $_SERVER['HTTP_HOST'] . '/' . $multidir . $pagename . '/merchant/success/', $str);
 		}
-		$str = str_replace('[MERCHANT_SUCCESS]', 'http://' . $_SERVER['HTTP_HOST'] . '/' . $multidir . $pagename . '/merchant/success/', $str);
-		$str = str_replace('[MERCHANT_FAIL]', 'http://' . $_SERVER['HTTP_HOST'] . '/' . $multidir . $pagename . '/merchant/fail/', $str);
+		$str = str_replace('[MERCHANT_SUCCESS]', _HTTP_ . $_SERVER['HTTP_HOST'] . '/' . $multidir . $pagename . '/merchant/success/', $str);
+		$str = str_replace('[MERCHANT_FAIL]', _HTTP_ . $_SERVER['HTTP_HOST'] . '/' . $multidir . $pagename . '/merchant/fail/', $str);
 		return $str;
 	}
 
