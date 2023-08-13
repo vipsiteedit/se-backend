@@ -7,7 +7,7 @@ require_once dirname( __FILE__ ) . '/basePayment.class.php';
 
 class payment_paymaster extends basePayment {
     private $order_id = 0;
-    private $url = 'https://paymaster.ru/api/v2'
+    private $url = 'https://paymaster.ru/api/v2';
 
     public function setVars() {
         return array(
@@ -31,9 +31,9 @@ class payment_paymaster extends basePayment {
         $order_id = $macros->execute( '[ORDER.ID]' );
         $amount = se_FormatNumber( $macros->execute( '[ORDER.SUMMA]' ), '' );
         $order_user = $macros->execute( '[USER.ID]' );
-        $result_url = $macros->execute( $this->getPathPayment( '[MERCHANT_RESULT]', $pagename ) );
-        $success_url = $macros->execute( $this->getPathPayment( '[MERCHANT_SUCCESS]', $pagename ) );
-        //$fail_url = $macros->execute( $this->getPathPayment( '[MERCHANT_FAIL]', $pagename ) );
+        $result_url = $this->getPathPayment( '[MERCHANT_RESULT]', $pagename );
+        $success_url = $this->getPathPayment( '[MERCHANT_SUCCESS]', $pagename );
+        //$fail_url = $this->getPathPayment( '[MERCHANT_FAIL]', $pagename );
 
         $description = 'Order:' . $order_id . '/User:' . $order_user;
 
