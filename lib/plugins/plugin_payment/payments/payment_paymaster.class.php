@@ -6,7 +6,6 @@ require_once dirname( __FILE__ ) . '/basePayment.class.php';
 */
 
 class payment_paymaster extends basePayment {
-    private $order_id = 0;
     private $url = 'https://paymaster.ru/api/v2';
 
     public function setVars() {
