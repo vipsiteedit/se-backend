@@ -70,15 +70,14 @@ class payment_paymaster extends basePayment {
     }
 
     public function result() {
-
+        $res = $this->getPaymentLog();
         $macros = new plugin_macros( 0, $this->order_id, $this->payment_id );
         $id_merchant = $macros->execute( '[PAYMENT.PM_MERCHANT]' );
 
         $data = json_decode( file_get_contents( 'php://input' ), true );
         if ( $data[ 'merchantId' ] == $id_merchant &&
         $data[ 'status' ] == 'Settled' &&
-        $data[ 'invoice' ][ 'orderNo' ] $res[ 'order_id' ] ) {
-            $res = $this->getPaymentLog();
+        $data[ 'invoice' ][ 'orderNo' ] == $res[ 'order_id' ] ) {
             $this->activate( $res[ 'order_id' ] );
         }
         exit;
