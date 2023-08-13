@@ -60,7 +60,7 @@ class payment_paymaster extends basePayment {
             'Content-Type'=>'application/json',
             'Accept'=>'application/json'
         );
-        $result = self::query( $this->url.'/invoices', $data, 'JSON_POST', $return = false, $headers )
+        $result = self::query( $this->url.'/invoices', $data, 'JSON_POST', true, $headers );
         if ( $result ) {
             head( 'Location: '.$result[ 'url' ] );
             exit;
