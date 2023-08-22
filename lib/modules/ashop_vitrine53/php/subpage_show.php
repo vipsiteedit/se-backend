@@ -61,7 +61,7 @@ $brand_link = '';
 if (!empty($price_fields['brand'])) {
     list($price_fields['brand'], $price_fields['brand_code'], $price_fields['brand_image']) = explode('||', $price_fields['brand']);
     $product_brand = $price_fields['brand'];  
-    $brand_link = seMultiDir() . '/' . $_page . '/cat/' . $price_fields['code_gr'] . '/?brand=' . urlencode($price_fields['brand_code']);
+    $brand_link = seMultiDir() . '/' . $_page . '/' . $price_fields['code_gr'] . '/?brand=' . urlencode($price_fields['brand_code']);
     if (!empty($price_fields['brand_image']))
         $brand_image = $psg->getBrandImage($price_fields['brand_image']);
 }
@@ -162,7 +162,3 @@ $product_name = htmlspecialchars($product_name, ENT_QUOTES);
 $product_group = htmlspecialchars($product_group, ENT_QUOTES);
 
 $price_label = $psg->getPriceLabel($viewgoods, (string)$section->language->lang008);
-
-
-
-?>

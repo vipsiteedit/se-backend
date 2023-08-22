@@ -41,7 +41,7 @@
                 </li>
                 <?php foreach($section->pathg as $pth): ?>
                     <li itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
-                        <a class="goodsLinkPath" href="<?php echo $__data->getLinkPageName() ?>cat/<?php echo $pth->cat ?>/" itemprop="url"><span itemprop="title"><?php echo $pth->cat_nm ?></span></a>
+                        <a class="goodsLinkPath" href="<?php echo $__data->getLinkPageName() ?><?php echo $pth->cat ?>/" itemprop="url"><span itemprop="title"><?php echo $pth->cat_nm ?></span></a>
                     </li>
                 
 <?php endforeach; ?>

@@ -3,28 +3,28 @@
 require_once dirname(__file__) . "/base/seBaseShopPrice.class.php";
 
 /**
- * êëàññ òîâàðîâ Èíòåðíåò-ìàãàçèíà
+ * ÐºÐ»Ð°ÑÑ Ñ‚Ð¾Ð²Ð°Ñ€Ð¾Ð² Ð˜Ð½Ñ‚ÐµÑ€Ð½ÐµÑ‚-Ð¼Ð°Ð³Ð°Ð·Ð¸Ð½Ð°
  * @filesource seShopPrice.class.php
  * @copyright EDGESTILE
  */
 class seShopPrice extends seBaseShopPrice
 {
-    private $user_id;
-    
+	private $user_id;
+
 	public function getDiscount()
 	{
-		if ($this->discount != 'Y') 
-            return;
-            
-        $user_id = seUserId();
-        
-	$discount = new seShopDiscount();
-        $discount->where('(id_price = '.$this->id.' OR id_group = ?)', $this->id_group);
-        if ($user_id) // Ïîëüçîâàòåëü àâòîðèçîâàí
-            $discount->andwhere('((id_user IS NULL) OR (id_user = ?))', $user_id);
-        else
-            $discount->andwhere('(id_user IS NULL)');
-                
+		if ($this->discount != 'Y')
+			return;
+
+		$user_id = seUserId();
+
+		$discount = new seShopDiscount();
+		$discount->where('(id_price = ' . $this->id . ' OR id_group = ?)', $this->id_group);
+		if ($user_id) // ÐŸÐ¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»ÑŒ Ð°Ð²Ñ‚Ð¾Ñ€Ð¸Ð·Ð¾Ð²Ð°Ð½
+			$discount->andwhere('((id_user IS NULL) OR (id_user = ?))', $user_id);
+		else
+			$discount->andwhere('(id_user IS NULL)');
+
 		return $discount->getList();
 	}
 
@@ -45,5 +45,3 @@ class seShopPrice extends seBaseShopPrice
 		return $images;
 	}
 }
-
-?>
