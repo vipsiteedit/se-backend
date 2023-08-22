@@ -359,7 +359,7 @@ class plugin_shopcart
 			$goods['measure'] = $product['measure'];
 			$goods['volume'] = $product['volume'];
 			$goods['weight'] = $product['weight'];
-			$goods['link'] = seMultiDir() . '/' . $this->shoppath . '/' . $product['url'] . SE_END;
+			$goods['link'] = $product['url'] . SE_END;
 			$plugin_amount = new plugin_shopamount(0, $product, $this->options['type_price'], $value['count'], $value['modifications'], $this->options['curr'], empty($value['notavailable']));
 			$plugin_amount->sum_cart = $sum_cart;
 			$goods['price'] = $plugin_amount->getPrice(false);
