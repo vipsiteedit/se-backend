@@ -271,7 +271,7 @@ class Delivery extends Base
         // вставка новых
         $dataD = array();
         $dataR = array();
-        DB::query('ALTER TABLE `shop_deliverytype` CHANGE `time` `time` VARCHAR(10) NOT NULL;');
+        DB::query('ALTER TABLE `shop_deliverytype` CHANGE `time` `time` VARCHAR(10) NULL;');
         $u = new DB('shop_deliverytype');
         $u->select('MAX(id) max');
         $result = $u->fetchOne();
