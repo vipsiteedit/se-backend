@@ -218,7 +218,7 @@ class basePayment extends CurlAbstract
 	{
 	}
 
-	protected function activate($order_id, $amount = false, $curr = '', $pay_num = 0, $pay_purse = '', $name_payment, $ident = '')
+	protected function activate($order_id, $amount = false, $curr = '', $pay_num = 0, $pay_purse = '', $name_payment = '', $ident = '')
 	{
 		$curr = ($curr) ? $curr : $this->basecurr;
 		$payee = new plugin_payment_payee($order_id, $this->payment_id,  $this->basecurr, trim($name_payment . ' ' . $pay_purse));
