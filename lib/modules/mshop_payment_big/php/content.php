@@ -3,7 +3,7 @@
 $user_group = seUserGroup();
 
 // Список неоплаченных заказов
-$ORDER_PAYEELIST = '';
+$ORDER_PAYEELIST = '<option value="">-</option>';
 $order = new seShopOrder();
 $order->select('id');
 $order->where('id_author=?', $id_author);
