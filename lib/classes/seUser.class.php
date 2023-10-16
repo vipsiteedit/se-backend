@@ -2,7 +2,6 @@
 require_once dirname(__FILE__) . "/base/seBaseUser.class.php";
 
 /**
- * Базовый класс списка пользователей
  * @filesource seUser.class.php
  * @copyright EDGESTILE
  */
@@ -26,8 +25,8 @@ class seUser extends seBaseUser
 		return $person;
 	}
 
-	// Устанавливаем права доступа пользователю
-	// 0 - Уровень, 1 - Имя группы
+	// ������������� ����� ������� ������������
+	// 0 - �������, 1 - ��� ������
 	public function setAccess($arr = array(array(1, '')))
 	{
 		if ($this->table_id) {
@@ -79,8 +78,9 @@ class seUser extends seBaseUser
 		elseif ($req['passw'] != $req['confirm'])
 			return 'err:passw-confirm';
 		else {
+			$parent_id = intval($parent_id || ($_SESSION['REFER']));
 			if (!$parent_id) {
-				$parent_id = intval($_SESSION['REFER']);
+				$parent_id = null;
 			}
 			$password = md5($req['passw']);
 			$email = $req['email'];
@@ -90,16 +90,19 @@ class seUser extends seBaseUser
 			if ($this->isFind()) {
 				return 'err:exists ' . $username;
 			} else {
+				se_db_query("START TRANSACTION");
 				$this->username     =   $username;
 				$this->password     =   $password;
 				$this->is_active    =   'Y';
-				$id_num = $this->save();
-				echo se_db_error();
-				if ($id_num) {
+				if ($id_num = $this->save()) {
 					$this->setAccess(array(array(1, $namegroup)));
-					$person = $this->getPerson();
+					$person = new sePerson();;
 					$person->id         = $id_num;
-					if ($parent_id) {
+					if (isset($_SESSION['SITE_REFERER'])) {
+						$person->addField('referer', 'text');
+						$person->referer = $_SESSION['SITE_REFERER'];
+					}
+					if (!empty($parent_id)) {
 						$person->id_up      = $parent_id;
 					}
 					$person->last_name  = $req['last_name'];
@@ -126,11 +129,12 @@ class seUser extends seBaseUser
 					if (!empty($req['subscriber_news']))
 						$person->subscriber_news = $req['subscriber_news'];
 					$person->reg_date   = date("Y-m-d H:i:s");
-
 					if ($person->save()) {
+						se_db_query("COMMIT");
 						return $id_num;
 					} else {
 						echo se_db_error();
+						se_db_query("ROLLBACK");
 					}
 				}
 			}

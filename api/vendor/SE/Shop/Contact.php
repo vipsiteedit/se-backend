@@ -14,7 +14,11 @@ class Contact extends Base
 {
     protected $tableName = "person";
 
-
+    // @@@@@@ @@@@@@    @@    @@  @@ @@  @@   @@  @@    @@    @@@@@@ @@@@@@@@ @@@@@@ @@@@@@ @@    @@
+    // @@  @@ @@  @@   @@@@   @@  @@ @@  @@   @@  @@   @@@@   @@        @@    @@  @@ @@  @@ @@   @@@
+    // @@  @@ @@  @@  @@  @@   @@@@  @@@@@@   @@@@@@  @@  @@  @@        @@    @@@@@@ @@  @@ @@  @@@@
+    // @@  @@ @@  @@ @@    @@   @@       @@   @@  @@ @@@@@@@@ @@        @@    @@     @@  @@ @@@@  @@
+    // @@  @@ @@@@@@ @@    @@   @@       @@   @@  @@ @@    @@ @@@@@@    @@    @@     @@@@@@ @@@   @@
     // получить настройки
     protected function getSettingsFetch()
     {
@@ -67,8 +71,7 @@ class Contact extends Base
                             p.first_name,
                             p.sec_name
                         ) display_name, 
-                        c.name company,
-                        sug.group_id id_group,
+                        uu.name as company,
                         COUNT(so.id) count_orders,
                         SUM(
                             so.amount
@@ -131,18 +134,27 @@ class Contact extends Base
                 ),
                 array(
                     "type" => "left",
-                    "table" => 'company c',
-                    "condition" => 'c.id = cp.id_company'
+                    "table" => 'company uu',
+                    "condition" => 'uu.id = cp.id_company'
                 )
             ),
-            "patterns" => array("displayName" => "p.last_name"),
+            "patterns" => array("displayName" => "p.last_name", "idGroup" => "sug.group_id"),
             "convertingValues" => array(
                 "amountOrders",
                 "paidOrders",
             ),
-            "groupBy" => "p.id, c.name, sug.group_id"
+            "groupBy" => "p.id, uu.name"
         );
     } // получить настройки
+
+    public function fetch($id = null)
+    {
+        parent::Fetch($id);
+        foreach ($this->result['items'] as &$it) {
+            $it['company'] = htmlspecialchars_decode($it['company']);
+        }
+        return $this->result['items'];
+    }
 
     protected function correctItemsBeforeFetch($items = [])
     {
@@ -211,12 +223,8 @@ class Contact extends Base
                         su.username login,
                         su.password,
                         (su.is_active = "Y") isActive,
-                        uu.company,
-                        uu.director,
-                        uu.tel,
-                        uu.fax,
-                        uu.uradres,
-                        uu.fizadres,
+                        c.name AS company,
+                        c.id AS companyId,
                         CONCAT_WS(
                             " ",
                             pr.last_name,
@@ -231,7 +239,8 @@ class Contact extends Base
                         ) manager_name
                         ');
             $u->leftJoin('se_user su', 'p.id=su.id');
-            $u->leftJoin('user_urid uu', 'uu.id=su.id');
+            $u->leftJoin('company_person cp', 'cp.id_person=su.id');
+            $u->leftJoin('company c', 'c.id=cp.id_company');
             $u->leftJoin('person pr', 'pr.id=p.id_up');
             $u->leftJoin('person pm', 'pm.id=p.manager_id');
             $u->orderBy("p.id");
@@ -247,6 +256,8 @@ class Contact extends Base
             $contact["customFields"] = $this->getCustomFields($contact["id"]);
             if ($count = count($contact['personalAccount']))
                 $contact['balance'] = $contact['personalAccount'][$count - 1]['balance'];
+            if ($contact['phone'])
+                $contact['phone'] = $this->correctPhone($contact['phone']);
             $this->result = $contact;
         } catch (Exception $e) {
             $this->error = "Не удаётся получить информацию о контакте! " . $e;
@@ -659,6 +670,7 @@ class Contact extends Base
                 $this->info();
                 return $this;
             }
+            $this->input["isActive"] = boolval($this->input["isActive"]);
 
 
             // начать транзакцию БД
@@ -738,6 +750,19 @@ class Contact extends Base
                 $u->setValuesFields($this->input);
                 $u->save(true);
 
+                $cp = new DB('company_person');
+                $cp->where("id_person=?", $this->input['id']);
+                $comp = $cp->fetchOne();
+                if ($this->input['companyId']) {
+                    $cp->setValuesFields(array('id' => $comp['id'], 'id_company' => $this->input['companyId'], 'id_person' => $this->input['id']));
+                    $cp->save();
+                } else {
+                    $cp->where("id_person=?", $this->input['id']);
+                    $cp->deleteList();
+                }
+
+
+
                 $this->saveCompanyRequisites($ids[0], $this->input);
                 if ($ids && isset($this->input["personalAccount"]))
                     $this->savePersonalAccounts($ids[0], $this->input["personalAccount"]);
@@ -761,7 +786,7 @@ class Contact extends Base
             return $this;
         } catch (Exception $e) {
             DB::rollBack();
-            $this->error = empty($this->error) ? "Не удаётся сохранить контакт!" : $this->error;
+            $this->error = empty($this->error) ? "Не удаётся сохранить контакт!" . $e : $this->error;
         }
     }
 

@@ -94,6 +94,9 @@ class Base extends CustomBase
 
         $settingsFetch["select"] = !empty($settingsFetch["select"]) ? $settingsFetch["select"] : "*";
         $this->patterns = $this->getPattensBySelect($settingsFetch["select"]);
+        foreach ($settingsFetch["patterns"] as $k => $patt) {
+            $this->patterns[$k] = $patt;
+        }
         try {
             $searchFields = [];
             $u = $this->createTableForInfo($settingsFetch); // начало запроса
@@ -546,9 +549,10 @@ class Base extends CustomBase
         foreach ($filters as $filter) {
             if (preg_match('/(0[1-9]|[12][0-9]|3[01])[.](0[1-9]|1[012])[.](19|20)\d\d/', $filter["value"]))
                 $filter["value"] = date("Y-m-d", strtotime($filter["value"]));
-            if (key_exists($filter["field"], $this->patterns))
+
+            if (key_exists($filter["field"], $this->patterns)) {
                 $field = $this->patterns[$filter["field"]];
-            else {
+            } else {
                 $field = DB::strToUnderscore($filter["field"]);
                 $field = $this->tableAlias . ".`{$field}`";
             }

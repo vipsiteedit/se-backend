@@ -79,7 +79,6 @@ class UserAccount extends Base
          * @return $this->result
          */
 
-        $this->debugging('funct', __FUNCTION__ . ' ' . __LINE__, __CLASS__, '[comment]');
 
         parent::fetch();                                               // 1
 
@@ -106,7 +105,6 @@ class UserAccount extends Base
 
     public function export()
     {
-        $this->debugging('funct', __FUNCTION__ . ' ' . __LINE__, __CLASS__, '[comment]');
         if (!class_exists("PHPExcel")) {
             $this->result = "Отсутствуют необходимые библиотеки для экспорта!";
             return;
