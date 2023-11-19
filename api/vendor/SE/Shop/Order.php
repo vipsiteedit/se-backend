@@ -318,6 +318,8 @@ class Order extends Base
             $group = key_exists($key, $groups) ? $groups[$key] : [];
             $group["id"] = $item["idGroup"];
             $group["name"] = empty($item["nameGroup"]) ? "Без категории" : $item["nameGroup"];
+            if ($item['type'] == "file")
+                $item['url'] = _HTTP_ . HOSTNAME .'/lib/docum.php?order='.$idOrder.'&name='.urlencode($item['value']);
             if ($item['type'] == "date")
                 $item['value'] = date('Y-m-d', strtotime($item['value']));
             if (!key_exists($key, $groups))

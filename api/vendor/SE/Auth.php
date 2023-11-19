@@ -66,7 +66,8 @@ class Auth extends Base
                 $u->select('su.id, su.is_super_admin,
                     CONCAT_WS(" ", p.last_name, CONCAT_WS(".", SUBSTR(p.first_name, 1, 1), SUBSTR(p.sec_name, 1, 1))) displayName');
                 $u->innerJoin('person p', 'p.id=su.id');
-                $u->where('is_active="Y" AND username="?"', $this->input["login"]);
+				$u->innerJoin('permission_role_user pru', 'pru.id_user = su.id');
+                $u->where('is_active="Y" AND is_manager>0 AND username="?"', $this->input["login"]);
                 $u->andWhere('password="?"', strtolower($this->input["hash"]));
                 $result = $u->fetchOne();
                 if (!empty($result)) {

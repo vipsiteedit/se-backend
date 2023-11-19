@@ -113,6 +113,43 @@ class plugin_shopOrder
 		return $data;
 	}
 
+	public function saveUserFields($id_order) {
+		if (empty($id_order)) return;
+		
+		$fields = $this->getUserFields();
+		if (!empty($fields)) {
+			$sou = new seTable('shop_order_userfields');
+			foreach($fields as $val) {
+				if ($val['is_group'] || !isset($_SESSION['userfields'][$val['code']]))
+					continue;
+				if ($val['type'] == 'file') {
+				    $value = '';
+				    $storedir = SE_ROOT . '/../files';
+                    if (!is_dir($storedir)) mkdir($storedir);
+                    $storedir .= '/orders'; 
+                    if (!is_dir($storedir)) mkdir($storedir);
+                    $storedir .= '/'.$id_order;
+                    if (!is_dir($storedir)) mkdir($storedir);
+                    $v = $_SESSION['userfields'][$val['code']];
+                    if ($v['tmp_name']) {
+                        if (move_uploaded_file($v['tmp_name'], $storedir . '/' .$v['name'])) {
+                            $value = $v['name'];
+                        } else {
+                            continue;
+                        }
+                    }
+				} else 
+                    $value = $_SESSION['userfields'][$val['code']];
+				$sou->insert();
+				$sou->id_order = $id_order;
+				$sou->id_userfield = $val['id'];
+				$sou->value = is_array($value) ? join(',', $value) : $value;
+				$sou->save();    
+			}
+		}
+		unset($_SESSION['userfields']);
+	}
+
 
 	/**
 	 * Формирование заказа
@@ -120,7 +157,7 @@ class plugin_shopOrder
 	 * @param string $email	  Email пользователя, куда отправлять заказ
 	 * @param array  $param	  Список заголовков  array('Код', 'Наименование','Цена','Скидка','Кол-во','Сумма')
 	 */
-	public function execute($indelivery = array(), $email = '', $param = array(), $discount = 0, $coupon = null)
+	public function execute($indelivery = array(), $email = '', $param = array(), $discount = 0, $coupon = null, $save_fields = false)
 	{
 		// Формирование данных для отображения заказа
 		if (!empty($email))
@@ -212,6 +249,10 @@ class plugin_shopOrder
 
 				$this->order_id = $order_id;
 				if ($order_id > 0) {
+
+					if ($save_fields) {
+						$this->saveUserFields($order_id);
+					}
 
 					if (!seUserGroup()) {
 						$_SESSION['orders'][] = $order_id;
@@ -524,5 +565,43 @@ class plugin_shopOrder
 		$mail['SHOP_ORDER_DISCOUNT'] = $this->show_summ_discount;
 
 		return $mail;
+	}
+
+	private function getUserFields() {
+		$fields = array();
+		$su = new seTable('shop_userfields', 'su');
+		$su->select('su.id, su.id_group, su.code, su.name, su.type, su.required, su.placeholder, su.description, su.values, sug.name as gname, sug.description as gdescription');
+		$su->leftJoin('shop_userfield_groups sug', 'sug.id=su.id_group');
+		$su->where('su.enabled=1');
+		$su->andWhere('(sug.enabled=1 OR sug.enabled IS NULL)');
+		$su->orderBy('sug.sort');
+		$su->addOrderBy('su.sort');
+		$list = $su->getList();
+		
+		if (!empty($list)) {
+			foreach ($list as $val) {
+				if (($val['type'] == 'select' || $val['type'] == 'radio') && empty($val['values']))
+					continue;
+				if (!empty($val['gname']) && !isset($fields[$val['id_group']])) {
+					$fields[$val['id_group']] = array(
+						'is_group' => true,
+						'name' => $val['gname'],
+						'description' => $val['gdescription']
+					);       
+				} 
+				$fields[] = array(
+					'id' => $val['id'],
+					'code' => $val['code'],
+					'name' => $val['name'],
+					'type' => $val['type'],
+					'required' => $val['required'],
+					'placeholder' => $val['placeholder'],
+					'description' => $val['description'],
+					'values' => $val['values']
+				);   
+			}
+		}
+		
+		return $fields;
 	}
 }
