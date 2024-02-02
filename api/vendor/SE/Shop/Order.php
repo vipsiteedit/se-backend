@@ -508,11 +508,11 @@ class Order extends Base
         }
 
         $fileName = "export_orders.xlsx";
-        $filePath = DOCUMENT_ROOT . "/files";
+        $filePath = DOCUMENT_ROOT . "/files/tmp";
         if (!file_exists($filePath) || !is_dir($filePath))
             mkdir($filePath, 0777, true);
         $filePath .= "/{$fileName}";
-        $urlFile = 'http://' . HOSTNAME . "/files/{$fileName}";
+        $urlFile = '//' . HOSTNAME . "/files/tmp/{$fileName}";
 
         $xls = new PHPExcel();
         $xls->setActiveSheetIndex(0);
@@ -603,11 +603,11 @@ class Order extends Base
     private function exportItem()
     {
         $fileName = "export_order_{$this->input["id"]}.xlsx";
-        $filePath = DOCUMENT_ROOT . "/files";
+        $filePath = DOCUMENT_ROOT . "/files/tmp";
         if (!file_exists($filePath) || !is_dir($filePath))
             mkdir($filePath, 0777, true);
         $filePath .= "/{$fileName}";
-        $urlFile = 'http://' . HOSTNAME . "/files/{$fileName}";
+        $urlFile = '//' . HOSTNAME . "/files/tmp/{$fileName}";
 
 
         $order = $this->info();
