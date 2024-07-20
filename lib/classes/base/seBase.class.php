@@ -69,6 +69,7 @@ abstract class seBase
         } else {
             $select = join(',', $this->select);
         }
+        $where = '';
 
         if (!empty($this->where)) {
             $where = ' WHERE ' . $this->where;

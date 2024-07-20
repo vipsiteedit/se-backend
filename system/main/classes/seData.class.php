@@ -101,11 +101,11 @@ class seData
             $this->pagename = $redirectpage;
         }
 
-        if (strpos($this->pagename, '_') !== false) {
+        if (isset($this->pagename) && strpos($this->pagename, '_') !== false) {
             list($this->pagename) = explode('_', $this->pagename);
         }
 
-        if (strpos($this->pagename, 'show') === 0) {
+        if (isset($this->pagename) && strpos($this->pagename, 'show') === 0) {
             $virtualpage = $this->getVirtualPage($this->pagename);
             if ($virtualpage != '') {
                 $this->pagename = $virtualpage;
@@ -115,7 +115,7 @@ class seData
         $this->redirectPage();
 
         // Инициализация редактора
-        if (strpos($this->pagename, 'show') === 0) {
+        if (isset($this->pagename) && strpos($this->pagename, 'show') === 0) {
             if (!empty($_SESSION['SE'][$this->pagename]))
                 $this->pagename = $_SESSION['SE'][$this->pagename];
             else
@@ -429,7 +429,7 @@ class seData
     private function getFromUrl($nameurl)
     {
         $namepage = '';
-        if ($this->getOldUrl($this->req->param[1])) {
+        if (isset($this->req->param[1]) && $this->getOldUrl($this->req->param[1])) {
             if ($this->req->razdel > 100000) {
                 $sections = $this->prj->sections;
             } else {
@@ -964,7 +964,7 @@ class seData
                 }
             }
         }
-        if (file_exists($namepage) && !is_dir($namepage)) {
+        if (isset($namepage) && file_exists($namepage) && !is_dir($namepage)) {
             echo join('', file($namepage));
             exit;
         }

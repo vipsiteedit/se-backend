@@ -1,5 +1,5 @@
 <?php
-chdir("../");
-$path=getcwd()."/system/.key";
+chdir( '../' );
+$path = getcwd().'/system/.key';
 
-if (file_exists($path)) echo join("",file($path)) ;
+if ( file_exists( $path ) ) echo join( '', file( $path ) ) ;

@@ -10,7 +10,20 @@ Copyright (c) 2006 EDGESTILE
 */
 require_once dirname(__file__) . '/parser/yaml_mysql.php';
 require_once dirname(__file__) . '/se_db_mysqlcache.php';
-define('DB_CACHED', true); // Включить кэширование
+define('DB_CACHED', false); // Включить кэширование
+
+if (!function_exists('get_magic_quotes_gpc')) {
+function get_magic_quotes_gpc()
+{
+    // Check if magic quotes GPC emulation is needed
+    if (version_compare(PHP_VERSION, '5.4.0', '<')) {
+        return (bool) ini_get('magic_quotes_gpc');
+    } else {
+        return false; // Magic quotes GPC is deprecated and not available
+    }
+}
+}
+
 
 function se_db_connect($CONF = array(), $link = 'db_link')
 {
@@ -63,7 +76,7 @@ function se_db_input($string, $link = 'db_link')
   }
   	if (function_exists('mysqli_real_escape_string'))
   	{
-    	return mysqli_real_escape_string($$link,$string);
+    	return mysqli_real_escape_string($$link,$string ?? '');
   	} else
 	if (function_exists('mysqli_escape_string'))
   	{
@@ -265,7 +278,7 @@ function se_db_perform($table, $data, $action = 'insert', $where = '', $log_upda
 	
 	
     $query = 'INSERT INTO ' . $table . ' (';
-    while (list($columns, $value) = each($data))
+    foreach ($data as $columns => $value)
     {
       $value = str_replace('\r\n', "\r\n", $value);
       $columns = str_replace('`', '', $columns);
@@ -275,7 +288,7 @@ function se_db_perform($table, $data, $action = 'insert', $where = '', $log_upda
     }
     $query = substr($query, 0, -2) . ') VALUES (';
     reset($data);
-    while (list($field, $value) = each($data))
+    foreach($data as $field => $value)
     {
       $value = str_replace('\r\n', "\r\n", $value);
       //if (empty($value)) continue;
@@ -321,7 +334,7 @@ function se_db_perform($table, $data, $action = 'insert', $where = '', $log_upda
   } elseif ($action == 'update')
   {
     $query = 'UPDATE ' . $table . ' SET ';
-    while (list($columns, $value) = each($data))
+    foreach ($data as $columns => $value)
     {
       $columns = str_replace('`', '', $columns);
       $value = str_replace('\r\n', "\r\n", $value);
@@ -376,7 +389,7 @@ function se_db_insert_id($table, $link = 'db_link')
   return $id[0];
 }
 
-function se_db_limit($offset = 0, $limit)
+function se_db_limit($offset = 0, $limit = 10000)
 {
   if ($offset > 0)
     $limit = ' LIMIT ' . $offset . ',' . $limit;
@@ -407,7 +420,7 @@ function se_db_query($sql, $cashetime = 30, $link = 'db_link')
   if (DB_CACHED && preg_match("/^SELECT/i", $sql) && ($cashetime>0)){
       return new MySQLCache($sql, $cashetime, $link); //, $link
   } else {
-      $result = @mysqli_query($$link,$sql);
+      $result = @mysqli_query($$link, $sql);
   }
 
   if (preg_match("/INSERT INTO(.+?)[\W]{1,}\(/im", $sql, $res_math))

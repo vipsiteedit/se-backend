@@ -52,7 +52,7 @@ function getItemMenu($itmenu, $mcount = -1, $mtitle = '...')
             } else {
                 $line = explode("\t", iconv('CP1251', 'UTF-8', $line));
             }
-            list($title, $stitle) = explode('|', $line[2]);
+            @list($title, $stitle) = explode('|', $line[2] ?? '');
             if ($mcount > 0 && $levelcnt > $mcount) {
                 if ($line[0] == 0) $lcnt++;
                 if ($lcnt == $mcount) {

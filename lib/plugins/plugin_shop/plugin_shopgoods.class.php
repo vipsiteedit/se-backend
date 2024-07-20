@@ -285,15 +285,6 @@ class plugin_shopgoods
 		return $this->getGoods($options, $goods_name, true);
 	}
 
-	/*	private function getGroupsLine(){
-		if ($this->GroupId) {
-				$groups = $this->GroupId;
-				if ($option['is_under_group'])
-					$groups = join(',', $this->plugin_groups->getChildrensId($groups));
-		}
-		
-	}*/
-
 	/** Возвращает список товаров и постраничная навигация
 	 *   @array option             массив входных параметров
 	 *   @array goods_name         список товаров, которые надо отобразить

@@ -1,49 +1,48 @@
 <?php
-date_default_timezone_set('Europe/Moscow');
-define('SE_INDEX_INCLUDED', true);
+date_default_timezone_set( 'Europe/Moscow' );
+define( 'SE_INDEX_INCLUDED', true );
 session_start();
-chdir($_SERVER['DOCUMENT_ROOT'] . '/');
-error_reporting(0);
+chdir( $_SERVER[ 'DOCUMENT_ROOT' ] . '/' );
+error_reporting( 0 );
 require 'system/main/init.php';
-check_session(false);
+check_session( false );
 
 $username = seUserName();
 $userGroup = seUserGroup();
-if (isset($_GET['target'])) {
-    list($_SESSION['SE_BACK_URL']) = explode('#', $_SESSION['SE_BACK_URL']);
-    $_SESSION['SE_BACK_URL'] .= '#' . $_GET['target'];
+if ( isset( $_GET[ 'target' ] ) ) {
+    list( $_SESSION[ 'SE_BACK_URL' ] ) = explode( '#', $_SESSION[ 'SE_BACK_URL' ] );
+    $_SESSION[ 'SE_BACK_URL' ] .= '#' . $_GET[ 'target' ];
 }
 
-function getSocial($provider)
-{
-    if (stripos($provider, 'facebook')) {
+function getSocial( $provider ) {
+    if ( stripos( $provider, 'facebook' ) ) {
         return 'facebook.png';
-    } elseif (stripos($provider, 'twitter')) {
+    } elseif ( stripos( $provider, 'twitter' ) ) {
         return 'twitter.png';
-    } elseif (stripos($provider, 'vkontakte')) {
+    } elseif ( stripos( $provider, 'vkontakte' ) ) {
         return 'vkontakte.png';
-    } elseif (stripos($provider, 'google')) {
+    } elseif ( stripos( $provider, 'google' ) ) {
         return 'google.png';
-    } elseif (stripos($provider, 'mail')) {
+    } elseif ( stripos( $provider, 'mail' ) ) {
         return 'mailruapi.png';
-    } elseif (stripos($provider, 'odnoklassniki')) {
+    } elseif ( stripos( $provider, 'odnoklassniki' ) ) {
         return 'odnoklassniki.png';
     }
 }
 
 ;
 
-function seGenRandomPassword($len = 6, $char_list = 'a-z,0-9')
-{
+function seGenRandomPassword( $len = 6, $char_list = 'a-z,0-9' ) {
     $chars = array();
     // предустановленные наборы символов
-    $chars['a-z'] = 'qwertyuiopasdfghjklzxcvbnm';
-    $chars['A-Z'] = strtoupper($chars['a-z']);
-    $chars['0-9'] = '0123456789';
-    $chars['~'] = '~!@#$%^&*()_+=-:";\'/\\?><,.|{}[]';
+    $chars[ 'a-z' ] = 'qwertyuiopasdfghjklzxcvbnm';
+    $chars[ 'A-Z' ] = strtoupper( $chars[ 'a-z' ] );
+    $chars[ '0-9' ] = '0123456789';
+    $chars[ '~' ] = '~!@#$%^&*()_+=-:";\'/\\?><, .| {
+    }[]';
     $charset = $password = '';
     if (!empty($char_list)) {
-        $char_types = explode(',', $char_list);
+        $char_types = explode(', ', $char_list);
         foreach ($char_types as $type) {
             if (array_key_exists($type, $chars)) {
                 $charset .= $chars[$type];
@@ -84,7 +83,7 @@ $err = '';
 $lang = se_getLang();
 $uri = $_SERVER["REQUEST_URI"];
 $host = urlencode(_HOST_ . $uri);
-$url = 'http://loginza.ru/api/widget?token_url=' . $host . '&lang=' . $lang;
+$url = 'http://loginza.ru/api/widget?token_url = ' . $host . '&lang = ' . $lang;
 unset($list);
 if (isset($_GET['sending'])) {
     $key = 1;
@@ -112,7 +111,7 @@ if (!empty($_POST['token']) && !(seUserGroup() || seUserId())) {
     $uid = $req['key'];
     $tlb = new seTable('se_loginza');
     $tlb->select('user_id, uid');
-    $tlb->where('uid=?', $uid);
+    $tlb->where('uid = ?', $uid);
     $list = $tlb->fetchOne();
     unset($tlb);
     if (($req['email'] == '') && (!$list)) {
@@ -142,14 +141,14 @@ if (!empty($_POST['token']) && !(seUserGroup() || seUserId())) {
     header("Location: ?");
 }
 
-//  echo '['.seUserId().']';
+//  echo '[ '.seUserId().' ]';
 // echo $subpage;
 if ($flag == 1) {
     // запоминаем профиль пользователя в сессию или создаем локальную учетную запись пользователя в БД
     unset($list);
     $uid = $req['key'];
     $tlb = new seTable('se_loginza');
-    $tlb->select('id, user_id, real_user_id,uid, photo');
+    $tlb->select('id, user_id, real_user_id, uid, photo');
     $tlb->where("uid='?'", $uid);
     $list = $tlb->fetchOne();
     $user = new seUser();
@@ -171,7 +170,7 @@ if ($flag == 1) {
             $user->where("id=?", $new_user_id);
             $user->save();
 
-            $tlb->select('max(id) as id');
+            $tlb->select('max( id ) as id');
             $list = $tlb->fetchOne();
             $_SESSION['loginza']['is_photo'] = $list['id'];
             if (seUserGroup() > 0) {
@@ -252,7 +251,7 @@ if (!empty($_SESSION['loginza']['is_auth'])) {
         $fio = $pers->first_name . " " . $pers->last_name;
         $idd = $item['id'];
         if (!empty($item['provider'])) {
-            $extra_avatar .= '<img class="icon_img" src="/lib/loginza/' . getSocial($item['provider']) . '" alt="' . $fio . '" title="' . $fio . '">';
+            $extra_avatar .= '<img class = 'icon_img' src = "/lib/loginza/' . getSocial($item['provider']) . '" alt = "' . $fio . '" title = "' . $fio . '">';
         }
     }
 }
@@ -448,28 +447,28 @@ if (!empty($_SESSION['loginza']['is_auth'])) {
             <!--a class="links remem" href="">Забыли пароль</a-->
         </div>
         <div class="openIdBlock form-group">
-            <!-- $list = 'facebook,vkontakte,odnoklassniki,twitter,google,mailruapi'; -->
+            <!-- $list = 'facebook, vkontakte, odnoklassniki, twitter, google, mailruapi'; -->
             <label class="loginblocktxt">Войти как пользователь</label>
             <div>
-                <a href="<?php echo $url . '&provider=facebook' ?>" class="loginzain" target=_parent><img class="imgs"
+                <a href="<?php echo $url . '&provider = facebook' ?>" class="loginzain" target=_parent><img class="imgs"
                                                                                                           src="/lib/loginza/facebook-lg.png"></a>
-                <a href="<?php echo $url . '&provider=vkontakte' ?>" class="loginzain" target=_parent><img class="imgs"
+                <a href="<?php echo $url . '&provider = vkontakte' ?>" class="loginzain" target=_parent><img class="imgs"
                                                                                                            src="/lib/loginza/vkontakte-lg.png"></a>
-                <a href="<?php echo $url . '&provider=mailruapi' ?>" class="loginzain" target=_parent><img class="imgs"
+                <a href="<?php echo $url . '&provider = mailruapi' ?>" class="loginzain" target=_parent><img class="imgs"
                                                                                                            src="/lib/loginza/mail-lg.png"></a>
-                <a href="<?php echo $url . '&provider=twitter' ?>" class="loginzain" target=_parent><img class="imgs"
+                <a href="<?php echo $url . '&provider = twitter' ?>" class="loginzain" target=_parent><img class="imgs"
                                                                                                          src="/lib/loginza/twitter-lg.png"></a>
-                <a href="<?php echo $url . '&provider=odnoklassniki' ?>" class="loginzain" target=_parent><img
+                <a href="<?php echo $url . '&provider = odnoklassniki' ?>" class="loginzain" target=_parent><img
                         class="imgs" src="/lib/loginza/odnoklassniki-lg.png"></a>
-                <a href="<?php echo $url . '&provider=google' ?>" class="loginzain" target=_parent><img class="imgs"
+                <a href="<?php echo $url . '&provider = google' ?>" class="loginzain" target=_parent><img class="imgs"
                                                                                                         src="/lib/loginza/google-lg.png"></a>
-                <a href="<?php echo $url . '&provider=yandex' ?>" class="loginzain" target=_parent><img class="imgs"
+                <a href="<?php echo $url . '&provider = yandex' ?>' class='loginzain' target=_parent><img class='imgs"
                                                                                                         src="/lib/loginza/yandex-lg.png"></a>
             </div>
         </div>
-        <!--a href="<?php echo $url ?>" class="loginzain">Авторизация</a></div-->
+        <!--a href="<?php echo $url ?>' class='loginzain">Авторизация</a></div-->
     </div>
     <?php endif ?>
-</div>
-</div></body>
-</html>
+    </div>
+    </div></body>
+    </html>

@@ -60,7 +60,7 @@ class seMenuTree
             $url = tsl($url);
         }
         $thismenu->url = $url;
-        $thismenu->target = str_replace('target=', '', $target);
+        $thismenu->target = str_replace('target=', '', $target ?? '');
         $thismenu->level = $value[0];
         $thismenu->access = $value[9];
         @list($img, $imgA) = explode(chr(8), $value[7]);

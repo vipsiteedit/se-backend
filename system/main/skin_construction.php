@@ -115,6 +115,6 @@ if (isRequest('sub') && (utf8_strpos($subpage, '{NOBODY}') !== false)) {
     }
     include "system/main/sitehead.php";
     include 'projects/' . SE_DIR . 'cache/map_' . basename($skinmap, '.map') . '.php';
-    echo $__logincontent;
+    echo $__logincontent ?? '';
     include "system/main/sitefooter.php";
 }
