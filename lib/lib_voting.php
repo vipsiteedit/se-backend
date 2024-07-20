@@ -180,13 +180,13 @@ class voting {
 
         foreach ( $ListVote as $golos ) {
             if ( $golos[ 'number' ] > 0 )
-            $per = round( $golos[ 'number' ] / ( $colgolos / 100 ) );
+                $per = round( $golos[ 'number' ] / ( $colgolos / 100 ) );
             else $per = 0;
-            $cont_vot .= '<div style=\'width: " . $per . "%;
-            height: 10px;
-            margin-bottom: 5px;
-            background: " . $golos['color'] . ";
-            \'>&nbsp;</div>';
+
+            if (!isset($golos['color'])) $golos['color'] = '#fff';
+
+            $cont_vot .= '<div style=\'width: ' . $per . '%; height: 10px; margin-bottom: 5px; background: '. $golos['color'] . ';\'>&nbsp;</d
+iv>';
         }
         $cont_vot .= '</div>';
         $cont_vot .= '<ul style=\'list-style: none;
@@ -195,9 +195,11 @@ class voting {
             if ( $golos[ 'number' ] > 0 )
             $per = round( $golos[ 'number' ] / ( $colgolos / 100 ),  $this->voting_e );
             else $per = 0;
-            $cont_vot .= '<li class=\'golos_txt\' style=\'color: " . $golos['color'] . "\'>' . $golos[ 'title' ] . ' ' . $per . '%</li>';
+
+            if (!isset($golos['color'])) $golos['color'] = '#fff';
+            $cont_vot .= '<li class=\'golos_txt\' style=\'color: ' . $golos['color'] . '\'>' . $golos[ 'title' ] . ' ' . $per . '%</li>';
         }
-        $cont_vot .= '<li class=\'golos_txt\">{$this->textvoting}: " . $colgolos . '</li>';
+        $cont_vot .= '<li class=\'golos_txt\'>'.$this->textvoting.': ' . $colgolos . '</li>';
         $cont_vot .= '</ul>';
         return $cont_vot;
     }

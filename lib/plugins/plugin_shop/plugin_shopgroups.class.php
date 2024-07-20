@@ -454,9 +454,9 @@ class plugin_shopgroups {
                 $this->groups[ $val[ 'id' ] ] = array(
                     'id' => ( int )$val[ 'id' ],
                     'name' => $val[ 'name' ],
-                    'image' => trim( $val[ 'picture' ] ),
-                    'image_alt' => trim( $val[ 'picture_alt' ] ),
-                    'picture_alt' => trim( $val[ 'picture_alt' ] ),
+                    'image' => trim( $val[ 'picture' ] ?? '' ),
+                    'image_alt' => trim( $val[ 'picture_alt' ] ?? '' ),
+                    'picture_alt' => trim( $val[ 'picture_alt' ] ?? '' ),
                     'code' => $val[ 'code_gr' ],
                     'title' => $val[ 'title' ],
                     'keywords' => $val[ 'keywords' ],
@@ -483,8 +483,8 @@ class plugin_shopgroups {
                     'link' => seMultiDir() . '/' . $this->shoppath . '/' . urlencode( $val[ 'code_gr' ] ) . URL_END,
                     'code' => $val[ 'code_gr' ],
                     'menu' => $this->parseTreeGroups( $val[ 'id' ], $level + 1 ),
-                    'image' => trim( $val[ 'picture' ] ),
-                    'image_alt' => trim( $val[ 'picture_alt' ] ),
+                    'image' => trim( $val[ 'picture' ] ?? '' ),
+                    'image_alt' => trim( $val[ 'picture_alt' ] ?? '' ),
                     'count' => $val[ 'scount' ]
                 );
             }

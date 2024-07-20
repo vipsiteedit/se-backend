@@ -5,7 +5,6 @@ if ( !function_exists( 'se_rating_list' ) ) {
         $res = array();
         $recres = array();
 
-        //$ip = $_SERVER[ 'REMOTE_ADDR' ];
         $ip = $_SERVER[ 'HTTP_X_REAL_IP' ];
 
         if ( !file_exists( 'data' ) ) {
@@ -24,7 +23,7 @@ if ( !function_exists( 'se_rating_list' ) ) {
             $fnameip = 'data/rating_' . $_page . '_' . $section->id . '_ip.dat';
         }
 
-        if ( file_exists( $fnamedat ) ) //���� ���� ���� ����������  {
+        if ( file_exists( $fnamedat ) ) {
             $stat = file( $fnamedat );
             foreach ( $stat as $str ) {
                 $v = explode( chr( 9 ), $str );
@@ -33,10 +32,10 @@ if ( !function_exists( 'se_rating_list' ) ) {
         }
 
         $flag = false;
-        if ( isRequest( 'goRating' ) && isRequest( 'ratingraz' ) && getRequest( 'ratingraz' ) == $section->id )  //���� ������ '����������' {
+        if ( isRequest( 'goRating' ) && isRequest( 'ratingraz' ) && getRequest( 'ratingraz' ) == $section->id )  {
             $rec = getRequest( 'ratingobj', 1 );
-            if ( file_exists( $fnameip ) )  //���� ���� ���� IP  {
-                if ( date( 'd', filemtime( $fnameip ) ) != date( 'd' ) )  //���� ���� �� ��������� c �������, ������� {
+            if ( file_exists( $fnameip )) {
+                if ( date( 'd', filemtime( $fnameip ) ) != date( 'd' ) ) {
                     unlink( $fnameip );
                 } else {
                     $iplist = file( $fnameip );
@@ -49,21 +48,19 @@ if ( !function_exists( 'se_rating_list' ) ) {
                     }
                 }
             }
-            if ( !$flag ) {
-                if ( isset( $res[ $rec ] ) ) {
+            if (!$flag) {
+                if (isset($res[ $rec ])) {
                     $res[ $rec ]++;
                 } else {
                     $res[ $rec ] = 1;
                 }
 
-                //��������� ������ � ���� IP
                 $f = fopen( $fnameip, 'a' );
                 flock( $f, LOCK_EX );
                 fputs( $f, $rec . chr( 9 ) . $ip . '\n' );
                 fflush( $f );
                 flock( $f, LOCK_UN );
                 fclose( $f );
-                //�������� ���� ����������
                 $f = fopen( $fnamedat, 'w' );
                 flock( $f, LOCK_EX );
                 foreach ( $res as $k => $v ) {
@@ -95,7 +92,7 @@ if ( !function_exists( 'se_rating_list' ) ) {
                 $i++;
             }
         }
-        if ( intval( $param ) == 1 ) //��������� ������ �� ���������  {
+        if ( intval( $param ) == 1 )  {
 
             foreach ( $section->objects as $line ) {
                 $id = intval( $line->id );
