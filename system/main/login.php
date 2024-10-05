@@ -39,7 +39,8 @@ function seGenRandomPassword( $len = 6, $char_list = 'a-z,0-9' ) {
     $chars[ 'A-Z' ] = strtoupper( $chars[ 'a-z' ] );
     $chars[ '0-9' ] = '0123456789';
     $chars[ '~' ] = '~!@#$%^&*()_+=-:";\'/\\?><, .| {
-    }[]';
+    }
+    []';
     $charset = $password = '';
     if (!empty($char_list)) {
         $char_types = explode(', ', $char_list);
@@ -141,8 +142,6 @@ if (!empty($_POST['token']) && !(seUserGroup() || seUserId())) {
     header("Location: ?");
 }
 
-//  echo '[ '.seUserId().' ]';
-// echo $subpage;
 if ($flag == 1) {
     // запоминаем профиль пользователя в сессию или создаем локальную учетную запись пользователя в БД
     unset($list);
@@ -222,12 +221,10 @@ if ($flag == 1) {
         header("Location: " . $_SESSION['SE_BACK_URL']);
     }
 }
-//echo seUserGroup();
+
 if (seUserGroup() > 0) {
     $_SESSION['loginza']['is_auth'] = 1;
     $_SESSION['loginza']['user_id'] = seUserId();
-} else {
-    //if (isset($_SESSION['loginza'])) unset($_SESSION['loginza']);
 }
 
 if (!empty($_SESSION['loginza']['is_auth'])) {
@@ -462,11 +459,11 @@ if (!empty($_SESSION['loginza']['is_auth'])) {
                         class="imgs" src="/lib/loginza/odnoklassniki-lg.png"></a>
                 <a href="<?php echo $url . '&provider = google' ?>" class="loginzain" target=_parent><img class="imgs"
                                                                                                         src="/lib/loginza/google-lg.png"></a>
-                <a href="<?php echo $url . '&provider = yandex' ?>' class='loginzain' target=_parent><img class='imgs"
+                <a href="<?php echo $url . '&provider = yandex' ?>' class = 'loginzain' target = _parent><img class = 'imgs"
                                                                                                         src="/lib/loginza/yandex-lg.png"></a>
             </div>
         </div>
-        <!--a href="<?php echo $url ?>' class='loginzain">Авторизация</a></div-->
+        <!--a href="<?php echo $url ?>' class = 'loginzain">Авторизация</a></div-->
     </div>
     <?php endif ?>
     </div>

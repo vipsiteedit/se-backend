@@ -18,11 +18,11 @@ function Go.onsubmit()
     window.event.returnValue = false;
     if (n==1)
     {
-      alert("Не заполнено поле " + str);
+      alert("Field empty " + str);
     }
     else
     {
-      alert("Следующие поля обязательны для заполнения:" + "\n" + str);
+      alert("Fields empty:" + "\n" + str);
     }
   }
 }

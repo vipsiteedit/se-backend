@@ -14,8 +14,6 @@ if ( !empty( $_SERVER[ 'REQUEST_SCHEME' ] ) ) {
     define( '_HTTP_', ( ( !$_SERVER[ 'HTTPS' ] || $_SERVER[ 'HTTPS' ] == 'off' ) ? 'http://' : 'https://' ) );
 }
 
-//define( '_HTTP_', ( ( ( !$_SERVER[ 'HTTPS' ] || $_SERVER[ 'HTTPS' ] == 'off' ) || $_SERVER[ 'REQUEST_SCHEME' ] !== 'https' ) ? 'http://' : 'https://' ) );
-
 define( '_HOST_', _HTTP_ . $_SERVER[ 'HTTP_HOST' ] );
 
 if ( empty( $_SERVER[ 'DOCUMENT_ROOT' ] ) ) {
@@ -34,8 +32,6 @@ define( 'SE_WWWDATA', '' );
 define( 'SE_ALL_SERVICES', true );
 define( 'URL_END', '/' );
 
-// {
-use database}
 if ( file_exists( 'system/config_db.php' ) ) {
     define( 'SE_LOGS', SE_ROOT . 'system/logs' );
     if ( !is_dir( SE_LOGS ) ) mkdir( SE_LOGS );
@@ -43,34 +39,24 @@ if ( file_exists( 'system/config_db.php' ) ) {
     define( 'SE_DB_ENABLE', true );
     require 'system/config_db.php';
     require SE_LIBS . 'lib_database.php';
-    // {
-    database type}
     se_db_dsn( 'mysql' );
-    // {
-    start database}
-    //Update version db
     se_db_connect( $CONFIG );
 } else {
     define( 'SE_DB_ENABLE', false );
 }
 
-// external request handler}
 require SE_CORE . 'serequests.php';
 // service core functions
 
-// languages and projects switcher
 require SE_CORE . 'manager.php';
 
-// authorization
 require SE_CORE . 'auth.php';
 
 require SE_CORE . 'function.php';
-// librarys
 if ( file_exists( SE_LIBS . 'lib.php' ) ) {
     require SE_LIBS . 'lib.php';
 }
 
-// static data handler
 require SE_CORE . 'classes/seData.class.php';
 
 if ( file_exists( SE_ROOT . 'modules/modules.php' ) ) {

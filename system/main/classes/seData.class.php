@@ -1359,8 +1359,7 @@ class seData
         }
     }
 
-    public function deleteSection($id_section)
-    {
+    public function deleteSection($id_section){
         $i = 0;
         if (!$id_section) return;
         if ($id_section < 10000) {
@@ -1383,7 +1382,7 @@ class seData
     }
 
 
-    public function getMaxSection($id_content, $sections = null)
+    public function getMaxSection($id_content, $sections = null) 
     {
         if ($sections == null) $sections = $this->sections;
         $max = $id_content * 1000;
@@ -1532,9 +1531,7 @@ class seData
 
 
     // Методы для работы с редактором
-    public function editor()
-    {
-    }
+    public function editor() {}
 
     public function editorHeader()
     {

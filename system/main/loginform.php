@@ -90,7 +90,7 @@ require_once SE_LIBS . 'loginza/loginzaapi.class.php';
 require_once SE_LIBS . 'loginza/loginzauserprofile.class.php';
 $LoginzaAPI = new LoginzaAPI();
 $err = '';
-//$lang = se_getLang();
+
 $uri = $_SERVER["REQUEST_URI"];
 $host = urlencode(_HOST_ . $uri);
 $url = 'http://loginza.ru/api/widget?token_url=' . $host . '&lang=' . $lang;
@@ -236,9 +236,7 @@ if (seUserGroup() > 0) {
     list(, $target) = explode('&target=', $target);
     if (!empty($target)) $uri . $target + SE_END;
     header("Location: " . $uri);
-} else {
-    //if (isset($_SESSION['loginza'])) unset($_SESSION['loginza']);
-}
+} 
 
 if (!empty($_SESSION['loginza']['is_auth'])) {
     $id_avatar = $_SESSION['loginza']['is_photo'];
