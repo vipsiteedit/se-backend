@@ -446,6 +446,21 @@ class plugin_shopgoods
 			return $price->getListCount();
 		}
 		if (empty($goods_name)) {
+			$SE_NAVIGATOR = $price->pageNavigator($option['limit']);
+			$pricelist = $price->getList();
+			if (!empty($brand_filter) && $pricelist) {
+				if (class_exists('plugin_router')) {
+					$router = plugin_router::getInstance();
+					$router->registerParams('group', 'brand');
+				}
+			}
+		}
+		else {
+			$SE_NAVIGATOR = '';
+			$pricelist = $price->getList(0, $option['limit']);
+		}
+		/*
+		if (empty($goods_name)) {
 			$SE_NAVIGATOR = '';
 			$page = defined('NEXT_PAGE_PRODUCTS') ? NEXT_PAGE_PRODUCTS : 0;
 			$pricelist = $price->getList($page * $option['limit'], $option['limit'] + 1);
@@ -463,6 +478,7 @@ class plugin_shopgoods
 			$SE_NAVIGATOR = '';
 			$pricelist = $price->getList(0, $option['limit']);
 		}
+		*/
 
 		foreach ($pricelist as &$val) {
 			if (!empty($val['mod_cache'])) {
