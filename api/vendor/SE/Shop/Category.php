@@ -298,7 +298,7 @@ class Category extends Base
         $idParent = $this->input["id"];
         $filter = array(
             array("field" => "upid", "value" => $idParent),
-            array("field" => "level", "value" => ++$this->result["level"])
+            array("field" => 'sgt.level', "value" => ++$this->result["level"])
         );
         $category = new Category(array("filters" => $filter));
         $result = $category->fetch();
