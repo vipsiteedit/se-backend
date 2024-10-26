@@ -12,7 +12,7 @@ function DelExtendFile($name)
 function getItemMenu($itmenu, $mcount = -1, $mtitle = '...')
 {
     $se = seData::getInstance();
-    $skin = '/' . $se->getSkinService();
+    $skin = $se->getSkinService();
 
     if ($itmenu == 'pmenu' || $itmenu == 'mmenu') {
         if ($itmenu == 'pmenu') {
@@ -23,13 +23,13 @@ function getItemMenu($itmenu, $mcount = -1, $mtitle = '...')
 
         return array($menulist, 0, 1);
     }
-
     $is_utf = false;
-    if (file_exists('./' . $skin . '/item' . $itmenu . '.mmit')) {
-        $list = file('./' . $skin . '/item' . $itmenu . '.mmit');
+    
+    if (file_exists(SE_ROOT. $skin . '/item' . $itmenu . '.mmit')) {
+        $list = file(SE_ROOT.  $skin . '/item' . $itmenu . '.mmit');
         $is_utf = true;
-    } elseif (file_exists('./' . $skin . '/item' . $itmenu . '.mlst')) {
-        $list = file('./' . $skin . '/item' . $itmenu . '.mlst');
+    } elseif (file_exists(SE_ROOT.  $skin . '/item' . $itmenu . '.mlst')) {
+        $list = file(SE_ROOT . $skin . '/item' . $itmenu . '.mlst');
     }
     if (count($list) > 0) {
         if ($is_utf) {
@@ -37,7 +37,7 @@ function getItemMenu($itmenu, $mcount = -1, $mtitle = '...')
         } else {
             list(, $tp, $drive) = explode("\t", iconv('CP1251', 'UTF-8', $list[0]));
         }
-        $drivemenu = (trim($drive) == '1');
+        $drivemenu = (intval(trim($drive)) == 1);
         $list = array_splice($list, 1, count($list) - 1);
         $newlist = array();
         $levelcnt = 0;
@@ -65,6 +65,7 @@ function getItemMenu($itmenu, $mcount = -1, $mtitle = '...')
 
             $newlist[] = ($line[0] + 1) . '|' . $line[1] . '|' . $line[1] . '|' . $title . '|||1|' . $line[3] . chr(8) . $line[4] . '||' . $line[5] . '|' . $stitle;
         }
+        
         $menutree = new seMenuTree();
         $menu = $menutree->execute($newlist);
         return array($menu, $tp, $drivemenu);
@@ -100,8 +101,8 @@ function fpagemenu($typmenu = 0, $menulist = array(), $drivemenu = false, $multi
         $folder = getWorkFolder('pagemenu.xml');
         $menulist = simplexml_load_file(SE_ROOT . '/projects/' . SE_DIR . $folder . 'pagemenu.xml');
     }
-    $menu = new seMenu(seData::getInstance()->getPageName(), $menulist, true, $typmenu, $multi);
-    $result = $menu->execute($drivemenu);
+    $menu = new seMenu(seData::getInstance()->getPageName(), $menulist, $drivemenu, $typmenu, $multi);
+    $result = $menu->execute($typmenu);
     if (seData::getInstance()->editorAccess() && empty($_SESSION['siteediteditor'])) {
         $result = '<div data-menu="pagemenu">' . $result . '</div>';
     }
