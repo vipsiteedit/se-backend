@@ -554,7 +554,9 @@ class Base extends CustomBase
                 $field = $this->patterns[$filter["field"]];
             } else {
                 $field = DB::strToUnderscore($filter["field"]);
-                $field = $this->tableAlias . ".`{$field}`";
+                if (strpos($field, '.')===false) { 
+                    $field = $this->tableAlias . ".`{$field}`";
+                }
             }
             $sign = empty($filter["sign"]) || !in_array($filter["sign"], $this->availableSigns) ?
                 "=" : $filter["sign"];
@@ -576,6 +578,7 @@ class Base extends CustomBase
 
         return implode(" AND ", $where);
     }
+
 
     protected function getWhereQuery($searchFields = [])
     {
