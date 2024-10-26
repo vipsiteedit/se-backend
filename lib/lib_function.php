@@ -111,9 +111,7 @@ function rus2translit( $string ) {
 
 function se_translite_url($string)
 {
-    $string = str_replace(array('№', '%20', ', ', '.', '!', '?', '&', '( ', ' )', '<', '>', ' {
-            ', '}
-            ', ' ', '_', '/', "\\", '[ ', ' ]'), '-', $string);
+    $string = str_replace(array('№', '%20', ', ', '.', '!', '?', '&', '( ', ' )', '<', '>', '{', '}', ' ', '_', '/', "\\", '[', ']'), '-', $string);
     $string = str_replace(array('+'), array('-plus'), $string);
 
     $result = preg_replace("/[\s]/", '-', rus2translit($string));
@@ -129,7 +127,7 @@ function se_translite_url($string)
         }
     }
     $result = str_replace('hh', 'hkh', $result);
-    return preg_replace('/[ ^a-zA-Z0-9_- ]/i', '', $result);
+    return preg_replace('/[^a-zA-Z0-9_-]/i', '', $result);
 }
 
 function se_strip_script($string)
