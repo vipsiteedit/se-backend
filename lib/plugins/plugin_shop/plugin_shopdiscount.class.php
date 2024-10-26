@@ -174,7 +174,7 @@ class plugin_shopdiscount {
             }
 
             $check = ( $discount[ 'summ_from' ] == 0 || $discount[ 'summ_from' ] <= $summ ) && ( $discount[ 'summ_to' ] == 0 || $discount[ 'summ_to' ] >= $summ );
-            $check & = ( intval( $discount[ 'count_from' ] ) <= 0 || $discount[ 'count_from' ] <= $count ) && ( $discount[ 'count_to' ] <= 0 || $discount[ 'count_to' ] >= $count );
+            $check &= ( intval( $discount[ 'count_from' ] ) <= 0 || $discount[ 'count_from' ] <= $count ) && ( $discount[ 'count_to' ] <= 0 || $discount[ 'count_to' ] >= $count );
 
             if ( $check ) {
                 $id_discount = $val;
