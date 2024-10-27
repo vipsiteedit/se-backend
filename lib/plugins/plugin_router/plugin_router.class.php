@@ -1,6 +1,5 @@
 <?php
 
-
 class plugin_router
 {
 
@@ -133,16 +132,24 @@ class plugin_router
             $link = '<link rel="canonical" href="' . $canonical . '">';
         } else {
             if (strpos($canonical, '?') !== false) {
-                if (!is_null($this->next_page))
+                if (!is_null($this->next_page)) {
                     $this->next_page = str_replace('?', '&', $this->next_page);
-                if (!is_null($this->prev_page))
+                }
+
+                if (!is_null($this->prev_page)) {
                     $this->prev_page = str_replace('?', '&', $this->prev_page);
+                }
+
             }
 
-            if (!is_null($this->next_page))
+            if (!is_null($this->next_page)) {
                 $link = '<link rel="next" href="' . $canonical . $this->next_page . '">';
-            if (!is_null($this->prev_page))
+            }
+
+            if (!is_null($this->prev_page)) {
                 $link .= '<link rel="prev" href="' . $canonical . $this->prev_page . '">';
+            }
+
         }
 
         return $link;
@@ -161,8 +168,9 @@ class plugin_router
     public function createUrl($type, $params = array(), $full = false)
     {
 
-        if (!isset($this->routes[$type]))
+        if (!isset($this->routes[$type])) {
             return;
+        }
 
         $route = $this->routes[$type];
 
@@ -183,9 +191,9 @@ class plugin_router
             $url .= '?' . http_build_query($params);
         }
 
-        if (!$full)
+        if (!$full) {
             $url = $this->host . $url;
-
+        }
 
         return $url;
     }

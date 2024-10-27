@@ -1,20 +1,25 @@
 <?php
 
 //********************************************************************
-// ������� �������������� ��� ������ Standard � Business
-// �����: 	����������
-// ��������:	EDGESTILE
-// ����:	21/02/2009
+// Avtorisation
 //********************************************************************
 
 function auth_activate()
 {
     if (isRequest('activate_code') && isRequest('login')) {
-        if (seUserId()) return;
-        if (!SE_DB_ENABLE) return;
+        if (seUserId()) {
+            return;
+        }
+
+        if (!SE_DB_ENABLE) {
+            return;
+        }
+
         $activate_code = getRequest('activate_code');
         $activate_login = getRequest('login');
-        if (substr(md5($activate_login . "USymlQpSK"), 0, 16) != $activate_code) return;
+        if (substr(md5($activate_login . "USymlQpSK"), 0, 16) != $activate_code) {
+            return;
+        }
 
         $user = new seUser();
         $user->Where("LOWER(`username`) = '?'", $activate_login);
@@ -27,7 +32,10 @@ function auth_activate()
 
             check_session(true);
             $usergroup = $user->getAccess();
-            foreach ($usergroup as $access) break;
+            foreach ($usergroup as $access) {
+                break;
+            }
+
             $person = $user->getPerson();
             $SESSION_VARS['IDUSER'] = $user->id;
             $SESSION_VARS['GROUPUSER'] = $access['level'];
@@ -66,7 +74,6 @@ function getLoginAccess($group, $namegroup, $userGroup, $userGroupName, $userLog
         || ($userGroup > $group && $userGroup < 4));
 }
 
-
 function seAuthAdmin()
 {
     $auth['IDUSER'] = 0;
@@ -102,7 +109,9 @@ function GetLogin($ch, $login, $password, $ladmin, $padmin, $admin, $group)
         return true;
     }
 
-    if (!SE_DB_ENABLE) return false;
+    if (!SE_DB_ENABLE) {
+        return false;
+    }
 
     $user = new seUser();
     $user->where("(`password` = '$password' OR `tmppassw` = '$password')");
@@ -112,7 +121,9 @@ function GetLogin($ch, $login, $password, $ladmin, $padmin, $admin, $group)
     if ($user->id) {
         $usergroup = $user->getAccess();
         // ���� ���� ������ // �������� ������������� getList()
-        foreach ($usergroup as $access) break;
+        foreach ($usergroup as $access) {
+            break;
+        }
 
         $person = $user->getPerson();
         if (getLoginAccess($group, $admin, $access['level'], $access['name'], $login)) {
@@ -159,7 +170,10 @@ function check_session($logout, $arr_auth = array())
 		KEY `IDUSER` (`IDUSER`),
 		KEY `IP` (`IP`)
 	    ) ENGINE=MyISAM DEFAULT CHARSET=utf8;");
-            if (!is_dir(SE_ROOT . 'system/logs')) mkdir(SE_ROOT . 'system/logs');
+            if (!is_dir(SE_ROOT . 'system/logs')) {
+                mkdir(SE_ROOT . 'system/logs');
+            }
+
             $fp = fopen(SE_ROOT . 'system/logs/session.upd', "w+");
             fclose($fp);
         }
@@ -171,18 +185,16 @@ function check_session($logout, $arr_auth = array())
         $ip = $_SERVER['REMOTE_ADDR'];
         $it_session = session_id();
         if ($logout) {
-            se_db_query("DELETE from `session` where `SID`='$it_session' and `IP` = '$ip'");
+            se_db_query("DELETE from `session` where `SID`='{$it_session}' and `IP` = '{$ip}'");
             unset($SESSION_VARS);
         } else {
-            se_db_query("DELETE from `session` where (`TIMES`<'$newtimes') OR (`TIMES`<'$daytimes')");
+            se_db_query("DELETE from `session` where (`TIMES`<'{$newtimes}') OR (`TIMES`<'{$daytimes}')");
             if (se_db_error()) {
                 unlink(SE_ROOT . 'system/logs/session.upd');
             }
 
-
-            $mysql = se_db_query("select * from `session` where `SID` = '$it_session' and `IP` = '$ip'");
+            $mysql = se_db_query("select * from `session` where `SID` = '{$it_session}' and `IP` = '{$ip}'");
             if (se_db_num_rows($mysql) > 0) {
-
 
                 $PAGES = "";
                 $sess = se_db_fetch_array($mysql);
@@ -193,8 +205,10 @@ function check_session($logout, $arr_auth = array())
                     if ($SESSIONBLOCK != "") {
                         $BLOCK = "Y";
                         $PAGES = getRequest('page');
-                    } else
+                    } else {
                         $BLOCK = "N";
+                    }
+
                 }
 
                 $SESSION_VARS['SID'] = $sess['SID'];
@@ -221,8 +235,10 @@ function check_session($logout, $arr_auth = array())
                     se_db_query("INSERT INTO `session`
 								(`SID`,`TIMES`,`IDUSER`,`GROUPUSER`,`ADMINUSER`,`USER`,`LOGIN`,`PASSW`,`IP`)
 								 values('$it_session','$times','$s1','$s2','$s3','$s4','$s5','$s6','$ip')");
-                } else
+                } else {
                     unset($SESSION_VARS);
+                }
+
             }
         }
     } else {
@@ -234,8 +250,10 @@ function check_session($logout, $arr_auth = array())
             if (isset($_SESSION['__SE_AUTH']) && !isset($SESSION_VARS)) {
                 $SESSION_VARS = $_SESSION['__SE_AUTH'];
             } else {
-                if (isset($SESSION_VARS))
+                if (isset($SESSION_VARS)) {
                     $_SESSION['__SE_AUTH'] = $SESSION_VARS;
+                }
+
             }
         }
     }
@@ -245,8 +263,10 @@ function check_session($logout, $arr_auth = array())
 function seUserGroup()
 {
     global $SESSION_VARS;
-    if (isset($SESSION_VARS['GROUPUSER']))
-       return intval($SESSION_VARS['GROUPUSER']);
+    if (isset($SESSION_VARS['GROUPUSER'])) {
+        return intval($SESSION_VARS['GROUPUSER']);
+    }
+
 }
 
 //Получить ID учетной записи пользователя
@@ -254,7 +274,7 @@ function seUserId()
 {
     global $SESSION_VARS;
     if (isset($SESSION_VARS['IDUSER'])) {
-       return intval($SESSION_VARS['IDUSER']);
+        return intval($SESSION_VARS['IDUSER']);
     }
 }
 
@@ -262,8 +282,10 @@ function seUserId()
 function seUserGroupName()
 {
     global $SESSION_VARS;
-    if (isset($SESSION_VARS['ADMINUSER']))
-       return $SESSION_VARS['ADMINUSER'];
+    if (isset($SESSION_VARS['ADMINUSER'])) {
+        return $SESSION_VARS['ADMINUSER'];
+    }
+
 }
 
 //Получить имя пользователя
@@ -275,7 +297,7 @@ function seUserName()
         $person = new sePerson();
         $person->find($user_id);
         return trim($person->last_name . ' ' . $person->first_name . ' ' . $person->sec_name);
-    } else 
+    } else
     if (seUserGroup()) {
         return 'Administrator';
     }
@@ -286,8 +308,10 @@ function seUserName()
 function seUserLogin()
 {
     global $SESSION_VARS;
-    if (isset($SESSION_VARS['AUTH_USER']))
-       return $SESSION_VARS['AUTH_USER'];
+    if (isset($SESSION_VARS['AUTH_USER'])) {
+        return $SESSION_VARS['AUTH_USER'];
+    }
+
 }
 
 function seUserEmail()
@@ -301,7 +325,7 @@ function seUserAccess($namepage)
     $group = 0;
     $namegroup = '';
     $pages = seData::getInstance()->getPages();
-    if (!empty($pages))
+    if (!empty($pages)) {
         foreach ($pages as $page) {
             if (trim($page['name'][0]) == $namepage) {
                 $group = ($page->groupslevel < 6) ? $page->groupslevel : 0;
@@ -309,6 +333,7 @@ function seUserAccess($namepage)
                 break;
             }
         }
+    }
 
     return getLoginAccess($group, $namegroup, seUserGroup(), seUserGroupName(), seUserLogin());
 }
@@ -316,8 +341,14 @@ function seUserAccess($namepage)
 // Проверить роль пользователя
 function seUserRole($namerole, $user_id = 0)
 {
-    if (!SE_DB_ENABLE) return false;
-    if (!$user_id) $user_id = seUserId();
+    if (!SE_DB_ENABLE) {
+        return false;
+    }
+
+    if (!$user_id) {
+        $user_id = seUserId();
+    }
+
     $user = new seTable('se_user_group', 'sug');
     $user->innerjoin('se_group sg', 'sug.group_id=sg.id');
     $user->where("sug.user_id=?", $user_id);

@@ -35,10 +35,10 @@ class plugin_macros
         if ($this->order_id) {
             $query = se_db_query("SELECT so.id_author, so.id_company, so.payment_type,so.date_order,
                 so.date_payee, so.discount, so.commentary, so.delivery_doc_num, so.delivery_service_name,
-                DATE_FORMAT(so.delivery_doc_date, '%d.%m.%Y') delivery_doc_date,                
+                DATE_FORMAT(so.delivery_doc_date, '%d.%m.%Y') delivery_doc_date,
                 (SELECT sa.account FROM shop_account sa WHERE sa.id_order=so.id LIMIT 1) as account,
-                so.curr, so.status, so.delivery_payee, 
-                (SELECT dl.name FROM shop_deliverytype dl WHERE dl.id=so.delivery_type) as delivery_name, 
+                so.curr, so.status, so.delivery_payee,
+                (SELECT dl.name FROM shop_deliverytype dl WHERE dl.id=so.delivery_type) as delivery_name,
                 so.delivery_status, so.delivery_date,
                 (SELECT SUM((st.price) * st.count) FROM shop_tovarorder st WHERE st.id_order=so.id) AS `price_tovar`
             FROM `shop_order` so
@@ -60,7 +60,7 @@ class plugin_macros
             $d[$r] = se_db_fields_item('spr_numbers', "registr='$r'", $sel);
         }
 
-        $summa = str_replace(array(' ', ','),  array('', '.'),  $summa);
+        $summa = str_replace(array(' ', ','), array('', '.'), $summa);
         $des = explode('.', $summa);
 
         $c = utf8_strlen($des[0]);
@@ -68,21 +68,52 @@ class plugin_macros
             $nums[$i] = utf8_substr($des[0], $c - $i, 1);
         }
         $rez = '';
-        if ($nums[7] != '') $rez .= $d['mill'][$nums[7]] . ' ';
-        if ($nums[6] != '') $rez .= $d['sot'][$nums[6]] . ' ';
-        if ($nums[5] != '' && $nums[5] != 1) $rez .= $d['dec'][$nums[5]] . ' ';
-        if ($nums[5] != '' && $nums[5] == 1) $rez .= $d['des'][$nums[4]] . ' ' . $d['thou'][0] . " ";
-        if ($nums[4] != '' && $nums[5] != 1) $rez .= $d['mel'][$nums[4]] . ' ' . $d['thou'][$nums[4]] . " ";
+        if ($nums[7] != '') {
+            $rez .= $d['mill'][$nums[7]] . ' ';
+        }
 
+        if ($nums[6] != '') {
+            $rez .= $d['sot'][$nums[6]] . ' ';
+        }
 
-        if ($nums[3] != '') $rez .= $d['sot'][$nums[3]] . " ";
-        if ($nums[2] != '' && $nums[2] != 1) $rez .= $d['dec'][$nums[2]] . " ";
-        if ($nums[2] != '' &&  $nums[2] == 1) $rez .= $d['des'][$nums[1]] . " ";
-        if ($nums[1] != '' &&  $nums[2] != 1) $rez .= $d['edin'][$nums[1]] . " ";
-        if (!empty($rez)) $rez = $rez . $d['wh'][0] . " ";
+        if ($nums[5] != '' && $nums[5] != 1) {
+            $rez .= $d['dec'][$nums[5]] . ' ';
+        }
+
+        if ($nums[5] != '' && $nums[5] == 1) {
+            $rez .= $d['des'][$nums[4]] . ' ' . $d['thou'][0] . " ";
+        }
+
+        if ($nums[4] != '' && $nums[5] != 1) {
+            $rez .= $d['mel'][$nums[4]] . ' ' . $d['thou'][$nums[4]] . " ";
+        }
+
+        if ($nums[3] != '') {
+            $rez .= $d['sot'][$nums[3]] . " ";
+        }
+
+        if ($nums[2] != '' && $nums[2] != 1) {
+            $rez .= $d['dec'][$nums[2]] . " ";
+        }
+
+        if ($nums[2] != '' && $nums[2] == 1) {
+            $rez .= $d['des'][$nums[1]] . " ";
+        }
+
+        if ($nums[1] != '' && $nums[2] != 1) {
+            $rez .= $d['edin'][$nums[1]] . " ";
+        }
+
+        if (!empty($rez)) {
+            $rez = $rez . $d['wh'][0] . " ";
+        }
+
         $kop = $des[1];
         if (!empty($kop)) {
-            while (utf8_strlen($kop) < 2) $kop .= "0";
+            while (utf8_strlen($kop) < 2) {
+                $kop .= "0";
+            }
+
             $rez .= $kop . " " . $d['fr'][0];
         }
 
@@ -92,35 +123,45 @@ class plugin_macros
 
     public function getMonth($m)
     {
-        if ($this->lang == 'rus' || $this->lang == 'blr')
+        if ($this->lang == 'rus' || $this->lang == 'blr') {
             $smonth = array('января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря');
-        else
+        } else {
             $smonth = array('January', ' February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
+        }
+
         return $smonth[$m - 1];
     }
 
     private function parseOrder($text)
     {
         if ($this->order_id) {
-            if (!$this->payment_id) $this->payment_id = $this->ORDER['payment_type'];
-            if (!empty($this->ORDER))
+            if (!$this->payment_id) {
+                $this->payment_id = $this->ORDER['payment_type'];
+            }
+
+            if (!empty($this->ORDER)) {
                 foreach ($this->ORDER as $k => $v) {
                     $text = str_replace("[ORDER." . strtoupper($k) . "]", trim($v), $text);
                 }
+            }
+
             $query = se_db_query("SELECT telnumber,email,calltime,address,postindex FROM shop_delivery WHERE id_order='{$this->order_id}'");
             $ORDERADDR = se_db_fetch_assoc($query);
-            if (!empty($ORDERADDR))
+            if (!empty($ORDERADDR)) {
                 foreach ($ORDERADDR as $k => $v) {
                     $text = str_replace("[ORDER." . strtoupper($k) . "]", trim($v), $text);
                 }
+            }
 
             $query = se_db_query("SELECT `count`,`price`,`discount` FROM  shop_tovarorder WHERE id_order='{$this->order_id}';");
             $discount = 0;
             $rozn = 0;
-            if (!empty($query))
+            if (!empty($query)) {
                 while ($res = se_db_fetch_assoc($query)) {
                     $discount += round(se_MoneyConvert($res['discount'], $this->ORDER['curr'], $this->curr), 2) * $res['count'];
                 }
+            }
+
             $summ = round(se_MoneyConvert($this->ORDER['price_tovar'] + $this->ORDER['delivery_payee'] - $this->ORDER['discount'], $this->ORDER['curr'], $this->curr), 2) - $discount; //-$ORDER['discount']
             $this->summ = $summ;
             $fullsumm = round(se_MoneyConvert($this->ORDER['price_tovar'], $this->ORDER['curr'], $this->curr), 2);
@@ -128,7 +169,10 @@ class plugin_macros
 
             $discount += round(se_money_convert($this->ORDER['discount'], $this->ORDER['curr'], $this->curr), 2);
             $modsumma = explode('.', str_replace(',', '.', $summ));
-            if (!isset($modsumma[1])) $modsumma[1] = 0;
+            if (!isset($modsumma[1])) {
+                $modsumma[1] = 0;
+            }
+
             $deliveryStatus = "";
             $status = "Не олачен";
             switch ($this->ORDER['delivery_status']) {
@@ -156,10 +200,13 @@ class plugin_macros
                 case 'D':
                     $status = 'Удален';
                     break;
-                case 'K': {
+                case 'K':{
                         if (strtotime($this->ORDER['date_exchange'])) {
                             $status = 'Кредит до ' . date('d.m.Y', strtotime($this->ORDER['curr'])) . $deliveryStatus;
-                        } else $status = 'Кредит' . $deliveryStatus;
+                        } else {
+                            $status = 'Кредит' . $deliveryStatus;
+                        }
+
                         break;
                     }
                 case 'W':
@@ -171,7 +218,6 @@ class plugin_macros
                 case 'T':
                     $status = 'Тест';
             }
-
 
             $array_change = array(
                 'ORDER_DISCOUNT' => se_formatMoney($discount, $this->curr),
@@ -199,39 +245,46 @@ class plugin_macros
                 'ORDER.SUMM_TAX' => str_replace(',', '.', $this->main['nds'] / (100 + $this->main['nds']) * $summ),
                 'ORDER.ID' => sprintf("%06d", $this->order_id),
                 'SHOP_ORDER_NUM' => sprintf("%06d", $this->order_id),
-                'ORDER.SID' => md5($this->order_id . 'se56Re2')
+                'ORDER.SID' => md5($this->order_id . 'se56Re2'),
             );
 
-            $query = se_db_query("SELECT su.code, su.name, suf.value FROM shop_order_userfields suf 
-                                  INNER JOIN shop_userfields su ON su.id = suf.id_userfield 
+            $query = se_db_query("SELECT su.code, su.name, suf.value FROM shop_order_userfields suf
+                                  INNER JOIN shop_userfields su ON su.id = suf.id_userfield
                                   WHERE id_order = {$this->order_id}");
             $fields_list = array();
-            if (!empty($query))
+            if (!empty($query)) {
                 while ($res = se_db_fetch_assoc($query)) {
                     $array_change["ORDER.FIELD." . strtoupper($res["code"])] = $res["value"];
                     $fields_list[$res["name"]] = $res["value"];
                 }
+            }
 
             if (!empty($fields_list)) {
                 $table_fields = '<table border=0 cellpadding=3 cellspacing=1>';
-                foreach ($fields_list as $key => $value)
+                foreach ($fields_list as $key => $value) {
                     $table_fields .= "<tr><td>{$key}</td>{$value}<td></td></tr>";
+                }
+
                 $table_fields .= '</table>';
                 $array_change["ORDER.FIELDS"] = $table_fields;
             }
 
             $this->user_id = $this->ORDER['id_author'];
             $this->company_id = $this->ORDER['id_company'];
-            if (!empty($array_change))
+            if (!empty($array_change)) {
                 foreach ($array_change as $k => $v) {
                     while (preg_match("/\[" . $k . "]/", $text)) {
                         $text = str_replace("[{$k}]", $v, $text);
                     }
                 }
+            }
 
             // Список доставки
             if (preg_match("/\<DELIVERY\>([\w\W]{1,})\<\/DELIVERY\>/i", $text, $res_math)) {
-                if (!($this->ORDER['delivery_payee'] > 0)) $res_math[1] = '';
+                if (!($this->ORDER['delivery_payee'] > 0)) {
+                    $res_math[1] = '';
+                }
+
                 $text = str_replace($res_math[0], $res_math[1], $text);
             }
 
@@ -328,10 +381,12 @@ class plugin_macros
 
                     //  значения параметров
                     foreach ($headers as $tmpKey => $tmpVal) {
-                        if (array_key_exists($tmpKey, $line['params']))
+                        if (array_key_exists($tmpKey, $line['params'])) {
                             $shopListParams .= '<td style="padding-top: 10px;">' . $line['params'][$tmpKey] . '</td>';
-                        else
+                        } else {
                             $shopListParams .= '<td style="padding-top: 10px;">&nbsp;</td>';
+                        }
+
                     }
                     $shopListParams .= '<td style="padding-top: 10px;">' . floatval($line['count']) . '</td>';
                     $shopListParams .= '<td style="padding-top: 10px;">' . floatval($line['price'] - $line['discount']) . '</td>';
@@ -344,7 +399,6 @@ class plugin_macros
                 $text = str_replace('[SHOPLIST.PARAMS]', $shopListParams, $text);
             }
 
-
             if (preg_match("/\<SHOPLIST\>([\w\W]{1,})\<\/SHOPLIST\>/i", $text, $res_math) || preg_match("/\<!--\<SHOPLIST\>--\>([\w\W]{1,})\<!--\<\/SHOPLIST\>--\>/i", $text, $res_math)) {
                 $SHOPLIST = "";
                 $query = se_db_query("SELECT sp.name, sp.article, st.`nameitem`, st.count,st.discount,st.price, (SELECT `picture` FROM shop_img WHERE id_price=sp.id AND `default`=1 LIMIT 1) AS img
@@ -356,8 +410,14 @@ class plugin_macros
                     $LISTIT = $res_math[1];
                     $it++;
                     $LISTIT = str_replace("[SHOPLIST.ITEM]", $it, $LISTIT);
-                    if (!empty($res['nameitem'])) $res['name'] = $res['nameitem'];
-                    if (!empty($res['price'])) $res['price'] = se_MoneyConvert($res['price'], $this->ORDER['curr'], $this->curr);
+                    if (!empty($res['nameitem'])) {
+                        $res['name'] = $res['nameitem'];
+                    }
+
+                    if (!empty($res['price'])) {
+                        $res['price'] = se_MoneyConvert($res['price'], $this->ORDER['curr'], $this->curr);
+                    }
+
                     $res['discount'] = $discount = number_format(se_MoneyConvert($res['discount'], $this->ORDER['curr'], $this->curr), 2, '.', '');
                     $res['imgurl'] = '';
                     if ($res['img']) {
@@ -365,19 +425,23 @@ class plugin_macros
                         $res['img'] = '<img src="' . $res['imgurl'] . '" width="100">';
                     }
 
-                    if (!empty($res['discount']))
+                    if (!empty($res['discount'])) {
                         $res['fdiscount'] = se_formatMoney($discount, $this->curr);
+                    }
+
                     $res['fsumma'] = se_formatMoney(round($res['price'] - $discount, 2) * $res['count'], $this->curr);
                     $res['fprice'] = se_formatMoney($res['price'], $this->curr);
                     $res['summa'] = number_format(round($res['price'], 2) * $res['count'], 2, '.', '');
                     $res['summa_total'] = number_format(round($res['price'] - $discount, 2) * $res['count'], 2, '.', '');
                     //$res['price'] = se_formatMoney($res['price'];
                     foreach ($res as $k => $v) {
-                        $LISTIT = str_replace("[SHOPLIST." . strtoupper($k) . "]",  $v, $LISTIT);
+                        $LISTIT = str_replace("[SHOPLIST." . strtoupper($k) . "]", $v, $LISTIT);
                     }
                     $SHOPLIST .= $this->execute($LISTIT);
                 }
-                if ($this->ORDER['delivery_payee'] > 0) $it++;
+                if ($this->ORDER['delivery_payee'] > 0) {
+                    $it++;
+                }
 
                 $text = str_replace("[ORDER.ITEMCOUNT]", $it, $text);
                 $text = str_replace($res_math[0], $SHOPLIST, $text);
@@ -403,18 +467,21 @@ class plugin_macros
                 if ($coupon->isFind()) {
                     $coupon_discount = round(se_MoneyConvert($coupon->discount, $this->ORDER['curr'], $this->curr), 2);
                     $coupon_percent = $coupon->percent;
-                    if (empty($coupon_percent))
+                    if (empty($coupon_percent)) {
                         $coupon_percent = $coupon_discount / ($summ - $delivery + $coupon_discount) * 100;
+                    }
 
                     $coupon_changes = array(
                         '[COUPON.ID]' => $coupon->id_coupon,
                         '[COUPON.CODE]' => $coupon->code_coupon,
                         '[COUPON.DISCOUNT]' => se_formatMoney($coupon_discount, $this->curr),
-                        '[COUPON.PERCENT]' => round($coupon_percent, 2)
+                        '[COUPON.PERCENT]' => round($coupon_percent, 2),
                     );
                 }
-                if (!empty($coupon_changes))
+                if (!empty($coupon_changes)) {
                     $text = strtr($text, $coupon_changes);
+                }
+
                 $text = preg_replace('/\[COUPON\.(.+?)\]/i', '', $text);
             }
         }
@@ -430,10 +497,12 @@ class plugin_macros
             "`reg_date` as `regdate`,`last_name` as `lastname`,`doc_ser`,`doc_num`,`doc_registr`, `addr` as `fizadres`,
             `first_name` as `firstname`,`sec_name` as `secname`, `id`, `email`, `phone`, `email` as `useremail`"
         );
-        if (!empty($user))
+        if (!empty($user)) {
             foreach ($user as $k => $v) {
                 $text = str_replace('[USER.' . strtoupper($k) . ']', trim(stripslashes($v)), $text);
             }
+        }
+
         $text = str_replace('[USEREMAIL]', $user['email'], $text);
 
         $text = str_replace(
@@ -444,17 +513,21 @@ class plugin_macros
 
         $query = se_db_query("SELECT `rekv_code`,`value` FROM user_rekv
             WHERE (id_author={$this->user_id}) AND (lang='{$this->lang}')");
-        if (!empty($query))
+        if (!empty($query)) {
             while ($line = se_db_fetch_assoc($query)) {
                 $text = str_replace('[USER.' . strtoupper($line['rekv_code']) . ']', $line['value'], $text);
             }
+        }
+
         unset($user);
         // Таблица user_urid
         $user = se_db_fields_item("user_urid", "id={$this->user_id}", "company,director,posthead,bookkeeper,uradres,tel,fax");
-        if (!empty($user))
+        if (!empty($user)) {
             foreach ($user as $k => $v) {
                 $text = str_replace('[USER.' . strtoupper($k) . ']', stripslashes($v), $text);
             }
+        }
+
         if (strpos($text, '[USERLOGIN]') !== false) {
             $text = str_replace('[USERLOGIN]', se_db_fields_item('se_user', 'id=' . $this->user_id, 'username'), $text);
         }
@@ -464,32 +537,36 @@ class plugin_macros
         }
         // Пользовательские поля контакта
         $query = se_db_query("SELECT su.code, su.name, pu.value FROM person_userfields pu
-                                  INNER JOIN shop_userfields su ON su.id = pu.id_userfield 
+                                  INNER JOIN shop_userfields su ON su.id = pu.id_userfield
                                   WHERE id_person = {$this->user_id}");
         $fields_list = array();
-        if (!empty($query))
+        if (!empty($query)) {
             while ($res = se_db_fetch_assoc($query)) {
                 $field = strtoupper($res["code"]);
                 $text = str_replace("[PERSON.FIELD.{$field}]", $res["value"], $text);
                 $fields_list[$res["name"]] = $res["value"];
             }
+        }
 
         if (!empty($fields_list)) {
             $table_fields = '<table border=0 cellpadding=3 cellspacing=1>';
-            foreach ($fields_list as $key => $value)
+            foreach ($fields_list as $key => $value) {
                 $table_fields .= "<tr><td>{$key}</td>{$value}<td></td></tr>";
+            }
+
             $table_fields .= '</table>';
             $text = str_replace("[PERSON.FIELDS]", $table_fields, $text);
         }
 
         $this->user_id = $this->ORDER['id_author'];
         $this->company_id = $this->ORDER['id_company'];
-        if (!empty($array_change))
+        if (!empty($array_change)) {
             foreach ($array_change as $k => $v) {
                 while (preg_match("/\[" . $k . "]/", $text)) {
                     $text = str_replace("[{$k}]", $v, $text);
                 }
             }
+        }
 
         $text = preg_replace("/\[USER\.(.+?)\]/i", '', $text);
         return $text;
@@ -498,27 +575,33 @@ class plugin_macros
     private function parseCompany($text)
     {
         $query = se_db_query("SELECT * FROM company WHERE id = {$this->company_id}");
-        if (!empty($query))
-            while ($res = se_db_fetch_assoc($query))
-                foreach ($res as $key => $value)
+        if (!empty($query)) {
+            while ($res = se_db_fetch_assoc($query)) {
+                foreach ($res as $key => $value) {
                     $text = str_replace('[COMPANY.' . strtoupper($key) . ']', trim(stripslashes($value)), $text);
+                }
+            }
+        }
 
         // Пользовательские поля компании
         $query = se_db_query("SELECT su.code, su.name, pu.value FROM company_userfields pu
-                                  INNER JOIN shop_userfields su ON su.id = pu.id_userfield 
+                                  INNER JOIN shop_userfields su ON su.id = pu.id_userfield
                                   WHERE id_company = {$this->company_id}");
         $fields_list = array();
-        if (!empty($query))
+        if (!empty($query)) {
             while ($res = se_db_fetch_assoc($query)) {
                 $field = strtoupper($res["code"]);
                 $text = str_replace("[COMPANY.FIELD.{$field}]", $res["value"], $text);
                 $fields_list[$res["name"]] = $res["value"];
             }
+        }
 
         if (!empty($fields_list)) {
             $table_fields = '<table border=0 cellpadding=3 cellspacing=1>';
-            foreach ($fields_list as $key => $value)
+            foreach ($fields_list as $key => $value) {
                 $table_fields .= "<tr><td>{$key}</td>{$value}<td></td></tr>";
+            }
+
             $table_fields .= '</table>';
             $text = str_replace("[COMPANY.FIELDS]", $table_fields, $text);
         }
@@ -539,12 +622,18 @@ class plugin_macros
         while (preg_match("/\bSUM\((.+?)\)/i", $text, $res_math)) {
             $res_ = explode(',', $res_math[1]);
             $sumres = 0;
-            if (!empty($res_))
+            if (!empty($res_)) {
                 foreach ($res_ as $sumres_) {
                     $sumres += str_replace('"', '', $sumres_);
                 }
-            if ($this->execute($res_[0]) == $this->execute($res_[1])) $res_ = 1;
-            else $res_ = 0;
+            }
+
+            if ($this->execute($res_[0]) == $this->execute($res_[1])) {
+                $res_ = 1;
+            } else {
+                $res_ = 0;
+            }
+
             $text = preg_replace("/\bSUM\((.+?)\)/i", $sumres, $text);
             //$text = $this->execute($text);
         }
@@ -557,7 +646,10 @@ class plugin_macros
                     $res = str_replace('ms', $month, $res);
                 }
                 $res = str_replace(array('m', 'd', 'y', 'Y'), array($res_[1], $res_[2], substr($res_[0], 2, 2), $res_[0]), $res);
-            } else $res = '';
+            } else {
+                $res = '';
+            }
+
             $text = str_replace($res_math[0], $res, $text);
         }
 
@@ -582,14 +674,13 @@ class plugin_macros
             //$text = $this->execute($text);
         }
 
-
         while (preg_match("/BASE64ENCODE\((.+?)\)/iu", $text, $res_math)) {
-            $text = str_replace($res_math[0],  base64_encode($res_math[1]), $text);
+            $text = str_replace($res_math[0], base64_encode($res_math[1]), $text);
             //$text = $this->execute($text);
         }
 
         while (preg_match("/BASE64DECODE\((.+?)\)/iu", $text, $res_math)) {
-            $text = str_replace($res_math[0],  $this->execute(base64_decode($res_math[1])), $text);
+            $text = str_replace($res_math[0], $this->execute(base64_decode($res_math[1])), $text);
             //$text = $this->execute($text);
         }
 
@@ -621,7 +712,6 @@ class plugin_macros
             $text = str_replace($res_math[0], $res_math[2], $text);
         }
 
-
         while (preg_match("/SAMETEXT\(\"(.+?)\"\)/i", $text, $res_math)) {
             $res_ = explode('","', $res_math[1]);
             if (mb_strtoupper($this->execute($res_[0]), 'UTF-8') == mb_strtoupper($this->execute($res_[1]), 'UTF-8')) {
@@ -633,10 +723,12 @@ class plugin_macros
             //$text = $this->execute($text);
         }
 
-
         while (strpos($text, '<php>') !== false) {
             list(, $res) = explode('<php>', $text);
-            if (strpos($res, '</php>') === false) break;
+            if (strpos($res, '</php>') === false) {
+                break;
+            }
+
             list($res) = explode('</php>', $res);
             $res_ = $this->evalPhp($res);
             $text = str_replace('<php>' . $res . '</php>', $res_, $text);
@@ -647,26 +739,44 @@ class plugin_macros
         }
 
         while (preg_match("/@if\((.*?)\)\{(.+?)\}/s", $text, $mach)) {
-            if ((trim($mach[1]) == '') or ($mach[1] == '0') or ($mach[1] == 'false') or ($mach[1] == 'no')) $mach[2] = '';
+            if ((trim($mach[1]) == '') or ($mach[1] == '0') or ($mach[1] == 'false') or ($mach[1] == 'no')) {
+                $mach[2] = '';
+            }
+
             if (strpos($mach[1], '==')) {
                 $rr = explode('==', $mach[1]);
-                if ($rr[0] != $rr[1]) $mach[2] = '';
+                if ($rr[0] != $rr[1]) {
+                    $mach[2] = '';
+                }
+
             }
             if (strpos($mach[1], '!=')) {
                 $rr = explode('!=', $mach[1]);
-                if ($rr[0] == $rr[1]) $mach[2] = '';
+                if ($rr[0] == $rr[1]) {
+                    $mach[2] = '';
+                }
+
             }
             $text = preg_replace("/@if\((.*?)\)\{(.+?)\}/s", $mach[2], $text);
         }
         while (preg_match("/@notif\((.*?)\)\{(.+?)\}/s", $text, $mach)) {
-            if ((trim($mach[1]) != '') or ($mach[1] == '1') or ($mach[1] == 'true') or ($mach[1] == 'yes')) $mach[2] = '';
+            if ((trim($mach[1]) != '') or ($mach[1] == '1') or ($mach[1] == 'true') or ($mach[1] == 'yes')) {
+                $mach[2] = '';
+            }
+
             if (strpos($mach[1], '!=')) {
                 $rr = explode('!=', $mach[1]);
-                if ($rr[0] == $rr[1]) $mach[2] = '';
+                if ($rr[0] == $rr[1]) {
+                    $mach[2] = '';
+                }
+
             }
             if (strpos($mach[1], '==')) {
                 $rr = explode('==', $mach[1]);
-                if ($rr[0] != $rr[1]) $mach[2] = '';
+                if ($rr[0] != $rr[1]) {
+                    $mach[2] = '';
+                }
+
             }
             $text = preg_replace("/@notif\((.*?)\)\{(.+?)\}/s", $mach[2], $text);
         }
@@ -702,7 +812,10 @@ class plugin_macros
             $sel = explode(',', $def);
             foreach ($sel as $if) {
                 $if = explode('=', $if);
-                if (strtolower($res_) == strtolower($if[1])) $res = $if[0];
+                if (strtolower($res_) == strtolower($if[1])) {
+                    $res = $if[0];
+                }
+
             }
             $text = str_replace($res_math[0], $res, $text);
         }
@@ -729,13 +842,15 @@ class plugin_macros
             $res_ = $res_math[1];
             if (isset($_GET[$res_math[1]])) {
                 $res_ = htmlspecialchars(stripslashes($_GET[$res_math[1]]));
-            } else $res_ = '';
+            } else {
+                $res_ = '';
+            }
+
             $text = str_replace($res_math[0], $res_, $text);
         }
         $text = str_replace('[CURDATE]', date('Y-m-d'), $text);
         return $text;
     }
-
 
     private function parsePayment($text)
     {
@@ -749,10 +864,12 @@ class plugin_macros
             $text = str_replace('[PAYMENT.CURR]', $this->curr, $text);
             $text = str_replace('[PAYMENT.ID]', $this->payment_id, $text);
             $query = se_db_query("select codename,value FROM bank_accounts WHERE id_payment IN (SELECT id FROM shop_payment WHERE shop_payment.lang='{$this->lang}');");
-            if (!empty($query))
+            if (!empty($query)) {
                 while ($payment = se_db_fetch_assoc($query)) {
                     $text = str_replace('[PAYMENT.' . strtoupper($payment['codename']) . ']', $payment['value'], $text);
                 }
+            }
+
         }
         return $text;
     }
@@ -769,7 +886,7 @@ class plugin_macros
                     $text = str_replace("[ADMIN_MAIL_SUPPORT]", $v, $text);
                 }
                 $k = strtoupper($k);
-                $text = str_replace(array('[MAIN.' . $k . ']', '[ADMIN_' . $k . "]"),  $v, $text);
+                $text = str_replace(array('[MAIN.' . $k . ']', '[ADMIN_' . $k . "]"), $v, $text);
             }
         }
         $text = str_replace('[THISNAMESITE]', $_SERVER['HTTP_HOST'], $text);

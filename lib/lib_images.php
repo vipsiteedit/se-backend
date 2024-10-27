@@ -1,7 +1,6 @@
 <?php
 require_once dirname(__FILE__) . '/lib_function.php';
 
-
 function se_create_fileimage($source, $ext)
 {
     switch ($ext) {
@@ -25,20 +24,20 @@ function se_set_image($width, $pathimage, $outname, $itemimage = 0)
     $file = false;
     $filename = "";
     $IMAGE_DIR = "/images/" . $pathimage . "/";
-    if (!is_dir(getcwd() . "/images"))
+    if (!is_dir(getcwd() . "/images")) {
         mkdir(getcwd() . "/images");
+    }
 
-    if (!is_dir(getcwd() . $IMAGE_DIR))
+    if (!is_dir(getcwd() . $IMAGE_DIR)) {
         mkdir(getcwd() . $IMAGE_DIR);
+    }
 
-    // ���� ����������� ��������
     if (is_uploaded_file($_FILES['userfile']['tmp_name'][$itemimage])) {
 
         $userfile = $_FILES['userfile']['tmp_name'][$itemimage];
         $userfile_size = $_FILES['userfile']['size'][$itemimage];
         $user = strtolower(htmlspecialchars($_FILES['userfile']['name'][$itemimage], ENT_QUOTES));
 
-        //���������, ��� ����������� ���� - ��������
         $sz = GetImageSize($userfile);
         if (preg_match("/\.(gif|jpg|png|jpeg)$/", $user, $m) && ($sz[2] == 1 || $sz[2] == 2 || $sz[2] == 3)) {
             $fileextens = $m[1];
@@ -47,14 +46,13 @@ function se_set_image($width, $pathimage, $outname, $itemimage = 0)
             return 'error type';
         }
 
-        //���� ������ ����� ������ ���������
         if ($userfile_size > 3024000) {
             $flag = false;
             return 'error size';
         }
         $file = true;
     }
-    // ���� ��������� ����
+
     if ($file) {
 
         $uploadfile = getcwd() . $IMAGE_DIR . $outname . '.' . getExtFile($user);
@@ -68,7 +66,8 @@ function se_set_image($width, $pathimage, $outname, $itemimage = 0)
         } else {
             move_uploaded_file($userfile, $uploadfile);
         }
-    };
+    }
+    ;
     return $filename;
 }
 
@@ -81,20 +80,20 @@ function se_set_image_prev($thumbwdth, $width, $pathimage, $outname, $itemimage 
     $file = false;
     $filename = "";
     $IMAGE_DIR = "/images/" . $pathimage . "/";
-    if (!is_dir(getcwd() . "/images"))
+    if (!is_dir(getcwd() . "/images")) {
         mkdir(getcwd() . "/images");
+    }
 
-    if (!is_dir(getcwd() . $IMAGE_DIR))
+    if (!is_dir(getcwd() . $IMAGE_DIR)) {
         mkdir(getcwd() . $IMAGE_DIR);
+    }
 
-    // ���� ����������� ��������
     if (is_uploaded_file(@$_FILES['userfile']['tmp_name'][$itemimage])) {
 
         $userfile = $_FILES['userfile']['tmp_name'][$itemimage];
         $userfile_size = $_FILES['userfile']['size'][$itemimage];
         $user = strtolower(htmlspecialchars($_FILES['userfile']['name'][$itemimage], ENT_QUOTES));
 
-        //���������, ��� ����������� ���� - ��������
         $sz = GetImageSize($userfile);
         $fileextens = '';
 
@@ -105,21 +104,19 @@ function se_set_image_prev($thumbwdth, $width, $pathimage, $outname, $itemimage 
             return 'error type';
         }
 
-        //���� ������ ����� ������ ���������
         if ($userfile_size > 3024000) {
             $flag = false;
             return 'error_size';
         }
         $file = true;
     }
-    // ���� ��������� ����
+
     if ($file) {
 
         $uploadfile = getcwd() . $IMAGE_DIR . $outname . "." . getExtFile($user);
         $uploadfileprev = getcwd() . $IMAGE_DIR . $outname . "_prev." . getExtFile($user);
         $filename = $outname . "." . substr($user, -3);
         $fileextens = getExtFile($user);
-
 
         if ($sz[0] > $width) {
             $uploadfiletmp = getcwd() . $IMAGE_DIR . $outname . ".temp";
@@ -134,7 +131,6 @@ function se_set_image_prev($thumbwdth, $width, $pathimage, $outname, $itemimage 
     return $filename;
 }
 
-
 function ImgCreate($thumbdest, $dest, $source, $ext, $wdth, $twdth)
 {
     $wdth = intval($wdth);
@@ -142,7 +138,6 @@ function ImgCreate($thumbdest, $dest, $source, $ext, $wdth, $twdth)
     $ext = getExtFile($dest);
     $img = se_create_fileimage($source, $ext);
 
-    // ������� ���������������� ������� ��� �������
     $f_getimagesize = getimagesize($source);
     $width = $f_getimagesize[0];
     $height = $f_getimagesize[1];
@@ -150,12 +145,16 @@ function ImgCreate($thumbdest, $dest, $source, $ext, $wdth, $twdth)
     if ($wdth > $width) {
         $wdth = intval($width);
         $destHeight = intval($height);
-    } else $destHeight = intval(round($height * $wdth / $width));
+    } else {
+        $destHeight = intval(round($height * $wdth / $width));
+    }
 
     if ($twdth > $width) {
         $twdth = intval($width);
         $thdestHeight = intval($height);
-    } else $thdestHeight = intval(round($height * $twdth / $width));
+    } else {
+        $thdestHeight = intval(round($height * $twdth / $width));
+    }
 
     $d_im = imagecreatetruecolor($wdth, $destHeight);
     $thd_im = imagecreatetruecolor($twdth, $thdestHeight);
@@ -174,7 +173,6 @@ function ImgCreate($thumbdest, $dest, $source, $ext, $wdth, $twdth)
         imagecolorallocate($d_im, 0, 0, 0);
         imagecolorallocate($thd_im, 0, 0, 0);
     }
-
 
     imagecopyresampled($d_im, $img, 0, 0, 0, 0, $wdth, $destHeight, $width, $height);
     imagecopyresampled($thd_im, $img, 0, 0, 0, 0, $twdth, $thdestHeight, $width, $height);
@@ -209,7 +207,10 @@ function setTransparency($new_image, $destWidth, $destHeight)
 
 function ThumbCreate($dest, $source, $res = 's', $size = 0, $x1 = 0, $y1 = 0, $w = 0, $h = 0, $quality = 75)
 {
-    if (empty($res) || strlen($res) > 1) $res = 's';
+    if (empty($res) || strlen($res) > 1) {
+        $res = 's';
+    }
+
     //$ext = getExtFile($source);
     $extarr = array(0 => '', 1 => 'gif', 2 => 'jpg', 3 => 'png');
     $f_getimagesize = getimagesize($source);
@@ -241,26 +242,32 @@ function ThumbCreate($dest, $source, $res = 's', $size = 0, $x1 = 0, $y1 = 0, $w
             }
             if ($res == 'm') {
                 if ($ratio_w > $ratio_h) {
-                    $wdth = (int)($width / $ratio_h);
+                    $wdth = (int) ($width / $ratio_h);
                     $x1 = ($wdth - $wm) / 2;
                 } else {
-                    $hght = (int)($height / $ratio_w);
+                    $hght = (int) ($height / $ratio_w);
                     $y1 = ($hght - $hm) / 2;
                 }
             } else {
                 $ratio = max($ratio_w, $ratio_h);
-                $wm = $wdth = (int)($width / $ratio);
-                $hm = $hght = (int)($height / $ratio);
+                $wm = $wdth = (int) ($width / $ratio);
+                $hm = $hght = (int) ($height / $ratio);
             }
         }
     } else {
         if (($width >= $height && $res == 's') || $res == 'w' || $res == 'm') {
-            if (intval($size) > $width) $size = $width;
+            if (intval($size) > $width) {
+                $size = $width;
+            }
+
             $wm = $wdth = intval($size);
             $hm = $hght = intval(round($height * $wdth / $width));
         }
         if (($width <= $height && $res == 's') || $res == 'h' || $res == 'm') {
-            if (intval($size) > $height) $size = $height;
+            if (intval($size) > $height) {
+                $size = $height;
+            }
+
             $hm = $hght = intval($size);
             $wm = $wdth = intval(round($width * $hght / $height));
         }
@@ -296,18 +303,20 @@ function ThumbCreate($dest, $source, $res = 's', $size = 0, $x1 = 0, $y1 = 0, $w
         }
 
         imagecopyresampled($d_im, $img, 0, 0, $x1, $y1, $wdth, $hght, $width, $height);
-        if ($dest == '') header("Content-type: " . $f_getimagesize['mime']);
+        if ($dest == '') {
+            header("Content-type: " . $f_getimagesize['mime']);
+        }
 
         switch ($ext) {
-            case "gif": {
+            case "gif":{
                     @imagegif($d_im, $dest);
                     break;
                 }
-            case "png": {
+            case "png":{
                     @imagepng($d_im, $dest);
                     break;
                 }
-            default: {
+            default:{
                     @imagejpeg($d_im, $dest, $quality);
                     break;
                 }
@@ -315,14 +324,20 @@ function ThumbCreate($dest, $source, $res = 's', $size = 0, $x1 = 0, $y1 = 0, $w
         imagedestroy($d_im);
         imagedestroy($img);
     }
-    if ($dest == '') return;
+    if ($dest == '') {
+        return;
+    }
+
 }
 
 function SiteScreenshot($url, $resolution = '1024x768', $size = '100', $format = 'png')
 {
     $Filename = md5($url . $size . $resolution) . ".jpg";
     $ScreenshotDirectory = "/images/screens/";
-    if (!file_exists($ScreenshotDirectory)) mkdir($ScreenshotDirectory);
+    if (!file_exists($ScreenshotDirectory)) {
+        mkdir($ScreenshotDirectory);
+    }
+
     if (@is_file($ScreenshotDirectory . $Filename)) {
         return $ScreenshotDirectory . $Filename;
     } else {
@@ -381,9 +396,14 @@ function se_getDImage($img, $size = 200, $res = 's', $water = '', $color = 0x000
 {
     $water = trim($water);
     $res = ($res == 'w' || $res == 'h' || $res == 'm') ? $res : 's';
-    if ($water && getExtFile($img) == 'gif') $water = '';
+    if ($water && getExtFile($img) == 'gif') {
+        $water = '';
+    }
 
-    if (empty($size)) $size = 200;
+    if (empty($size)) {
+        $size = 200;
+    }
+
     $wat = ($water) ? 'w' : '';
     $ext = getExtFile($img);
 
@@ -393,10 +413,15 @@ function se_getDImage($img, $size = 200, $res = 's', $water = '', $color = 0x000
     $destW = $dest . '.webp';
     $dest .= '.' . $ext;
     $root = $_SERVER['DOCUMENT_ROOT'];
-    if (substr($root, -1) != '/') $root .= '/';
+    if (substr($root, -1) != '/') {
+        $root .= '/';
+    }
+
     $path = 'images/prev/';
 
-    if (substr($img, 0, 1) == '/') $img = substr($img, 1);
+    if (substr($img, 0, 1) == '/') {
+        $img = substr($img, 1);
+    }
 
     if (!is_dir($root . $path)) {
         mkdir($root . $path);
@@ -415,19 +440,22 @@ function se_getDImage($img, $size = 200, $res = 's', $water = '', $color = 0x000
             $flist = glob($root . $path . md5($image) . '*.*');
             if (!empty($flist)) {
                 foreach ($flist as $f) {
-                    if ($f != $path . $dest) unlink($f);
+                    if ($f != $path . $dest) {
+                        unlink($f);
+                    }
+
                 }
             }
         }
         if (!file_exists($root . $path . $dest)) {
             if ($mode == 'check') {
-                $_SESSION['get_images'][(string)$dest] = $conf_image = array(
-                    'image' => (string)$image,
-                    'size' => (string)$size,
-                    'res' => (string)$res,
-                    'water' => (string)$water,
-                    'pos' => (string)$pos,
-                    'quality' => (string)$waterquality
+                $_SESSION['get_images'][(string) $dest] = $conf_image = array(
+                    'image' => (string) $image,
+                    'size' => (string) $size,
+                    'res' => (string) $res,
+                    'water' => (string) $water,
+                    'pos' => (string) $pos,
+                    'quality' => (string) $waterquality,
                 );
                 file_put_contents($root . $path . $dest . '.conf', json_encode($conf_image));
                 return '/lib/image.php?get_image=' . $dest;
@@ -442,14 +470,7 @@ function se_getDImage($img, $size = 200, $res = 's', $water = '', $color = 0x000
                         $watermarktype = 'text';
                         $watermark = $water;
                     }
-                    /*if (class_exists('Imagick') && $watermarktype == 'image'){
-                        thumbCreate($root . $path . $dest, $img, $res, $size, 0, 0, 0, 0, 75);
-                        $image = new Imagick($root . $path . $dest);
-                        $watermark = new Imagick($watermark);
-                        drawWatermark($image, $watermark, 5, 1);
-                        $image->writeImage($path . $dest);
-                    } else
-                    */
+
                     $imgobj = new plugin_imagewatermark($path . $dest);
                     $imgobj->execute($img, $watermark, $watermarktype, 0x0000FF, $waterquality, $path . $dest, $size, $res, $pos);
                     unset($imgobj);
@@ -479,8 +500,8 @@ function convert_webp($source, $pathout = '', $level = 90)
 {
     $type = exif_imagetype($source); // [] if you don't have exif you could use getImageSize()
     $allowedTypes = array(
-        2,  // [] jpg
-        3,  // [] png
+        2, // [] jpg
+        3, // [] png
     );
     if (!in_array($type, $allowedTypes)) {
         return false;
@@ -497,5 +518,8 @@ function convert_webp($source, $pathout = '', $level = 90)
             $cmd = "cwebp -lossless '{$source}' -o '{$outpath}/{$name}.webp'";
             break;
     }
-    if ($cmd) exec($cmd);
+    if ($cmd) {
+        exec($cmd);
+    }
+
 }

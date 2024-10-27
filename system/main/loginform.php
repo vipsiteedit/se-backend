@@ -12,7 +12,7 @@ function ml($title, $lang)
 {
     $lng = array();
     $namefile = SE_ROOT . '/system/loginlang.json';
-    if (file_exists($namefile)){
+    if (file_exists($namefile)) {
         $lng = json_decode(file_get_contents($namefile), true);
     }
     $tr = rus2translit($title);
@@ -67,7 +67,6 @@ function seGenRandomPassword($len = 6, $char_list = 'a-z,0-9')
     return $password;
 }
 
-
 $sql = " CREATE TABLE IF NOT EXISTS `se_loginza` (
         `id` int(10) unsigned NOT NULL auto_increment,
         `uid` varchar(50) NOT NULL,
@@ -103,7 +102,10 @@ $flag = 0;
 $list = array();
 // проверка переданного токена
 if (!empty($_POST['token']) && !(seUserGroup() || seUserId())) {
-    if (isset($_SESSION['loginza'])) unset($_SESSION['loginza']);
+    if (isset($_SESSION['loginza'])) {
+        unset($_SESSION['loginza']);
+    }
+
     // получаем профиль авторизованного пользователя
     $UserProfile = $LoginzaAPI->getAuthInfo($_POST['token']);
     $req['username'] = 'login' . $UserProfile->uid;
@@ -135,7 +137,7 @@ if (!empty($_POST['token']) && !(seUserGroup() || seUserId())) {
     $req['identity'] = $_GET['inden'];
     $req['provider'] = $_GET['prov'];
     $req['username'] = 'login' . $req['key'];
-    $passw = seGenRandomPassword();   //пароль
+    $passw = seGenRandomPassword(); //пароль
     $req['confirm'] = $req['passw'] = $passw;
     $req['last_name'] = $_GET['lnames'];
     $req['first_name'] = $_GET['fnames'];
@@ -217,7 +219,7 @@ if ($flag == 1) {
     if (($new_user_id > 0) && (seUserGroup() == 0)) {
         $arr = $user->select('*')->find($new_user_id);
         $person = $user->getPerson();
-        check_session(true);   //ЗАКРЫТЬ СЕССИЮ
+        check_session(true); //ЗАКРЫТЬ СЕССИЮ
         $auth['IDUSER'] = $new_user_id;
         $auth['GROUPUSER'] = 1;
         $login = $auth['USER'] = $person->first_name . " " . $person->last_name;
@@ -234,9 +236,12 @@ if (seUserGroup() > 0) {
     $_SESSION['loginza']['user_id'] = seUserId();
     list($uri, $target) = explode('?', $_SERVER["REQUEST_URI"]);
     list(, $target) = explode('&target=', $target);
-    if (!empty($target)) $uri . $target + SE_END;
+    if (!empty($target)) {
+        $uri . $target + SE_END;
+    }
+
     header("Location: " . $uri);
-} 
+}
 
 if (!empty($_SESSION['loginza']['is_auth'])) {
     $id_avatar = $_SESSION['loginza']['is_photo'];

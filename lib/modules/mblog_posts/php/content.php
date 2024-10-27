@@ -53,15 +53,7 @@ $posts->groupby('sbp.id');
 //echo $posts->getSQL() . '<br>';
 $SE_NAVIGATOR = $posts->pageNavigator($section->parametrs->param1);
 $postlist = $posts->getList();
-/*
-echo '[' . mysql_error() . ']<br>';
-$qqq = se_db_query("SHOW COLUMNS FROM se_blog_posts");
-while ($rrr = se_db_fetch_assoc($qqq)) {
-    echo $rrr['Field'] . '<br>';
-}
-//*/
-//echo '<pre>' . print_r($postlist, true) . '</pre>';
-//echo mysql_error();
+
 if (!empty($postlist)) {
     foreach ($postlist as $post) {
        // определяем категории в которых состоит пост

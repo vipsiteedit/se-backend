@@ -1,40 +1,40 @@
 <?php
 //BeginLib
-// Функция получает сумму заказа из базы данных магазина по номеру счета, 
-// В этой же функции можно проверить наличие заказа с запрашиваемым ID
-// здесь символически возвращает цену заказа из настроек config_zp.php
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ, 
+// пїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ ID
+// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ config_zp.php
 if (!function_exists('GetAmountOrder')) {
 function GetAmountOrder($IdOrder){
 	global $AmountOrder;
-	// Запрос к БД даных заказов 
+	// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ 
 	return $AmountOrder;
 }}
-// Функция успешного проведения оплаты
-// Конкретное наполнении функции зависит от бизнес логики вашего сайта.
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ.
 if (!function_exists('ConfirmOrder')) {
 function ConfirmOrder($IdOrder) {
-// Здесь необходимо выполнить все действия по обновлению статуса заказа, 
-// уведомлению клиента, отгрузке товара и пр. действия после получения оплаты заказа
-	// Отправляем письмо клиенту
+// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, 
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅ. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     se_shop_mail_payee_client($email_to, $array_change, $from, $email_from);
     se_shop_mail_payee_admin($email_to, $array_change, $from, $email_from);
     return true;
 }}
-// Функция отмены заказа
-// Конкретное наполнении функции зависит от бизнес логики вашего сайта.
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ.
 if (!function_exists('CancelOrder')) {
 function CancelOrder($IdOrder) {
-// Здесь необходимо выполнить все действия по отмене заказа
-    //!!! Удаляем корзину
+// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+    //!!! пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     unset($_SESSION['mshopcart']);
 	return true;
 }}
-// Отправление сообщение на e-mail
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ e-mail
 if (!function_exists('se_shop_mail')) {
 function se_shop_mail($mailtype, $email_to, $array_change, $from, $email_from, $lang="rus", $typpost="html") {
-    /* получатели */
+    /* пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ */
     $encode='utf-8';
-    $from = str_replace('№','No',$from);
+    $from = str_replace('пїЅ','No',$from);
     $arr_email_to = preg_split("/[\s,;]+/",$email_to);
     $email_to = '';
     foreach ($arr_email_to as $k => $v)
@@ -49,14 +49,14 @@ function se_shop_mail($mailtype, $email_to, $array_change, $from, $email_from, $
     $from = str_replace('&gt;','',$from);
     $mail_text = se_db_fetch_array(se_db_query("
         SELECT * FROM `shop_mail`
-        WHERE (`lang`='".$lang."')AND(`mailtype`='".$mailtype."') LIMIT 1;"), MYSQL_ASSOC);
+        WHERE (`lang`='".$lang."')AND(`mailtype`='".$mailtype."') LIMIT 1;"));
     if ($typpost!='html') $mail_text['letter'] = str_replace("<br>","\r\n",$mail_text['letter']);
     else $mail_text['letter'] = str_replace("\r\n","<br>",$mail_text['letter']);
     foreach ($array_change as $k => $v) {
         $mail_text['letter'] = str_replace("[".$k."]", $v, $mail_text['letter']);
         $mail_text['subject'] = str_replace("[".$k."]", $v, $mail_text['subject']);
     }
-    $mail_text['subject']= str_replace('№','No',$mail_text['subject']);
+    $mail_text['subject']= str_replace('пїЅ','No',$mail_text['subject']);
     $headers = "";
     $headers .= 'Content-type: text/'.$typpost.'; charset='.$encode."\n";
     $headers .= 'From: '.$from.' <'.(!empty($email_from[0])?$email_from[0]:$email_from).">\n";
@@ -65,16 +65,16 @@ function se_shop_mail($mailtype, $email_to, $array_change, $from, $email_from, $
     $headers .= "MIME-Version: 1.0\n";
     $headers .= "Content-Type: multipart/alternative;\n";
     $headers .= 'Content-type: text/'.$typpost.'; charset='.$encode."\n";
-    $mail_text['letter'] = str_replace('№','No',$mail_text['letter']);
+    $mail_text['letter'] = str_replace('пїЅ','No',$mail_text['letter']);
     mail($email_to, $mail_text['subject'], $mail_text['letter'], $headers, '-f'.$email_from[0]);
 }}
 if (!function_exists('se_merchant_mail_payee_client')) {
 function se_merchant_mail_payee_client($email_to, $array_change, $from, $email_from) {
-    // Отсылаем клиенту письмо об успешной оплате
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 }}
 if (!function_exists('se_merchant_mail_payee_admin')) {
 function se_merchant_mail_payee_admin($email_to, $array_change, $from, $email_from) {
-    // Отсылаем админу письмо об успешной оплате
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 }}
 //EndLib
 function module_shopmini_zpayment($razdel, $section = null)

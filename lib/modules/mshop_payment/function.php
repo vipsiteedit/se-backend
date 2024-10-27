@@ -36,11 +36,11 @@ function macrocomands($SUB_PAY_EXECUTE, $FP, $order, $curr='RUR', $lang="rus"){
 global $_page,$razdel,$THISCURR;
 se_db_connect();
 if ($lang=='rus')
-   $smonth=array('января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря');
+   $smonth=array('пїЅпїЅпїЅпїЅпїЅпїЅ','пїЅпїЅпїЅпїЅпїЅпїЅпїЅ','пїЅпїЅпїЅпїЅпїЅ','пїЅпїЅпїЅпїЅпїЅпїЅ','пїЅпїЅпїЅ','пїЅпїЅпїЅпїЅ','пїЅпїЅпїЅпїЅ','пїЅпїЅпїЅпїЅпїЅпїЅпїЅ','пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ','пїЅпїЅпїЅпїЅпїЅпїЅпїЅ','пїЅпїЅпїЅпїЅпїЅпїЅ','пїЅпїЅпїЅпїЅпїЅпїЅпїЅ');
 else
    $smonth=array('January',' February','March','April','May','June','July','August','September','October','November','December');
 
-// Заполняю переменными
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
   $curr="";
   $SUB_PAY_EXECUTE=str_replace('[RAZDEL]',$razdel,$SUB_PAY_EXECUTE);
   $SUB_PAY_EXECUTE=str_replace('[PAGENAME]',$_page,$SUB_PAY_EXECUTE);
@@ -102,7 +102,7 @@ WHERE shop_order.id = '$order'");
 
 $ORDER=se_db_fetch_array($query);
 
-// Таблица MAIN
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ MAIN
 $main=se_db_fields_item("main","lang='$lang'","*");
 $NDS=$main['nds'];
 if (!empty($main))
@@ -113,7 +113,7 @@ if (!empty($ORDER))
 foreach ($ORDER as $k => $v) {
         $SUB_PAY_EXECUTE = str_replace("[ORDER.".strtoupper(@$k)."]", trim(@$v), $SUB_PAY_EXECUTE);
 }
-// Добавляем адрес доставки
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 $query = se_db_query("SELECT telnumber,email,calltime,address,postindex FROM shop_delivery WHERE id_order='$order'");
 $ORDERADDR=se_db_fetch_array($query);
 if (!empty($ORDERADDR))
@@ -165,7 +165,7 @@ foreach ($array_change as $k => $v)
         $SUB_PAY_EXECUTE = str_replace("[".$k."]", @$v, $SUB_PAY_EXECUTE);
 
 
-// Таблица user_urid
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ user_urid
 $user=se_db_fields_item("user_urid","id_author=".@$ORDER['id_author'],"*");
 if (!empty($user)) foreach ($user as $k => $v) $array_change['USER.'.strtoupper($k)]=$v;
 
@@ -179,7 +179,7 @@ $author=se_db_fields_item("author","id=".@$ORDER['id_author'],
 if (!empty($author)) foreach ($author as $k => $v) $array_change['USER.'.strtoupper($k)]=trim($v);
  @$SUB_PAY_EXECUTE=str_replace('[CLIENTNAME]',trim($author['lastname']." ".$author['firstname']." ".$author['secname']),$SUB_PAY_EXECUTE);
 
-// Таблица bank_accounts
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ bank_accounts
 $fpid=se_db_fields_item("shop_payment","id='$FP'",'name_payment');
   $array_change['PAYMENT.NAME']=@$fpid;
 
@@ -308,7 +308,7 @@ function se_shop_mailsend($mailtype, $email, $from, $email_from, $fp, $order, $c
     $headers .= "MIME-Version: 1.0\r\n";
     $headers .= "Content-type: text/html; charset=utf-8\r\n";
 
-    $mail_text = se_db_fetch_array(se_db_query("SELECT * FROM `shop_mail` WHERE (`lang`='".$language."')AND(`mailtype`='".$mailtype."') LIMIT 1;"), MYSQL_ASSOC);
+    $mail_text = se_db_fetch_array(se_db_query("SELECT * FROM `shop_mail` WHERE (`lang`='".$language."')AND(`mailtype`='".$mailtype."') LIMIT 1;"));
     $mail_text['letter'] = str_replace("\r\n", "<br>", $mail_text['letter']);
     $mail_text['letter'] = macrocomands($mail_text['letter'], $fp, $order, $curr,$language);
     $mail_text['subject'] = macrocomands($mail_text['subject'], $fp, $order, $curr,$language);

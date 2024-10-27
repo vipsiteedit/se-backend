@@ -1,15 +1,13 @@
 <?php
-//BeginLib
-// Многостраничность
-// se_DivPages(всего_записей, записей_на_странице)
+
 if (!function_exists('se_DivPages')) {
-function se_DivPages($cnrowfull, $cnrowpage, $helptitle="Введите номер страницы и нажмите enter для перехода") {
+function se_DivPages($cnrowfull, $cnrowpage, $helptitle="пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ enter пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ") {
     $r = "";
     $cnpage = ceil($cnrowfull/$cnrowpage);
     if ($cnpage > 1) {
         //$squery = $_SERVER['QUERY_STRING'];
         if (empty($L_VARS['get'])) {
-            // выдаем все переменные, переданные в $GET без $remove
+            // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ $GET пїЅпїЅпїЅ $remove
             $link = array();
             $remove = array('page', 'razdel', 'sub', 'sheet');
             foreach($_GET as $k => $v) if (!in_array($k, $remove)) $link[$k] = $k.'='.$v;
@@ -23,10 +21,10 @@ function se_DivPages($cnrowfull, $cnrowpage, $helptitle="Введите номер страницы 
         $r .= '<center><table border="0">';
         $r .= '<form style="margin:0px"
         onSubmit="if ((this.elements[0].value)>'.$cnpage.' || this.elements[0].value < 1) {
-                       alert(\'Страницы с таким номером не существует\'); return false; }
+                       alert(\'пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ\'); return false; }
                    location.href=\'?'.$L_VARS['get'].'\'+(this.elements[0].value);
                    return false;" method="get" enctype="multipart/form-data">';
-        //$r .= '<tr><td colspan="9" align="center">Записей: <b>'.$cnrowfull.'</b>; Страниц: <b>'.$cnpage.'</b></td></tr>';
+        //$r .= '<tr><td colspan="9" align="center">пїЅпїЅпїЅпїЅпїЅпїЅпїЅ: <b>'.$cnrowfull.'</b>; пїЅпїЅпїЅпїЅпїЅпїЅпїЅ: <b>'.$cnpage.'</b></td></tr>';
         $r .= "<tr>";
         $r_left = "";
         $r_right = "";
@@ -176,15 +174,17 @@ if (($razdel != $__request['razdel']) || empty($__request['sub'])){
         else $limitpage = "LIMIT ".$pagen;
     }
     $thisdate=time()+86400;
+    
     $sql="SELECT SQL_CALC_FOUND_ROWS `news`.`id`,LEFT(`news`.`text`,600) as `text`,`news`.img,
     `news`.title,`news`.`date` FROM `news` INNER JOIN `news_category` ON (`news`.id_category = `news_category`.id)
      WHERE
     (`news`.lang ='$lang') $newskod AND (`news`.pub_date<='$thisdate') ORDER BY date DESC $limitpage";
+    
     $rnews = se_db_query($sql); //
-    $cnr = mysql_fetch_row(se_db_query("SELECT FOUND_ROWS()")); $cnrow = $cnr[0];
+    $cnr = se_db_fetch_row(se_db_query("SELECT FOUND_ROWS()")); $cnrow = $cnr[0];
     if (intval($pagen)>0)
       $MANYPAGE = str_replace("%alt%",$section->params[20]->value,se_divpages($cnrow, $pagen));
-    while ($news = mysql_fetch_array($rnews)){
+    while ($news = se_db_fetch_array($rnews)){
         $notetext=str_replace("\n","",strip_tags(replase_teg_edittext($news['text'])));
         $id = $news['id'];
         if ($moder == 1) $data[$nn][0] = "<a id=\"editlink\" href=\"?razdel=$razdel&amp;sub=3&amp;object=$id\">$text[11]</a>";
@@ -221,9 +221,9 @@ if(($razdel == $__request['razdel']) && !empty($__request['sub']) && ($__request
 //BeginSubPage1
 // РїРѕРєР°Р·Р°С‚СЊ СЃСѓР±СЃС‚СЂР°РЅРёС†Сѓ РґР»СЏ С‚РµРєСѓС‰РµР№ РЅРѕРІРѕСЃС‚Рё
         if (isset($_GET['object'])){
-            $Obj = htmlspecialchars($_GET['object'],ENT_QUOTES);
-            $rnews = se_db_query("SELECT SQL_CACHE id, title, short_txt, text, img FROM news WHERE id='$Obj'");
-            $news = mysql_fetch_array($rnews);
+            $Obj = intval($_GET['object']);
+            $rnews = se_db_query("SELECT SQL_CACHE id, title, short_txt, text, img FROM news WHERE id={$Obj}");
+            $news = se_db_fetch_array($rnews);
             $col1 = se_db_output($news['title']);
             $titlepage=$col1;
             if (!((strpos($news['text'],'<')!==false) && (strpos($news['text'],'>')!==false)))
@@ -302,7 +302,7 @@ if(($razdel == $__request['razdel']) && !empty($__request['sub']) && ($__request
               $title  = $_POST['title'];
               $text   = $_POST['text'];
               $resmax = se_db_query("SELECT max(id) AS obid FROM news");
-              $rmax   = mysql_fetch_array($resmax);
+              $rmax   = se_db_fetch_array($resmax);
               $maxid  = $rmax['obid']+1;
               // РµСЃР»Рё Р·Р°РіСЂСѓР¶Р°РµРј С„Р°Р№Р»
               if ($file){
@@ -342,7 +342,7 @@ if(($razdel == $__request['razdel']) && !empty($__request['sub']) && ($__request
         if (isset($_GET['object'])){
             $nid = $_GET['object'];
             $redit = se_db_query("SELECT date, title, text, img FROM news WHERE id = '$nid'");
-            $edit = mysql_fetch_array($redit);
+            $edit = se_db_fetch_array($redit);
             // СЃС„РѕСЂРјРёСЂРѕРІР°С‚СЊ РґР°С‚Сѓ
             $_time = explode(".",date("d.m.Y", $edit['date']));
             $_day       = htmlspecialchars(stripslashes($_time[0]));

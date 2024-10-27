@@ -70,11 +70,6 @@ WHERE shop_order.id_author = '".$id_author."'
 ORDER BY shop_order.id ASC"); */
            se_db_connect();
            $ORDER_PAYEELIST="";
-/*
-           $result=se_db_query("select id,status from `shop_order` where `id_author`='$id_author'
-           AND (`status`='N' OR `status`='K') ORDER BY `id` ASC");
-           $maxid=se_db_num_rows($result);
-//*/
            $tbl = new seTable();
            $tbl->from("shop_order","so");
            $tbl->select("id,status");
@@ -83,7 +78,7 @@ ORDER BY shop_order.id ASC"); */
            $tbl->orderby("id");
            $result = $tbl->getList();
            $i=1;
-//           while ($line = mysql_fetch_array($result))
+
            foreach($result as $line) 
            {
              $selected="";

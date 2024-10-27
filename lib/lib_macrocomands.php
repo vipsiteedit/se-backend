@@ -1,7 +1,10 @@
 <?php
 function setPaymentParams($order_id, $payment_id, $arr = array())
 {
-    if (empty($arr)) return;
+    if (empty($arr)) {
+        return;
+    }
+
     $fp = fopen(SE_ROOT . 'data/payment_' . $order_id . '_' . $payment_id . '.dat', "w+");
     fwrite($fp, serialize($arr));
     fclose($fp);
@@ -9,10 +12,11 @@ function setPaymentParams($order_id, $payment_id, $arr = array())
 
 function getPaymentParams($order_id, $payment_id)
 {
-    if (file_exists(SE_ROOT . 'data/payment_' . $order_id . '_' . $payment_id . '.dat'))
+    if (file_exists(SE_ROOT . 'data/payment_' . $order_id . '_' . $payment_id . '.dat')) {
         return unserialize(join('', file(SE_ROOT . 'data/payment_' . $order_id . '_' . $payment_id . '.dat')));
-}
+    }
 
+}
 
 function se_summtostring($summa)
 {
@@ -23,7 +27,7 @@ function se_summtostring($summa)
         $d[$r] = se_db_fields_item('spr_numbers', "registr='$r'", $sel);
     }
 
-    $summa = str_replace(array(' ', ','),  array('', '.'),  $summa);
+    $summa = str_replace(array(' ', ','), array('', '.'), $summa);
     $des = explode('.', $summa);
 
     $c = utf8_strlen($des[0]);
@@ -31,27 +35,57 @@ function se_summtostring($summa)
         $nums[$i] = utf8_substr($des[0], $c - $i, 1);
     }
     $rez = '';
-    if ($nums[7] != '') $rez .= $d['mill'][$nums[7]] . ' ';
-    if ($nums[6] != '') $rez .= $d['sot'][$nums[6]] . ' ';
-    if ($nums[5] != '' && $nums[5] != 1) $rez .= $d['dec'][$nums[5]] . ' ';
-    if ($nums[5] != '' && $nums[5] == 1) $rez .= $d['des'][$nums[4]] . ' ' . $d['thou'][0] . " ";
-    if ($nums[4] != '' && $nums[5] != 1) $rez .= $d['mel'][$nums[4]] . ' ' . $d['thou'][$nums[4]] . " ";
+    if ($nums[7] != '') {
+        $rez .= $d['mill'][$nums[7]] . ' ';
+    }
 
+    if ($nums[6] != '') {
+        $rez .= $d['sot'][$nums[6]] . ' ';
+    }
 
-    if ($nums[3] != '') $rez .= $d['sot'][$nums[3]] . " ";
-    if ($nums[2] != '' && $nums[2] != 1) $rez .= $d['dec'][$nums[2]] . " ";
-    if ($nums[2] != '' &&  $nums[2] == 1) $rez .= $d['des'][$nums[1]] . " ";
-    if ($nums[1] != '' &&  $nums[2] != 1) $rez .= $d['edin'][$nums[1]] . " ";
-    if (!empty($rez)) $rez = $rez . $d['wh'][0] . " ";
+    if ($nums[5] != '' && $nums[5] != 1) {
+        $rez .= $d['dec'][$nums[5]] . ' ';
+    }
+
+    if ($nums[5] != '' && $nums[5] == 1) {
+        $rez .= $d['des'][$nums[4]] . ' ' . $d['thou'][0] . " ";
+    }
+
+    if ($nums[4] != '' && $nums[5] != 1) {
+        $rez .= $d['mel'][$nums[4]] . ' ' . $d['thou'][$nums[4]] . " ";
+    }
+
+    if ($nums[3] != '') {
+        $rez .= $d['sot'][$nums[3]] . " ";
+    }
+
+    if ($nums[2] != '' && $nums[2] != 1) {
+        $rez .= $d['dec'][$nums[2]] . " ";
+    }
+
+    if ($nums[2] != '' && $nums[2] == 1) {
+        $rez .= $d['des'][$nums[1]] . " ";
+    }
+
+    if ($nums[1] != '' && $nums[2] != 1) {
+        $rez .= $d['edin'][$nums[1]] . " ";
+    }
+
+    if (!empty($rez)) {
+        $rez = $rez . $d['wh'][0] . " ";
+    }
+
     $kop = $des[1];
 
-    while (utf8_strlen($kop) < 2) $kop .= "0";
+    while (utf8_strlen($kop) < 2) {
+        $kop .= "0";
+    }
+
     $rez .= $kop . " " . $d['fr'][0];
 
     $rez = '<span style="Text-transform:uppercase;">' . utf8_substr($rez, 0, 1) . '</span>' . utf8_substr($rez, 1, utf8_strlen($rez) - 1);
     return ($rez);
 }
-
 
 function se_macrocomands($SUB_PAY_EXECUTE, $FP = 0, $order_id = 0, $user_id = 0)
 {
@@ -64,13 +98,16 @@ function se_macrocomands($SUB_PAY_EXECUTE, $FP = 0, $order_id = 0, $user_id = 0)
 
     if (function_exists('se_getLang')) {
         $lang = se_getLang();
-    } else $lang = 'rus';
+    } else {
+        $lang = 'rus';
+    }
 
     //echo $order_id;
-    if ($lang == 'rus')
+    if ($lang == 'rus') {
         $smonth = array('января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря');
-    else
+    } else {
         $smonth = array('January', ' February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
+    }
 
     // Заполняю переменными
 
@@ -82,7 +119,10 @@ function se_macrocomands($SUB_PAY_EXECUTE, $FP = 0, $order_id = 0, $user_id = 0)
         $def = explode(':', $res_);
         if (isset($_POST[strtolower($def[0])])) {
             $res_ = htmlspecialchars(stripslashes(@$_POST[strtolower($def[0])]));
-        } else $res_ = @$def[1];
+        } else {
+            $res_ = @$def[1];
+        }
+
         $SUB_PAY_EXECUTE = str_replace($res_math[0], strtoupper($res_), $SUB_PAY_EXECUTE);
     }
 
@@ -100,12 +140,13 @@ function se_macrocomands($SUB_PAY_EXECUTE, $FP = 0, $order_id = 0, $user_id = 0)
         $res = @$def[1];
         foreach ($sel as $if) {
             $if = explode('=', $if);
-            if (strtolower($res_) == strtolower($if[1])) $res = $if[0];
+            if (strtolower($res_) == strtolower($if[1])) {
+                $res = $if[0];
+            }
+
         }
         $SUB_PAY_EXECUTE = str_replace($res_math[0], $res, $SUB_PAY_EXECUTE);
     }
-
-
 
     while (preg_match("/\[SETCURRENCY\:(\w{1,})\]/m", $SUB_PAY_EXECUTE, $res_math)) {
         if (isset($res_math[1])) {
@@ -115,7 +156,6 @@ function se_macrocomands($SUB_PAY_EXECUTE, $FP = 0, $order_id = 0, $user_id = 0)
         $SUB_PAY_EXECUTE = str_replace($res_math[0], '', $SUB_PAY_EXECUTE);
     }
     $SUB_PAY_EXECUTE = str_replace('[PAYMENT.CURR]', $_SESSION['THISCURR'], $SUB_PAY_EXECUTE);
-
 
     while (preg_match("/\[POST\.(\w{1,})\]/i", $SUB_PAY_EXECUTE, $res_math)) {
         $res_ = $res_math[1];
@@ -131,7 +171,10 @@ function se_macrocomands($SUB_PAY_EXECUTE, $FP = 0, $order_id = 0, $user_id = 0)
         $res_ = $res_math[1];
         if (isset($_POST[$res_])) {
             $res_ = htmlspecialchars(stripslashes(@$_GET[$res_]));
-        } else $res_ = '';
+        } else {
+            $res_ = '';
+        }
+
         $SUB_PAY_EXECUTE = str_replace($res_math[0], $res_, $SUB_PAY_EXECUTE);
     }
 
@@ -140,8 +183,8 @@ function se_macrocomands($SUB_PAY_EXECUTE, $FP = 0, $order_id = 0, $user_id = 0)
 
     $query = se_db_query("SELECT so.id_author, so.payment_type,so.date_order, so.date_payee, so.discount, so.commentary,
 	    (SELECT sa.account FROM shop_account sa WHERE sa.id_order=so.id LIMIT 1) as account,
-	    so.curr, so.status, so.delivery_payee, 
-	    (SELECT dl.name FROM shop_deliverytype dl WHERE dl.id=so.delivery_type) as delivery_name, 
+	    so.curr, so.status, so.delivery_payee,
+	    (SELECT dl.name FROM shop_deliverytype dl WHERE dl.id=so.delivery_type) as delivery_name,
 	    so.delivery_status, so.delivery_date,
 	    (SELECT SUM((st.price) * st.count) FROM shop_tovarorder st WHERE st.id_order=so.id) AS `price_tovar`
 	FROM `shop_order` so
@@ -149,16 +192,18 @@ function se_macrocomands($SUB_PAY_EXECUTE, $FP = 0, $order_id = 0, $user_id = 0)
 
     //INNER JOIN `shop_tovarorder` st ON so.id = st.id_order
 
-
-    if ($order_id > 0)
+    if ($order_id > 0) {
         $ORDER = se_db_fetch_array($query);
+    }
 
-    if (!$FP) $FP = $ORDER['payment_type'];
+    if (!$FP) {
+        $FP = $ORDER['payment_type'];
+    }
 
     // Таблица MAIN
     $main = se_getAdmin();
     $NDS = $main['nds'];
-    if (!empty($main))
+    if (!empty($main)) {
         foreach ($main as $k => $v) {
             $SUB_PAY_EXECUTE = str_replace("[MAIN." . strtoupper(@$k) . "]", trim(@$v), $SUB_PAY_EXECUTE);
             $SUB_PAY_EXECUTE = str_replace("[ADMIN_" . strtoupper(@$k) . "]", trim(@$v), $SUB_PAY_EXECUTE);
@@ -169,22 +214,28 @@ function se_macrocomands($SUB_PAY_EXECUTE, $FP = 0, $order_id = 0, $user_id = 0)
                 $SUB_PAY_EXECUTE = str_replace("[ADMIN_MAIL_SUPPORT]", trim($v), $SUB_PAY_EXECUTE);
             }
         }
+    }
 
-    if (!empty($ORDER))
+    if (!empty($ORDER)) {
         foreach ($ORDER as $k => $v) {
             $SUB_PAY_EXECUTE = str_replace("[ORDER." . strtoupper(@$k) . "]", trim(@$v), $SUB_PAY_EXECUTE);
         }
+    }
+
     // Добавляем адрес доставки
     if ($order_id) {
         $query = se_db_query("SELECT telnumber,email,calltime,address,postindex FROM shop_delivery WHERE id_order='$order_id'");
         $ORDERADDR = se_db_fetch_array($query);
-        if (!empty($ORDERADDR))
+        if (!empty($ORDERADDR)) {
             foreach ($ORDERADDR as $k => $v) {
-                if (isset($k))
+                if (isset($k)) {
                     $SUB_PAY_EXECUTE = str_replace("[ORDER." . strtoupper($k) . "]", trim(@$v), $SUB_PAY_EXECUTE);
-            }
-    }
+                }
 
+            }
+        }
+
+    }
 
     if ($order_id && strpos($SUB_PAY_EXECUTE, "[CONTRACT]") !== false) {
         $query = se_db_query("SELECT * FROM `shop_contract` WHERE id_order = '$order_id'");
@@ -234,7 +285,7 @@ function se_macrocomands($SUB_PAY_EXECUTE, $FP = 0, $order_id = 0, $user_id = 0)
             'ORDER_TAX' => round($NDS),
             'ORDER.SUMM_TAX' => str_replace(',', '.', $NDS / (100 + $NDS) * $summ),
             'ORDER.ID' => $order_id,
-            'SHOP_ORDER_NUM' => $order_id
+            'SHOP_ORDER_NUM' => $order_id,
         );
     }
 
@@ -270,14 +321,20 @@ function se_macrocomands($SUB_PAY_EXECUTE, $FP = 0, $order_id = 0, $user_id = 0)
         }
         // Таблица user_urid
         $user = se_db_fields_item("user_urid", "id={$user_id}", "company,director,posthead,bookkeeper,uradres,tel,fax");
-        if (!empty($user)) foreach ($user as $k => $v) $array_change['USER.' . strtoupper($k)] = stripslashes($v);
+        if (!empty($user)) {
+            foreach ($user as $k => $v) {
+                $array_change['USER.' . strtoupper($k)] = stripslashes($v);
+            }
+        }
+
     }
-    if (!empty($array_change))
+    if (!empty($array_change)) {
         foreach ($array_change as $k => $v) {
             while (preg_match("/\[" . $k . "]/", $SUB_PAY_EXECUTE)) {
                 $SUB_PAY_EXECUTE = str_replace("[{$k}]", @$v, $SUB_PAY_EXECUTE);
             }
         }
+    }
 
     $nameuser = se_db_fields_item('person', 'id=' . $user_id, "concat_sw(' ',last_name,first_name,sec_name)");
     $SUB_PAY_EXECUTE = str_replace('[USERLOGIN]', se_db_fields_item('se_user', 'id=' . $user_id, 'username'), $SUB_PAY_EXECUTE);
@@ -288,19 +345,26 @@ function se_macrocomands($SUB_PAY_EXECUTE, $FP = 0, $order_id = 0, $user_id = 0)
         $fpid = se_db_fields_item("shop_payment", "id=$FP", 'name_payment');
         $array_change['PAYMENT.NAME'] = $fpid;
         $array_change['PAYMENT.ID'] = $FP;
-    } else $array_change['PAYMENT.NAME'] = 'Лицевой счет'; //Personal account';
+    } else {
+        $array_change['PAYMENT.NAME'] = 'Лицевой счет';
+    }
+    //Personal account';
     $query = se_db_query("select codename,value FROM bank_accounts WHERE id_payment IN (SELECT id FROM shop_payment WHERE shop_payment.lang='$lang');");
     while ($payment = se_db_fetch_array($query)) {
         $array_change['PAYMENT.' . strtoupper($payment[0])] = $payment[1];
     }
 
-    if (!empty($array_change))
+    if (!empty($array_change)) {
         foreach ($array_change as $k => $v) {
             $SUB_PAY_EXECUTE = str_replace("[" . $k . "]", $v, $SUB_PAY_EXECUTE);
         }
+    }
 
     if (preg_match("/\<DELIVERY\>([\w\W]{1,})\<\/DELIVERY\>/i", $SUB_PAY_EXECUTE, $res_math)) {
-        if (!($ORDER['delivery_payee'] > 0)) $res_math[1] = '';
+        if (!($ORDER['delivery_payee'] > 0)) {
+            $res_math[1] = '';
+        }
+
         $SUB_PAY_EXECUTE = str_replace($res_math[0], $res_math[1], $SUB_PAY_EXECUTE);
     }
 
@@ -319,7 +383,6 @@ function se_macrocomands($SUB_PAY_EXECUTE, $FP = 0, $order_id = 0, $user_id = 0)
         $SUB_PAY_EXECUTE = str_replace('[SHOP_ORDER_VALUE_LIST]', $value_list, $SUB_PAY_EXECUTE);
     }
 
-
     if ($order_id && preg_match("/\<SHOPLIST\>([\w\W]{1,})\<\/SHOPLIST\>/i", $SUB_PAY_EXECUTE, $res_math)) {
         $SHOPLIST = "";
         $query = se_db_query("SELECT sp.name, st.`nameitem`, st.count,st.discount,st.price FROM shop_tovarorder st
@@ -331,29 +394,35 @@ function se_macrocomands($SUB_PAY_EXECUTE, $FP = 0, $order_id = 0, $user_id = 0)
             $it++;
             $LISTIT = str_replace("[SHOPLIST.ITEM]", $it, $LISTIT);
             //if (!empty($res['nameitem']) && !empty($res['name'])) $res['name'] = $res['name'].' ('.$res['nameitem'].')';
-            if (!empty($res['nameitem'])) $res['name'] = $res['nameitem'];
+            if (!empty($res['nameitem'])) {
+                $res['name'] = $res['nameitem'];
+            }
 
-            if (!empty($res['price'])) $res['price'] = se_MoneyConvert($res['price'], $ORDER['curr'], $curr);
+            if (!empty($res['price'])) {
+                $res['price'] = se_MoneyConvert($res['price'], $ORDER['curr'], $curr);
+            }
+
             $discount = se_MoneyConvert($res['discount'], $ORDER['curr'], $curr);
-            if (!empty($res['discount'])) $res['discount'] = se_formatMoney($discount, $curr);
+            if (!empty($res['discount'])) {
+                $res['discount'] = se_formatMoney($discount, $curr);
+            }
+
             $res['summa'] = se_formatMoney(round($res['price'] - $discount, 2) * $res['count'], $curr);
             $res['price'] = se_formatMoney($res['price'], $curr);
-
 
             foreach ($res as $k => $v) {
                 $LISTIT = str_replace("[SHOPLIST." . strtoupper($k) . "]", $v, $LISTIT);
             }
             $SHOPLIST .= $LISTIT;
         }
-        if ($ORDER['delivery_payee'] > 0) $it++;
-
+        if ($ORDER['delivery_payee'] > 0) {
+            $it++;
+        }
 
         $SUB_PAY_EXECUTE = str_replace("[ORDER.ITEMCOUNT]", $it, $SUB_PAY_EXECUTE);
         $SUB_PAY_EXECUTE = str_replace($res_math[0], $SHOPLIST, $SUB_PAY_EXECUTE);
         $SUB_PAY_EXECUTE = se_macrocomands($SUB_PAY_EXECUTE, $FP, $order_id, $user_id);
     }
-
-
 
     while (preg_match("/\[FORMATDATE\,(.+?)\,(.+?)\]/s", $SUB_PAY_EXECUTE, $res_math)) {
         $res_ = explode('-', $res_math[1]);
@@ -368,7 +437,6 @@ function se_macrocomands($SUB_PAY_EXECUTE, $FP = 0, $order_id = 0, $user_id = 0)
         $res = str_replace('Y', $res_[0], $res);
         $SUB_PAY_EXECUTE = str_replace($res_math[0], $res, $SUB_PAY_EXECUTE);
     }
-
 
     while (preg_match("/\[STR_SUMM\,(.+?)\]/i", $SUB_PAY_EXECUTE, $math)) {
         $math[1] = str_replace("'", '', $math[1]);
@@ -391,14 +459,13 @@ function se_macrocomands($SUB_PAY_EXECUTE, $FP = 0, $order_id = 0, $user_id = 0)
         $SUB_PAY_EXECUTE = se_macrocomands($SUB_PAY_EXECUTE, $FP, $order_id, $user_id);
     }
 
-
     while (preg_match("/BASE64ENCODE\((.+?)\)/iu", $SUB_PAY_EXECUTE, $res_math)) {
-        $SUB_PAY_EXECUTE = str_replace($res_math[0],  base64_encode($res_math[1]), $SUB_PAY_EXECUTE);
+        $SUB_PAY_EXECUTE = str_replace($res_math[0], base64_encode($res_math[1]), $SUB_PAY_EXECUTE);
         $SUB_PAY_EXECUTE = se_macrocomands($SUB_PAY_EXECUTE, $FP, $order_id, $user_id);
     }
 
     while (preg_match("/BASE64DECODE\((.+?)\)/iu", $SUB_PAY_EXECUTE, $res_math)) {
-        $SUB_PAY_EXECUTE = str_replace($res_math[0],  base64_decode($res_math[1]), $SUB_PAY_EXECUTE);
+        $SUB_PAY_EXECUTE = str_replace($res_math[0], base64_decode($res_math[1]), $SUB_PAY_EXECUTE);
         $SUB_PAY_EXECUTE = se_macrocomands($SUB_PAY_EXECUTE, $FP, $order_id, $user_id);
     }
 
@@ -423,8 +490,6 @@ function se_macrocomands($SUB_PAY_EXECUTE, $FP = 0, $order_id = 0, $user_id = 0)
         $SUB_PAY_EXECUTE = se_macrocomands($SUB_PAY_EXECUTE, $FP, $order_id, $user_id);
     }
 
-
-
     $SUB_PAY_EXECUTE = preg_replace("/\[USER\.(.+?)\]/i", "", $SUB_PAY_EXECUTE);
 
     if (function_exists('seMultiDir')) {
@@ -437,16 +502,19 @@ function se_macrocomands($SUB_PAY_EXECUTE, $FP = 0, $order_id = 0, $user_id = 0)
 
     while (strpos($SUB_PAY_EXECUTE, '<php>') !== false) {
         list(, $res) = explode('<php>', $SUB_PAY_EXECUTE);
-        if (strpos($res, '</php>') === false) break;
+        if (strpos($res, '</php>') === false) {
+            break;
+        }
+
         list($res) = explode('</php>', $res);
-        ob_start(); // пФЛТЩЧБЕН ВХЖЕТЙЪБГЙА 
+        ob_start(); // пФЛТЩЧБЕН ВХЖЕТЙЪБГЙА
         eval(str_replace('&gt;', '>', $res));
         $res_ = ob_get_contents(); // юЙФБЕН ЙЪ ВХЖЕТБ УПДЕТЦБОЙЕ ЧЛМАЮБЕНПЗП ЖБКМБ
         ob_end_clean(); // пЮЙЭБЕН ВХЖЕТ
         $SUB_PAY_EXECUTE = str_replace('<php>' . $res . '</php>', $res_, $SUB_PAY_EXECUTE);
     }
     while (preg_match("/\<\?php(.+?)\?\>/i", $SUB_PAY_EXECUTE, $res_math)) {
-        ob_start(); // пФЛТЩЧБЕН ВХЖЕТЙЪБГЙА 
+        ob_start(); // пФЛТЩЧБЕН ВХЖЕТЙЪБГЙА
         eval($res_math[1]);
         $res_ = ob_get_contents(); // юЙФБЕН ЙЪ ВХЖЕТБ УПДЕТЦБОЙЕ ЧЛМАЮБЕНПЗП ЖБКМБ
         ob_end_clean(); // пЮЙЭБЕН ВХЖЕТ
@@ -456,26 +524,44 @@ function se_macrocomands($SUB_PAY_EXECUTE, $FP = 0, $order_id = 0, $user_id = 0)
     $SUB_PAY_EXECUTE = preg_replace("/\[(.+?)\]/i", "", $SUB_PAY_EXECUTE);
 
     while (preg_match("/@if\((.*?)\)\{(.+?)\}/s", $SUB_PAY_EXECUTE, $mach)) {
-        if ((trim($mach[1]) == '') or ($mach[1] == '0') or ($mach[1] == 'false') or ($mach[1] == 'no')) $mach[2] = '';
+        if ((trim($mach[1]) == '') or ($mach[1] == '0') or ($mach[1] == 'false') or ($mach[1] == 'no')) {
+            $mach[2] = '';
+        }
+
         if (strpos($mach[1], '==')) {
             $rr = explode('==', $mach[1]);
-            if ($rr[0] != $rr[1]) $mach[2] = '';
+            if ($rr[0] != $rr[1]) {
+                $mach[2] = '';
+            }
+
         }
         if (strpos($mach[1], '!=')) {
             $rr = explode('!=', $mach[1]);
-            if ($rr[0] == $rr[1]) $mach[2] = '';
+            if ($rr[0] == $rr[1]) {
+                $mach[2] = '';
+            }
+
         }
         $SUB_PAY_EXECUTE = preg_replace("/@if\((.*?)\)\{(.+?)\}/s", $mach[2], $SUB_PAY_EXECUTE);
     }
     while (preg_match("/@notif\((.*?)\)\{(.+?)\}/s", $SUB_PAY_EXECUTE, $mach)) {
-        if ((trim($mach[1]) != '') or ($mach[1] == '1') or ($mach[1] == 'true') or ($mach[1] == 'yes')) $mach[2] = '';
+        if ((trim($mach[1]) != '') or ($mach[1] == '1') or ($mach[1] == 'true') or ($mach[1] == 'yes')) {
+            $mach[2] = '';
+        }
+
         if (strpos($mach[1], '!=')) {
             $rr = explode('!=', $mach[1]);
-            if ($rr[0] == $rr[1]) $mach[2] = '';
+            if ($rr[0] == $rr[1]) {
+                $mach[2] = '';
+            }
+
         }
         if (strpos($mach[1], '==')) {
             $rr = explode('==', $mach[1]);
-            if ($rr[0] != $rr[1]) $mach[2] = '';
+            if ($rr[0] != $rr[1]) {
+                $mach[2] = '';
+            }
+
         }
         $SUB_PAY_EXECUTE = preg_replace("/@notif\((.*?)\)\{(.+?)\}/s", $mach[2], $SUB_PAY_EXECUTE);
     }
@@ -483,12 +569,18 @@ function se_macrocomands($SUB_PAY_EXECUTE, $FP = 0, $order_id = 0, $user_id = 0)
     while (preg_match("/\bSUM\((.+?)\)/i", $SUB_PAY_EXECUTE, $res_math)) {
         $res_ = explode(',', $res_math[1]);
         $sumres = 0;
-        if (!empty($res_))
+        if (!empty($res_)) {
             foreach ($res_ as $sumres_) {
                 $sumres += str_replace('"', '', $sumres_);
             }
-        if ($res_[0] == $res_[1]) $res_ = 1;
-        else $res_ = 0;
+        }
+
+        if ($res_[0] == $res_[1]) {
+            $res_ = 1;
+        } else {
+            $res_ = 0;
+        }
+
         $SUB_PAY_EXECUTE = preg_replace("/\bSUM\((.+?)\)/i", $sumres, $SUB_PAY_EXECUTE);
         $SUB_PAY_EXECUTE = se_macrocomands($SUB_PAY_EXECUTE, $FP, $order_id);
     }

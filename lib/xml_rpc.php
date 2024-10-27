@@ -11,9 +11,9 @@ This code is Open Source, released under terms similar to the Artistic License.
 Read the license at http://www.keithdevens.com/software/license/
 
 Note: this code requires version 4.1.0 or higher of PHP.
-*/
+ */
 
-function &XML_serialize(&$data, $level = 0, $prior_key = NULL)
+function &XML_serialize(&$data, $level = 0, $prior_key = null)
 {
     #assumes a hash, keys are the variable names
     $xml_serialized_string = "";
@@ -71,15 +71,15 @@ function &XML_serialize(&$data, $level = 0, $prior_key = NULL)
 
 class XML
 {
-    var $parser; #a reference to the XML parser
-    var $document; #the entire XML structure built up so far
-    var $current; #a pointer to the current item - what is this
-    var $parent; #a pointer to the current parent - the parent will be an array
-    var $parents; #an array of the most recent parent at each level
+    public $parser; #a reference to the XML parser
+    public $document; #the entire XML structure built up so far
+    public $current; #a pointer to the current item - what is this
+    public $parent; #a pointer to the current parent - the parent will be an array
+    public $parents; #an array of the most recent parent at each level
 
-    var $last_opened_tag;
+    public $last_opened_tag;
 
-    function XML($data = null)
+    public function XML($data = null)
     {
         $this->parser = xml_parser_create();
 
@@ -90,22 +90,22 @@ class XML
         #        register_shutdown_function(array(&$this, 'destruct'));
     }
 
-    function destruct()
+    public function destruct()
     {
         xml_parser_free($this->parser);
     }
 
-    function parse($data)
+    public function parse($data)
     {
         $this->document = array();
         $this->parent = &$this->document;
         $this->parents = array();
-        $this->last_opened_tag = NULL;
+        $this->last_opened_tag = null;
         xml_parse($this->parser, $data);
         return $this->document;
     }
 
-    function open($parser, $tag, $attributes)
+    public function open($parser, $tag, $attributes)
     {
         #echo "Opening tag $tag<br>\n";
         $this->data = "";
@@ -143,20 +143,20 @@ class XML
         array_unshift($this->parents, $this->parent);
     }
 
-    function data($parser, $data)
+    public function data($parser, $data)
     {
         #echo "Data is '", htmlspecialchars($data), "'<br>\n";
-        if ($this->last_opened_tag != NULL) {
+        if ($this->last_opened_tag != null) {
             $this->data .= $data;
         }
     }
 
-    function close($parser, $tag)
+    public function close($parser, $tag)
     {
         #echo "Close tag $tag<br>\n";
         if ($this->last_opened_tag == $tag) {
             $this->parent = $this->data;
-            $this->last_opened_tag = NULL;
+            $this->last_opened_tag = null;
         }
         array_shift($this->parents);
         $this->parent = &$this->parents[0];
@@ -183,19 +183,19 @@ function &XMLRPC_parse(&$request)
     return $data;
 }
 
-function &XMLRPC_prepare($data, $type = NULL)
+function &XMLRPC_prepare($data, $type = null)
 {
     if (is_array($data)) {
         $num_elements = count($data);
         if ((array_key_exists(0, $data) or !$num_elements) and $type != 'struct') { #it's an array
             if (!$num_elements) { #if the array is empty
-                $returnvalue =  array('array' => array('data' => NULL));
+                $returnvalue = array('array' => array('data' => null));
             } else {
                 $returnvalue['array']['data']['value'] = array();
                 $temp = &$returnvalue['array']['data']['value'];
                 $count = count_numeric_items($data);
                 for ($n = 0; $n < $count; $n++) {
-                    $type = NULL;
+                    $type = null;
                     if (array_key_exists("$n type", $data)) {
                         $type = $data["$n type"];
                     }
@@ -204,13 +204,13 @@ function &XMLRPC_prepare($data, $type = NULL)
             }
         } else { #it's a struct
             if (!$num_elements) { #if the struct is empty
-                $returnvalue = array('struct' => NULL);
+                $returnvalue = array('struct' => null);
             } else {
                 $returnvalue['struct']['member'] = array();
                 $temp = &$returnvalue['struct']['member'];
                 foreach ($data as $key => $value) {
                     if (substr($key, -5) != ' type') { #if it's not a type specifier
-                        $type = NULL;
+                        $type = null;
                         if (array_key_exists("$key type", $data)) {
                             $type = $data["$key type"];
                         }
@@ -309,21 +309,21 @@ function &XMLRPC_adjustValue(&$current_node)
             switch ($type) {
                 case 'int':
                 case 'i4':
-                    $temp = (int)$temp;
+                    $temp = (int) $temp;
                     break;
                 case 'string':
-                    $temp = (string)$temp;
+                    $temp = (string) $temp;
                     break;
                 case 'double':
-                    $temp = (float)$temp;
+                    $temp = (float) $temp;
                     break;
                 case 'boolean':
-                    $temp = (bool)$temp;
+                    $temp = (bool) $temp;
                     break;
             }
         }
     } else {
-        $temp = (string)$current_node;
+        $temp = (string) $current_node;
     }
     return $temp;
 }
@@ -356,7 +356,7 @@ function XMLRPC_getMethodName($methodCall)
     return $methodCall['methodCall']['methodName'];
 }
 
-function XMLRPC_request($site, $location, $methodName, $params = NULL, $user_agent = NULL)
+function XMLRPC_request($site, $location, $methodName, $params = null, $user_agent = null)
 {
     $site = explode(':', $site);
     if (isset($site[1]) and is_numeric($site[1])) {
@@ -374,7 +374,7 @@ function XMLRPC_request($site, $location, $methodName, $params = NULL, $user_age
     $data["methodCall"]["methodName"] = $methodName;
     $param_count = count($params);
     if (!$param_count) {
-        $data["methodCall"]["params"] = NULL;
+        $data["methodCall"]["params"] = null;
     } else {
         for ($n = 0; $n < $param_count; $n++) {
             $data["methodCall"]["params"]["param"][$n]["value"] = $params[$n];
@@ -393,12 +393,12 @@ function XMLRPC_request($site, $location, $methodName, $params = NULL, $user_age
         return array(false, array('faultCode' => 10532, 'faultString' => "Connection failed: Couldn't make the connection to $site."));
     } else {
         $headers =
-            "POST $location HTTP/1.0\r\n" .
-            "Host: $site\r\n" .
-            "Connection: close\r\n" .
-            ($user_agent ? "User-Agent: $user_agent\r\n" : '') .
-            "Content-Type: text/xml\r\n" .
-            "Content-Length: " . strlen($data) . "\r\n\r\n";
+        "POST $location HTTP/1.0\r\n" .
+        "Host: $site\r\n" .
+        "Connection: close\r\n" .
+        ($user_agent ? "User-Agent: $user_agent\r\n" : '') .
+        "Content-Type: text/xml\r\n" .
+        "Content-Length: " . strlen($data) . "\r\n\r\n";
 
         fputs($conn, "$headers");
         fputs($conn, $data);
@@ -421,7 +421,7 @@ function XMLRPC_request($site, $location, $methodName, $params = NULL, $user_age
             XMLRPC_debug('XMLRPC_request', "<p>Received the following response:</p>\n\n" . XMLRPC_show($response, 'print_r', true) . "<p>Which was serialized into the following data:</p>\n\n" . XMLRPC_show($data, 'print_r', true));
         }
         if (isset($data['methodResponse']['fault'])) {
-            $return =  array(false, XMLRPC_adjustValue($data['methodResponse']['fault']['value']));
+            $return = array(false, XMLRPC_adjustValue($data['methodResponse']['fault']['value']));
             if (defined('XMLRPC_DEBUG') && XMLRPC_DEBUG) {
                 XMLRPC_debug('XMLRPC_request', "<p>Returning:</p>\n\n" . XMLRPC_show($return, 'var_dump', true));
             }
@@ -436,7 +436,7 @@ function XMLRPC_request($site, $location, $methodName, $params = NULL, $user_age
     }
 }
 
-function XMLRPC_response($return_value, $server = NULL)
+function XMLRPC_response($return_value, $server = null)
 {
     $data["methodResponse"]["params"]["param"]["value"] = &$return_value;
     $return = XML_serialize($data);
@@ -459,7 +459,7 @@ function XMLRPC_response($return_value, $server = NULL)
     echo $return;
 }
 
-function XMLRPC_error($faultCode, $faultString, $server = NULL)
+function XMLRPC_error($faultCode, $faultString, $server = null)
 {
     $array["methodResponse"]["fault"]["value"]["struct"]["member"] = array();
     $temp = &$array["methodResponse"]["fault"]["value"]["struct"]["member"];
@@ -534,12 +534,12 @@ function XMLRPC_show($data, $func = "print_r", $return_str = false)
 
 // Added by Gwyneth Llewelyn 20060730
 // Uses libCURL to handle special cases
-function XMLRPC_request_CURL($site, $location, $methodName, $params = NULL, $user_agent = NULL)
+function XMLRPC_request_CURL($site, $location, $methodName, $params = null, $user_agent = null)
 {
     $data["methodCall"]["methodName"] = $methodName;
     $param_count = count($params);
     if (!$param_count) {
-        $data["methodCall"]["params"] = NULL;
+        $data["methodCall"]["params"] = null;
     } else {
         for ($n = 0; $n < $param_count; $n++) {
             $data["methodCall"]["params"]["param"][$n]["value"] = $params[$n];
@@ -560,15 +560,16 @@ function XMLRPC_request_CURL($site, $location, $methodName, $params = NULL, $use
     @curl_setopt($ch, CURLOPT_POSTFIELDSIZE, strlen($data));
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_TIMEOUT, 9);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
     $response = curl_exec($ch);
 
-    if (curl_errno($ch))
+    if (curl_errno($ch)) {
         XMLRPC_debug('XMLRPC_request', '<p>Connection failed: ' . curl_error($ch) . '</p>');
-    else
+    } else {
         curl_close($ch);
+    }
 
     if (defined('XMLRPC_DEBUG') && XMLRPC_DEBUG) {
         XMLRPC_debug('XMLRPC_request', "<p>Sent the following request:</p>\n\n" . XMLRPC_show($headers . $data, 'print_r', true));
@@ -580,7 +581,7 @@ function XMLRPC_request_CURL($site, $location, $methodName, $params = NULL, $use
         XMLRPC_debug('XMLRPC_request', "<p>Received the following response:</p>\n\n" . XMLRPC_show($response, 'print_r', true) . "<p>Which was serialized into the following data:</p>\n\n" . XMLRPC_show($data, 'print_r', true));
     }
     if (isset($data['methodResponse']['fault'])) {
-        $return =  array(false, XMLRPC_adjustValue($data['methodResponse']['fault']['value']));
+        $return = array(false, XMLRPC_adjustValue($data['methodResponse']['fault']['value']));
         if (defined('XMLRPC_DEBUG') && XMLRPC_DEBUG) {
             XMLRPC_debug('XMLRPC_request', "<p>Returning:</p>\n\n" . XMLRPC_show($return, 'var_dump', true));
         }

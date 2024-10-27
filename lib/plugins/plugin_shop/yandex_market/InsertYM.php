@@ -7,20 +7,20 @@ class InsertYM extends AYandexMarket
     public function currency($currencies)
     {
         foreach ($currencies as $currency) {
-            $currency = (string)$currency->attributes()->id;
+            $currency = (string) $currency->attributes()->id;
             $valute_list = $this->getCurrency();
             if (!in_array($currency, $valute_list)) {
                 $cbr_code = $this->sbrCode();
                 if ($currency == 'RUR' || $currency == 'RUB') {
                     $cbr_code['RUB'] = $cbr_code['RUR'] = array(
                         'name' => 'Российский рубль',
-                        'code' => ''
+                        'code' => '',
                     );
                 }
                 $itemCurrency = array(
-                    'name'    => $currency,
-                    'title'   => $cbr_code[$currency]['name'],
-                    'cbr_kod' => $cbr_code[$currency]['code']
+                    'name' => $currency,
+                    'title' => $cbr_code[$currency]['name'],
+                    'cbr_kod' => $cbr_code[$currency]['code'],
                 );
                 $this->setCurrency($itemCurrency);
             }
@@ -31,19 +31,19 @@ class InsertYM extends AYandexMarket
     public function category($groups)
     {
         foreach ($groups as $group) {
-            $id = (int)$group->attributes()->id;
-            $parentId = (int)$group->attributes()->parentId;
-            $name = (string)$group;
+            $id = (int) $group->attributes()->id;
+            $parentId = (int) $group->attributes()->parentId;
+            $name = (string) $group;
 
-            $this->getCategory();  // нужно для транслита
+            $this->getCategory(); // нужно для транслита
             $uniqCategory = $this->getTranslitName($name);
             $parentId = (empty($this->categoryTree[$parentId]))
-                ? 'null' : $this->categoryTree[$parentId];
+            ? 'null' : $this->categoryTree[$parentId];
             $itemCategory = array(
                 'code_gr' => $uniqCategory,
-                'name'    => $name,
-                'upid'    => $parentId,
-                'visits'  => '00'
+                'name' => $name,
+                'upid' => $parentId,
+                'visits' => '00',
             );
             $this->setCategory($itemCategory);
             $ins = $this->save('shop_group');
@@ -55,16 +55,16 @@ class InsertYM extends AYandexMarket
     {
         $this->getProduct(); // нужно для транслита
         foreach ($offers as $offer) {
-            $id = (int)$offer->attributes()->id;
-            $groupId = (int)$offer->attributes()->group_id;
-            $price = (float)$offer->price;
-            $currency = (string)$offer->currencyId;
-            $group = (int)$offer->categoryId;
-            $type = (string)$offer->attributes()->type;
-            $name = ($type == 'vendor.model') ? (string)$offer->model : (string)$offer->name;
-            $brand = (string)$offer->vendor;
-            $note = (string)$offer->description;
-            $url = (string)$offer->url;
+            $id = (int) $offer->attributes()->id;
+            $groupId = (int) $offer->attributes()->group_id;
+            $price = (float) $offer->price;
+            $currency = (string) $offer->currencyId;
+            $group = (int) $offer->categoryId;
+            $type = (string) $offer->attributes()->type;
+            $name = ($type == 'vendor.model') ? (string) $offer->model : (string) $offer->name;
+            $brand = (string) $offer->vendor;
+            $note = (string) $offer->description;
+            $url = (string) $offer->url;
             // $rec = (string)$offer->rec;
 
             if (!empty($brand)) {
@@ -73,7 +73,7 @@ class InsertYM extends AYandexMarket
                     $uniqBrand = $this->getTranslitName($brand);
                     $itemBrand = array(
                         'name' => $brand,
-                        'code' => $uniqBrand
+                        'code' => $uniqBrand,
                     );
 
                     $this->setBrand($itemBrand);
@@ -83,36 +83,38 @@ class InsertYM extends AYandexMarket
                     $brandId = array_search($brand, $currentBrand);
                 }
             }
-            if (empty($brandId)) $brandId = 'null';
+            if (empty($brandId)) {
+                $brandId = 'null';
+            }
 
             $uniqProduct = $this->getTranslitName($name);
             $group = (empty($this->categoryTree[$group]))
-                ? 'null' : $this->categoryTree[$group];
+            ? 'null' : $this->categoryTree[$group];
             $itemProduct = array(
-                'code'           => $uniqProduct,
-                'lang'           => 'rus',
-                'id_group'       => $group,
-                'id_brand'       => $brandId,
-                'name'           => $name,
-                'price'          => $price,
-                'price_opt'      => '00',
+                'code' => $uniqProduct,
+                'lang' => 'rus',
+                'id_group' => $group,
+                'id_brand' => $brandId,
+                'name' => $name,
+                'price' => $price,
+                'price_opt' => '00',
                 'price_opt_corp' => '00',
-                'bonus'          => '00',
-                'votes'          => '00',
-                'note'           => $note,
-                'curr'           => $currency
+                'bonus' => '00',
+                'votes' => '00',
+                'note' => $note,
+                'curr' => $currency,
             );
             $this->setProduct($itemProduct);
 
             foreach ($offer->param as $line) {
-                $tmp = (string)$line;
+                $tmp = (string) $line;
                 if (!empty($tmp)) {
                     $this->productParam[$uniqProduct][] = $line;
                 }
             }
 
             foreach ($offer->picture as $line) {
-                $tmpPicture = (string)$line;
+                $tmpPicture = (string) $line;
                 $this->pictureLoad[] = $tmpPicture;
                 $tmpPicture = explode("/", $tmpPicture);
                 $tmpPicture = end($tmpPicture);
@@ -125,17 +127,17 @@ class InsertYM extends AYandexMarket
         $productList = $this->getProductByCode();
         foreach ($this->productParam as $code => $params) {
             foreach ($params as $param) {
-                $name = (string)$param->attributes()->name;
-                $unit = (string)$param->attributes()->unit;
-                $value = (string)$param;
+                $name = (string) $param->attributes()->name;
+                $unit = (string) $param->attributes()->unit;
+                $value = (string) $param;
 
                 $currentParam = $this->getParam();
                 $idParam = 0;
                 if (!in_array($name, $currentParam)) {
                     $unit = (empty($unit)) ? 'null' : $unit;
                     $itemParam = array(
-                        'name'    => $name,
-                        'measure' => $unit
+                        'name' => $name,
+                        'measure' => $unit,
                     );
 
                     $this->setParam($itemParam);
@@ -151,7 +153,7 @@ class InsertYM extends AYandexMarket
                     if (!in_array($value, $paramValues)) {
                         $itemParamValue = array(
                             'id_feature' => $idParam,
-                            'value'      => $value
+                            'value' => $value,
                         );
 
                         $this->setParamValue($itemParamValue);
@@ -165,9 +167,9 @@ class InsertYM extends AYandexMarket
                     if (!empty($idValue) && !empty($productList[$code])) {
                         $idPrice = $productList[$code];
                         $itemProductParamValue = array(
-                            'id_price'   => $idPrice,
+                            'id_price' => $idPrice,
                             'id_feature' => $idParam,
-                            'id_value'   => $idValue
+                            'id_value' => $idValue,
                         );
                         $this->setProductParamValue($itemProductParamValue);
                     }
@@ -181,7 +183,7 @@ class InsertYM extends AYandexMarket
                 $idPrice = $productList[$code];
                 $itemPictureList = array(
                     'id_price' => $idPrice,
-                    'picture' => $value
+                    'picture' => $value,
                 );
                 $this->setPicture($itemPictureList);
             }

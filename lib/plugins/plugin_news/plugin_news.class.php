@@ -22,21 +22,23 @@ class plugin_news
     private $cache_count;
     private $cache_group;
 
-
     public function __construct($opt = array(), $pagename = false)
     {
         $this->current_page = ($pagename) ? $pagename : seData::getInstance()->getPageName();
-        //$this->opts = $opt;
 
         $this->cache_dir = SE_SAFE . 'projects/' . SE_DIR . 'cache/news/' . $opt['lang'] . '/';
         $this->cache_sections = $this->cache_dir . 'news.json';
         $this->cache_count = $this->cache_dir . 'count.json';
         $this->cache_group = $this->cache_dir . 'groups.json';
         if (!is_dir($this->cache_dir)) {
-            if (!is_dir(SE_SAFE . 'projects/' . SE_DIR . 'cache/'))
+            if (!is_dir(SE_SAFE . 'projects/' . SE_DIR . 'cache/')) {
                 mkdir(SE_SAFE . 'projects/' . SE_DIR . 'cache/');
-            if (!is_dir(SE_SAFE . 'projects/' . SE_DIR . 'cache/news/'))
+            }
+
+            if (!is_dir(SE_SAFE . 'projects/' . SE_DIR . 'cache/news/')) {
                 mkdir(SE_SAFE . 'projects/' . SE_DIR . 'cache/news/');
+            }
+
             mkdir($this->cache_dir);
         }
 
@@ -93,8 +95,11 @@ class plugin_news
     {
         global $SE_REQUEST_NAME;
         $url = explode('?', $_SERVER['REQUEST_URI']);
-        $url = str_replace(seMultiDir() . '/' . $this->current_page . '/', '',  $url[0]);
-        if (substr($url, -1, 1) == URL_END) $url = substr($url, 0, -1);
+        $url = str_replace(seMultiDir() . '/' . $this->current_page . '/', '', $url[0]);
+        if (substr($url, -1, 1) == URL_END) {
+            $url = substr($url, 0, -1);
+        }
+
         $u = explode('/', $url);
         $result = $this->getIdUrl($url);
 
@@ -133,10 +138,9 @@ class plugin_news
 
         $result = se_db_query($sql_cache);
 
-        $cache_count = file_exists($this->cache_count) ? (int)file_get_contents($this->cache_count) : -1;
+        $cache_count = file_exists($this->cache_count) ? (int) file_get_contents($this->cache_count) : -1;
 
         $update_time = 0;
-
 
         if (!empty($result)) {
             while ($line = se_db_fetch_assoc($result)) {
@@ -164,7 +168,7 @@ class plugin_news
         $news = new seTable('news', 'n');
         $news->addField('is_date_public', 'tinyint(1)', '0', 1);
         $news->addField('sort', 'integer', '0', 1);
-        $news->select("nc.ident, nc.lang, `n`.`id_category`, `n`.`id`, `n`.`short_txt` AS `note`, `n`.`text`, `n`.`img`, `n`.`title`, 
+        $news->select("nc.ident, nc.lang, `n`.`id_category`, `n`.`id`, `n`.`short_txt` AS `note`, `n`.`text`, `n`.`img`, `n`.`title`,
             `n`.`news_date`, `n`.`pub_date`, `n`.`is_date_public`, `n`.`sort`, GROUP_CONCAT(ngc.id_gcontact) AS gcontacts");
         $news->innerjoin("news_category nc", "`n`.id_category = `nc`.id");
         $news->leftjoin("news_gcontacts ngc", "`n`.id = `ngc`.id_news");
@@ -190,7 +194,6 @@ class plugin_news
         foreach ($flist as $fld) {
             $fields[$fld['id_news']][$fld['code']] = $fld['value'];
         }
-
 
         foreach ($newslist as $val) {
 
@@ -218,10 +221,18 @@ class plugin_news
 
     public static function getInstance($opt = array(), $pagename = false)
     {
-        if (empty($opt['size_image'])) $opt['size_image'] = '200x200';
-        if (empty($opt['lang'])) $opt['lang'] = 'rus';
+        if (empty($opt['size_image'])) {
+            $opt['size_image'] = '200x200';
+        }
+
+        if (empty($opt['lang'])) {
+            $opt['lang'] = 'rus';
+        }
+
         self::$options = $opt;
-        if (empty(self::$options['size_image_full'])) self::$options['size_image_full'] = 800;
+        if (empty(self::$options['size_image_full'])) {
+            self::$options['size_image_full'] = 800;
+        }
 
         if (is_null(self::$instance)) {
             self::$instance = new self($opt, $pagename = false);
@@ -302,7 +313,6 @@ class plugin_news
         foreach ($fields as $fld) {
             $val['field_' . $fld['code']] = $fld['value'];
         }
-
 
         $newsimg = new seTable('news_img', 'ni');
         $newsimg->select();
@@ -437,7 +447,10 @@ class plugin_news
             if (empty($codearr) || in_array($item['ident'], $codearr)) {
                 if (strtotime($item['pub_date']) < time() || !$item['is_date_public']) {
                     $ff_id++;
-                    if ($offset > $ff_id - 1) continue;
+                    if ($offset > $ff_id - 1) {
+                        continue;
+                    }
+
                     $item['image_prev'] = ($item['img']) ? $this->getPictimage($item['img'], self::$options['size_image'], 'm') : '';
                     //$item['image'] = ($item['img']) ? $this->getRealImgPath() . $item['img'] : '';
                     foreach ($item['fields'] as $n => $f) {
@@ -445,7 +458,10 @@ class plugin_news
                     }
                     unset($item['img'], $item['fields']);
                     $items[] = $item;
-                    if (count($items) >= $limit) break;
+                    if (count($items) >= $limit) {
+                        break;
+                    }
+
                 }
             }
         }
@@ -467,10 +483,14 @@ class plugin_news
         $news->leftjoin("news_gcontacts ngc", "`n`.id = `ngc`.id_news");
         //$news->Where("nc.lang = '?'", self::$options['lang']);
         $news->Where("n.active = 'Y'");
-        if (!empty($code))
+        if (!empty($code)) {
             $news->andWhere("nc.ident IN ('?')", $code);
-        if (self::$options['lang'])
+        }
+
+        if (self::$options['lang']) {
             $news->andWhere("nc.lang = '?'", self::$options['lang']);
+        }
+
         $news->andWhere("((SELECT COUNT(ngc1.id) FROM news_gcontacts ngc1 WHERE `ngc1`.id_news=`n`.id) < 1 OR ngc.id_gcontact=?)", intval($this->id_gcontact));
         $news->groupBy('n.id');
         $news->orderBy('sort', 0);

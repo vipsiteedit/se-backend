@@ -1,75 +1,83 @@
 <?php
 
 /**
-* Функция добавления конечного слеша
-*
-* @param   string $string Исходная строка
-*
-* @return  string  Строка с конечным слешем
-*
-* @since   5.1
-*
-*/
+ * Функция добавления конечного слеша
+ *
+ * @param   string $string Исходная строка
+ *
+ * @return  string  Строка с конечным слешем
+ *
+ * @since   5.1
+ *
+ */
 
-function tsl( $string ) {
-    if ( strpos( $string, '://' ) !== false ) {
+function tsl($string)
+{
+    if (strpos($string, '://') !== false) {
         return $string;
     }
-    if ( strpos( '#', $string ) !== false ) {
-        list( $string, $rec ) = explode( '#', $string );
+    if (strpos('#', $string) !== false) {
+        list($string, $rec) = explode('#', $string);
         $rec = '#' . $rec;
     } else {
         $rec = '';
     }
 
-    if ( strpos( '?', $string ) !== false ) {
-        list( $string, $req ) = explode( '?', $string );
+    if (strpos('?', $string) !== false) {
+        list($string, $req) = explode('?', $string);
         $req = '?' . $req;
     } else {
         $req = '';
     }
 
-    if ( !empty( $string ) && substr( $string, -1 ) != '/' ) {
+    if (!empty($string) && substr($string, -1) != '/') {
         $string .= '/';
     }
-    if ( !empty( $string ) && substr( $string, 0, 1 ) != '/' ) {
+    if (!empty($string) && substr($string, 0, 1) != '/') {
         $string = '/' . $string;
     }
     return SE_MULTI_DIR . $string . $req . $rec;
 }
 
-function getExtFile( $filename ) {
-    $res = explode( '.', $filename );
-    return end( $res );
+function getExtFile($filename)
+{
+    $res = explode('.', $filename);
+    return end($res);
 }
 
-function delExtFile( $filename ) {
-    $ext = getExtFile( $filename );
-    if ( !empty( $ext ) ) {
-        $len = 0 - ( strlen( $ext ) + 1 );
-        $filename = substr( $filename, 0, $len );
+function delExtFile($filename)
+{
+    $ext = getExtFile($filename);
+    if (!empty($ext)) {
+        $len = 0 - (strlen($ext) + 1);
+        $filename = substr($filename, 0, $len);
     }
     return $filename;
 }
 
-function setPrefFile( $filename, $pref = '' ) {
-    return delExtFile( $filename ) . $pref . '.' . getExtFile( $filename );
+function setPrefFile($filename, $pref = '')
+{
+    return delExtFile($filename) . $pref . '.' . getExtFile($filename);
 }
 
 //функция определения ip адреса клиента
 
-function detect_ip() {
+function detect_ip()
+{
     $ip = false;
-    if ( isset( $_SERVER[ 'HTTP_X_FORWARDED_FOR' ] ) and preg_match( "#^[0-9.]+$#", $_SERVER[ 'HTTP_X_FORWARDED_FOR' ] ) )
-    $ip = $_SERVER[ 'HTTP_X_FORWARDED_FOR' ];
-    elseif ( isset( $_SERVER[ 'HTTP_X_REAL_IP' ] ) and preg_match( "#^[0-9.]+$#", $_SERVER[ 'HTTP_X_REAL_IP' ] ) )
-    $ip = $_SERVER[ 'HTTP_X_REAL_IP' ];
-    elseif ( preg_match( "#^[0-9.]+$#", $_SERVER[ 'REMOTE_ADDR' ] ) )
-    $ip = $_SERVER[ 'REMOTE_ADDR' ];
+    if (isset($_SERVER['HTTP_X_FORWARDED_FOR']) and preg_match("#^[0-9.]+$#", $_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+    } elseif (isset($_SERVER['HTTP_X_REAL_IP']) and preg_match("#^[0-9.]+$#", $_SERVER['HTTP_X_REAL_IP'])) {
+        $ip = $_SERVER['HTTP_X_REAL_IP'];
+    } elseif (preg_match("#^[0-9.]+$#", $_SERVER['REMOTE_ADDR'])) {
+        $ip = $_SERVER['REMOTE_ADDR'];
+    }
+
     return $ip;
 }
 
-function rus2translit( $string ) {
+function rus2translit($string)
+{
 
     $converter = array(
         'а' => 'a', 'б' => 'b', 'в' => 'v',
@@ -136,7 +144,6 @@ function se_strip_script($string)
     return trim(preg_replace("/<[\/]?script([^>]+)?>/is", "", $string));
 }
 
-
 function se_convert_pattern($pattern)
 {
     $patt = '#^';
@@ -147,5 +154,5 @@ function se_convert_pattern($pattern)
         return '( [ ^\/ ]+ )';
     }, $pattern);
     $patt .= '/*$#i';
-                return $patt;
-            }
+    return $patt;
+}

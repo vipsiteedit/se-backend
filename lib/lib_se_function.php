@@ -10,12 +10,21 @@ if (!function_exists('se_sqs')) {
 
         $link = array();
         $remove = array('part', 'rec', 'archive', 'sub', 'page', 'razdel');
-        foreach ($_GET as $k => $v) if (!in_array($k, $remove) && intval($k) == 0 && $v) $link[$k] = $k . '=' . $v;
+        foreach ($_GET as $k => $v) {
+            if (!in_array($k, $remove) && intval($k) == 0 && $v) {
+                $link[$k] = $k . '=' . $v;
+            }
+        }
 
         if (!empty($var) && !empty($var)) {
             $arrvar = explode(";", $var);
             $arrval = explode(";", $val);
-            foreach ($arrvar as $k => $v) if (isset($arrval[$k]) && $v) $link[$v] = $v . '=' . $arrval[$k];
+            foreach ($arrvar as $k => $v) {
+                if (isset($arrval[$k]) && $v) {
+                    $link[$v] = $v . '=' . $arrval[$k];
+                }
+            }
+
         }
         $SE_VARS['get'] = join('&', $link);
         return $SE_VARS['get'];
@@ -29,7 +38,10 @@ if (!function_exists('se_DivPagesLimit')) {
     {
         //if ($razdel > 0)
 
-        if ($pagen == 0) return;
+        if ($pagen == 0) {
+            return;
+        }
+
         if (isset($_GET['sheet'])) {
             $sheet = intval($_GET['sheet']);
             $_SESSION['sheetpage'] = $sheet;
@@ -42,13 +54,14 @@ if (!function_exists('se_DivPagesLimit')) {
             $sheet = 1;
         }
 
-        if ($sheet > 1)
+        if ($sheet > 1) {
             return 'LIMIT ' . ($pagen * $sheet - $pagen) . ',' . $pagen;
-        else
+        } else {
             return 'LIMIT ' . $pagen;
+        }
+
     }
 }
-
 
 // -------------------------------------------------------------- //
 // Формат вывода чисел (тысячи разделяются пробелом, сотые после точки)
@@ -59,8 +72,14 @@ if (!function_exists('se_FormatNumber')) {
     function se_FormatNumber($num, $separator = '&nbsp;')
     {
         $rnum = strstr(str_replace(",", ".", $num), '.');
-        if (trim($rnum) == '') $rnum = ".00";
-        if (strlen(trim($rnum)) < 3) $rnum .= "0";
+        if (trim($rnum) == '') {
+            $rnum = ".00";
+        }
+
+        if (strlen(trim($rnum)) < 3) {
+            $rnum .= "0";
+        }
+
         $num = strval(floor($num));
         $res = "";
         $l = strlen($num) - 1;
@@ -87,17 +106,26 @@ if (!function_exists('se_formatMoney')) {
     {
         $currency = seCurrency::getInstance(se_getlang());
         $res_setcurr = $currency->getCurrData($curr);
-        if (empty($res_setcurr['minsum'])) $res_setcurr['minsum'] = 0.01;
+        if (empty($res_setcurr['minsum'])) {
+            $res_setcurr['minsum'] = 0.01;
+        }
+
         $price = round($price / $res_setcurr['minsum']) * $res_setcurr['minsum'];
-        if ($res_setcurr['minsum'] >= 1) $round = true;
+        if ($res_setcurr['minsum'] >= 1) {
+            $round = true;
+        }
 
         $num = (!$round) ? round($price, 2) : round($price);
 
-
         $rnum = strstr(str_replace(",", ".", $num), '.');
-        if (!$round && trim($rnum) == '') $rnum = ".00";
+        if (!$round && trim($rnum) == '') {
+            $rnum = ".00";
+        }
 
-        if (!$round && strlen(trim($rnum)) < 3) $rnum .= "0";
+        if (!$round && strlen(trim($rnum)) < 3) {
+            $rnum .= "0";
+        }
+
         $num = strval(floor($num));
         $res = "";
         $l = strlen($num) - 1;
@@ -112,17 +140,16 @@ if (!function_exists('se_formatMoney')) {
         }
         $price = str_replace(" ", $separator, trim($res . $rnum));
 
-
-        //$price = se_formatNumber($price);
-        //$res_setcurr = mysql_fetch_array(mysql_query("SELECT `name_front`, `name_flang`  FROM `money_title` WHERE (`name` = '".$curr."') LIMIT 1"),MYSQL_BOTH);
-        if (!empty($res_setcurr['name_front']))
+        if (!empty($res_setcurr['name_front'])) {
             return '<span class="fMoneyFront">' . $res_setcurr['name_front'] . '</span>&nbsp;' . trim($price);
-        elseif (!empty($res_setcurr['name_flang'])) {
+        } elseif (!empty($res_setcurr['name_flang'])) {
             $rubl = (in_array($curr, array('RUR', 'RUB'))) ? ' rubl' : '';
             $nameflang = (in_array($curr, array('RUR', 'RUB'))) ? 'руб.' : $res_setcurr['name_flang'];
             return trim($price) . '&nbsp;<span class="fMoneyFlang' . $rubl . '">' . $nameflang . '</span>';
-        } else
+        } else {
             return trim($price);
+        }
+
     }
 }
 
@@ -145,7 +172,10 @@ if (!function_exists('se_MoneyConvert')) {
         // конвертирование цен
         // price conversion
         if (!se_manual_curr_rate()) {
-            if ($setvalut == $getvalut) return $summa;
+            if ($setvalut == $getvalut) {
+                return $summa;
+            }
+
             $curs1 = getCurrencyValues($setvalut);
             $curs1 = (!empty($curs1['Value'])) ? str_replace(',', '.', $curs1['Value']) / $curs1['Nominal'] : 1.00;
             $curs2 = getCurrencyValues($getvalut);
@@ -160,7 +190,6 @@ if (!function_exists('se_MoneyConvert')) {
         }
     }
 }
-
 
 // -------------------------------------------------------------- //
 // Проверка почтового ящика на валидность
@@ -194,9 +223,9 @@ if (!function_exists('se_CheckMail')) {
         // else $se_check_dns = FALSE;
 
         if ($se_strings_isemail && $se_check_mx && $se_check_dns) {
-            return TRUE;
+            return true;
         } else {
-            return FALSE;
+            return false;
         }
     }
 }
@@ -210,8 +239,12 @@ if (!function_exists('se_LimitString')) {
     function se_LimitString($text, $len = 150, $endchars = '...')
     {
         $text = utf8_substr($text, 0, $len);
-        if (preg_match('/^(.+|\n)\W/ius', $text, $matches)) return rtrim($matches[1]) . " " . $endchars;
-        else return $text . " " . $endchars;
+        if (preg_match('/^(.+|\n)\W/ius', $text, $matches)) {
+            return rtrim($matches[1]) . " " . $endchars;
+        } else {
+            return $text . " " . $endchars;
+        }
+
     }
 }
 
@@ -219,13 +252,18 @@ function se_iconv($outcharser, $text)
 {
     global $SE_PAGEVAL, $sitearray;
 
-    if (!empty($SE_PAGEVAL['localcharset']))
+    if (!empty($SE_PAGEVAL['localcharset'])) {
         $charset = $SE_PAGEVAL['localcharset'];
-    elseif (!empty($sitearray["globalcharset"]))
+    } elseif (!empty($sitearray["globalcharset"])) {
         $charset = $sitearray["globalcharset"];
-    else  $charset = 'CP1251';
-    if (strtolower($charset) != strtolower($outcharser))
+    } else {
+        $charset = 'CP1251';
+    }
+
+    if (strtolower($charset) != strtolower($outcharser)) {
         $text = iconv($charset, $outcharser, $text);
+    }
+
     return $text;
 }
 
@@ -235,11 +273,16 @@ function se_getlang()
 {
     if (defined('DEFAULT_LANG') && DEFAULT_LANG) {
         $lang = DEFAULT_LANG;
-    } else $lang = "rus";
-    if (strpos($lang, '.')) list(, $lang) = explode('.', $lang);
+    } else {
+        $lang = "rus";
+    }
+
+    if (strpos($lang, '.')) {
+        list(, $lang) = explode('.', $lang);
+    }
+
     return $lang;
 }
-
 
 function se_correct_path($path)
 {
@@ -257,8 +300,14 @@ function se_correct_path($path)
 
 function se_manual_curr_rate()
 {
-    if (!SE_DB_ENABLE) return;
-    if (defined('SE_MANUAL_CURR_RATE')) return SE_MANUAL_CURR_RATE;
+    if (!SE_DB_ENABLE) {
+        return;
+    }
+
+    if (defined('SE_MANUAL_CURR_RATE')) {
+        return SE_MANUAL_CURR_RATE;
+    }
+
     $main = new seTable('main');
     $main->select('is_manual_curr_rate');
     $main->where("lang='?'", se_getlang());
@@ -269,18 +318,26 @@ function se_manual_curr_rate()
 
 function se_BaseCurrency()
 {
-    if (!SE_DB_ENABLE) return;
-    if (defined('SE_BASE_CURR')) return SE_BASE_CURR;
+    if (!SE_DB_ENABLE) {
+        return;
+    }
+
+    if (defined('SE_BASE_CURR')) {
+        return SE_BASE_CURR;
+    }
+
     $main = new seTable('main');
     $main->select('basecurr');
     $main->where("lang='?'", se_getlang());
     $main->fetchOne();
     $basecurr = $main->basecurr;
-    if (empty($basecurr)) $basecurr = 'RUR';
+    if (empty($basecurr)) {
+        $basecurr = 'RUR';
+    }
+
     define('SE_BASE_CURR', $basecurr);
     return $basecurr;
 }
-
 
 function se_getMoney()
 {
@@ -295,16 +352,22 @@ function se_getMoney()
     return (trim($pricemoney) != '') ? $pricemoney : 'RUR';
 }
 
-
 function se_getAdmin($select = '')
 {
-    if (!SE_DB_ENABLE) return;
+    if (!SE_DB_ENABLE) {
+        return;
+    }
+
     $main = new seTable('main');
     $main->select($select);
     $main->where("lang='?'", se_getlang());
     $result = $main->fetchOne();
-    if (count($result) < 2) return $result[$select];
-    else return $result;
+    if (count($result) < 2) {
+        return $result[$select];
+    } else {
+        return $result;
+    }
+
 }
 
 if (!function_exists('se_getVersion')) {
@@ -312,14 +375,20 @@ if (!function_exists('se_getVersion')) {
     {
         $file = trim(current(file(dirname(__FILE__) . '/version')));
         list(, $version) = explode(':', $file);
-        if (empty($version)) $version = '5.1';
+        if (empty($version)) {
+            $version = '5.1';
+        }
+
         return $version;
     }
 }
 
 function se_getMainId()
 {
-    if (!SE_DB_ENABLE) return;
+    if (!SE_DB_ENABLE) {
+        return;
+    }
+
     if (!defined('SE_SHOP_ID')) {
         $main = new seTable('main');
         $main->select('id');
@@ -335,14 +404,17 @@ function se_getMainId()
 
 function seUserTypePrice()
 {
-    if (!SE_DB_ENABLE) return;
+    if (!SE_DB_ENABLE) {
+        return;
+    }
+
     if (!defined('USER_TYPEPRICE')) {
         $price_type = 0;
         if ($id_user = seUserId()) {
             $p = new seTable('person');
             $p->select('price_type');
             $p->find($id_user);
-            $price_type = (int)$p->price_type;
+            $price_type = (int) $p->price_type;
         }
         define('USER_TYPEPRICE', $price_type);
     }

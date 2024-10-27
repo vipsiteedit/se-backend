@@ -1,6 +1,5 @@
 <?php
 
-
 class ArrayStream
 {
 
@@ -22,7 +21,7 @@ class ArrayStream
     public static function last(&$array)
     {
         $c = count($array);
-        return $c ? $array[$c - 1] : NULL;
+        return $c ? $array[$c - 1] : null;
     }
 }
 
@@ -140,16 +139,16 @@ class XSS
      */
     public function is_persistant()
     {
-        return TRUE;
+        return true;
     }
 
-    //					'a'                             => array('href','target'),
+    //                    'a'                             => array('href','target'),
 
     private function config()
     {
         $this->autoclosed_tags = array('area', 'base', 'basefont', 'bgsound', 'br', 'col', 'colgroup', 'event-source', 'frame', 'hr', 'img', 'input', 'link', 'meta', 'param');
         $this->common_allowed_attrs = array('class', 'id', 'title');
-        $this->output_empty_attribute = FALSE;
+        $this->output_empty_attribute = false;
         $this->white_tags = array(
             'abbr' => array(),
             'acronym' => array(), // deprecated, use <abbr>
@@ -208,7 +207,7 @@ class XSS
             'tr' => array('valign'),
             'u' => array(), // deprecated, no HTML5
             'ul' => array(),
-            'var' => array()
+            'var' => array(),
         );
     }
 
@@ -231,7 +230,7 @@ class XSS
         ///////////////////// normalize source
         do {
             // set default flag
-            $this->flag_entity_decode = FALSE;
+            $this->flag_entity_decode = false;
             // normalize
             $str = $this->html_normalize($str);
         } while ($this->flag_entity_decode);
@@ -264,12 +263,14 @@ class XSS
      */
     private function uchr(&$ch)
     {
-        if ($ch < 128)
+        if ($ch < 128) {
             return chr($ch);
-        else if ($ch < 2048)
+        } else if ($ch < 2048) {
             return chr(192 + (($ch - ($ch % 64)) / 64)) . chr(128 + ($ch % 64));
-        else
+        } else {
             return chr(224 + (($ch - ($ch % 4096)) / 4096)) . chr(128 + ((($ch % 4096) - ($ch % 64)) / 64)) . chr(128 + ($ch % 64));
+        }
+
     }
 
     /**
@@ -281,11 +282,12 @@ class XSS
     private function entity_decode(&$buf, $is_hex)
     {
         // convert char to integer
-        if ($is_hex)
+        if ($is_hex) {
             $buf = hexdec($buf);
+        }
 
         // set decode flag
-        $this->flag_entity_decode = TRUE;
+        $this->flag_entity_decode = true;
 
         // return character
         return $this->only_char($this->uchr($buf));
@@ -314,7 +316,7 @@ class XSS
             $ch = substr($source, $i, 1);
 
             switch ($tchar) {
-                    // start look for html entity
+                // start look for html entity
                 case '&':
                     // is html entity
                     if ($ch == '#') {
@@ -326,12 +328,12 @@ class XSS
                         $index++;
                         return '&';
                     }
-                    // continue look for html entity
-                    // after &#
+                // continue look for html entity
+                // after &#
                 case '#':
 
                     // set default
-                    $is_hex = FALSE; // is hexadecimal number
+                    $is_hex = false; // is hexadecimal number
                     $condition = '1-9';
 
                     // is hexadecimal number
@@ -354,12 +356,12 @@ class XSS
                         return '&';
                     }
                     break;
-                    // continue look for html entity
-                    // after &#x
-                    // as hexidecimal number
+                // continue look for html entity
+                // after &#x
+                // as hexidecimal number
                 case 'X':
 
-                    $is_hex = TRUE;
+                    $is_hex = true;
 
                     // is hexadecimal number
                     if (preg_match('/^[1-9a-f]$/i', $ch)) {
@@ -378,7 +380,7 @@ class XSS
                         return '&';
                     }
                     break;
-                    // skip leading zero
+                // skip leading zero
                 case '0':
                     // up step
                     $i++;
@@ -403,8 +405,8 @@ class XSS
                         return $this->only_char($ch);
                     }
                     break;
-                    // continue look for html entity
-                    // as number
+                // continue look for html entity
+                // as number
                 case 'D':
 
                     // is number
@@ -415,8 +417,9 @@ class XSS
                     } // convert to character
                     else {
                         // exclude delimiter
-                        if ($ch == ';')
+                        if ($ch == ';') {
                             $i++;
+                        }
 
                         // save index for next search
                         $index = $i;
@@ -424,7 +427,7 @@ class XSS
                         // return character
                         return $this->entity_decode($buf, $is_hex);
                     }
-                    // is another character
+                // is another character
                 default:
                     // continue look for html entity
                     if ($ch == '&') {
@@ -447,7 +450,7 @@ class XSS
         }
 
         // no result
-        return FALSE;
+        return false;
     }
 
     /**
@@ -462,10 +465,12 @@ class XSS
         $length = strlen($str);
         $result = '';
 
-        while (($ch = $this->pack_entity($i, $str, $length)) !== FALSE) {
+        while (($ch = $this->pack_entity($i, $str, $length)) !== false) {
 
-            if (strlen($ch) != 0)
+            if (strlen($ch) != 0) {
                 $result .= $ch;
+            }
+
         }
 
         return $result;
@@ -482,7 +487,7 @@ class XSS
             $this->index++;
             return $ch;
         }
-        return FALSE;
+        return false;
     }
 
     /**
@@ -497,13 +502,13 @@ class XSS
         $attr_operation = self::XSS_DATA;
         $attr = array();
         $ATTR_QUOTE = '';
-        $quote_escaped = FALSE;
+        $quote_escaped = false;
 
-        while (($ch = $this->read_char()) !== FALSE) {
+        while (($ch = $this->read_char()) !== false) {
 
             switch ($this->state) {
 
-                    // read tag inner
+                // read tag inner
                 case self::XSS_READ_INNER:
 
                     // try open a tag
@@ -518,7 +523,7 @@ class XSS
 
                     break;
 
-                    // try read a tag
+                // try read a tag
                 case self::XSS_READ_TAG:
 
                     switch ($tag_operation) {
@@ -530,8 +535,10 @@ class XSS
                                 $this->current_tag = strtolower($ch);
                                 $tag_operation = self::XSS_OPEN_TAG;
                             } // closed tag
-                            else if ($ch == '/')
+                            else if ($ch == '/') {
                                 $tag_operation = self::XSS_CLOSE_TAG;
+                            }
+
                             // not tag
                             // return to inner reading
                             else {
@@ -562,8 +569,9 @@ class XSS
                             else if ($ch == '>') {
                                 $this->state = self::XSS_READ_INNER;
                                 return array($this->current_tag, self::XSS_OPEN_TAG, $attr);
-                            } else
+                            } else {
                                 throw new Exception("Bad tag '$this->current_tag' segment");
+                            }
 
                             break;
 
@@ -577,8 +585,9 @@ class XSS
                                 $this->state = self::XSS_READ_INNER;
                                 return array($this->current_tag, self::XSS_CLOSE_TAG, $attr);
                             } // not another character
-                            else if (preg_match('/\S/', $ch))
+                            else if (preg_match('/\S/', $ch)) {
                                 throw new Exception("Bad closed '$this->current_tag' tag segment");
+                            }
 
                             break;
 
@@ -587,20 +596,21 @@ class XSS
                             if ($ch == '>') {
                                 $this->state = self::XSS_READ_INNER;
                                 return array($this->current_tag, self::XSS_AUTOCLOSE_TAG, $attr);
-                            } else
+                            } else {
                                 throw new Exception("Bad autoclosed '$this->current_tag' tag segment");
+                            }
 
                             break;
                     }
 
                     break;
 
-                    // read tag inforamtion
+                // read tag inforamtion
                 case self::XSS_READ_TAG_INFO:
 
                     switch ($attr_operation) {
 
-                            // try search attribute
+                        // try search attribute
                         case self::XSS_DATA:
 
                             if (preg_match('/[a-z]/i', $ch)) {
@@ -612,12 +622,13 @@ class XSS
                             } else if ($ch == '>') {
                                 $this->state = self::XSS_READ_INNER;
                                 return array($this->current_tag, self::XSS_OPEN_TAG, $attr);
-                            } else if (preg_match('/\S/', $ch))
+                            } else if (preg_match('/\S/', $ch)) {
                                 throw new Exception("Failure attribute reading in '$this->current_tag' tag");
+                            }
 
                             break;
 
-                            // read attribute's name
+                        // read attribute's name
                         case self::XSS_ATTR_NAME:
 
                             if (preg_match('/[\w\-]/i', $ch)) {
@@ -628,7 +639,7 @@ class XSS
                                 break;
                             }
 
-                            // search name/value delimiter '='
+                        // search name/value delimiter '='
                         case self::XSS_ATTR_DELIM:
 
                             if ($ch == '=') {
@@ -642,12 +653,13 @@ class XSS
                                 $attr_operation = self::XSS_ATTR_NAME;
                                 $attr[$this->cur_attr_name] = array('', '"');
                                 $this->cur_attr_name = $ch;
-                            } else if (preg_match('/\S/', $ch))
+                            } else if (preg_match('/\S/', $ch)) {
                                 throw new Exception("Invalid attribute value in '$this->current_tag' tag");
+                            }
 
                             break;
 
-                            // select value's escaping
+                        // select value's escaping
                         case self::XSS_ATTR_VAL:
 
                             $this->cur_attr_val = '';
@@ -666,11 +678,11 @@ class XSS
 
                             break;
 
-                            // read quoted value
+                        // read quoted value
                         case self::XSS_ATTR_VAL_QUOTE:
 
                             if ($ch == '\\') {
-                                $quote_escaped = TRUE;
+                                $quote_escaped = true;
                                 $this->cur_attr_val .= $ch;
                                 break;
                             } else if ($ch == $ATTR_QUOTE) {
@@ -686,11 +698,11 @@ class XSS
                             }
 
                             // reset escaping
-                            $quote_escaped = FALSE;
+                            $quote_escaped = false;
 
                             break;
 
-                            // read unquoted value
+                        // read unquoted value
                         case self::XSS_ATTR_VAL_BLANK:
 
                             if ($ch == '>') {
@@ -715,7 +727,7 @@ class XSS
         }
 
         // no more tags
-        return FALSE;
+        return false;
     }
 
     /**
@@ -736,7 +748,9 @@ class XSS
                 empty($value[0]) && !$this->output_empty_attribute ||
                 // hide denied attribute
                 !in_array($key, $this->white_tags[$token[0]]) && !in_array($key, $this->common_allowed_attrs)
-            ) continue;
+            ) {
+                continue;
+            }
 
             /////////////////////////// filter attribute
 
@@ -751,8 +765,9 @@ class XSS
 
             if (preg_match_all("#($filter)#i", $value[0], $matches)) {
 
-                if (!$this->output_empty_attribute)
+                if (!$this->output_empty_attribute) {
                     continue;
+                }
 
                 $value[0] = '';
             }
@@ -782,11 +797,12 @@ class XSS
             $white_tags = array_keys($this->white_tags);
 
             // Go! Go! Go!
-            while (($token = $this->next_token()) !== FALSE) {
+            while (($token = $this->next_token()) !== false) {
 
                 // save PCDATA in result
-                if (empty($super_deny))
+                if (empty($super_deny)) {
                     $result .= htmlspecialchars($this->text_buffer, ENT_COMPAT, 'UTF-8');
+                }
 
                 switch ($token[1]) {
 
@@ -795,8 +811,10 @@ class XSS
                         if (empty($super_deny)) {
 
                             if (!in_array($token[0], $white_tags)) {
-                                if (!in_array($token[0], $this->autoclosed_tags))
+                                if (!in_array($token[0], $this->autoclosed_tags)) {
                                     $super_deny = $token[0];
+                                }
+
                             } else {
                                 $result .= '<' . $token[0] . $this->a2s($token);
 
@@ -818,8 +836,10 @@ class XSS
                             $denied_tag = $super_deny;
                             $super_deny = '';
 
-                            if ($denied_tag == $token[0])
+                            if ($denied_tag == $token[0]) {
                                 break;
+                            }
+
                         }
 
                         if (ArrayStream::last($stack) == $token[0]) {
@@ -832,8 +852,9 @@ class XSS
                     case self::XSS_AUTOCLOSE_TAG:
 
                         // only allowed autoclosed tags
-                        if (empty($super_deny) && in_array($token[0], $white_tags))
+                        if (empty($super_deny) && in_array($token[0], $white_tags)) {
                             $result .= '<' . $token[0] . $this->a2s($token) . ' />';
+                        }
 
                         break;
                 }
@@ -842,19 +863,21 @@ class XSS
             //////////////////////////////////// POST PROCESSING
 
             // save PCDATA in result
-            if (empty($super_deny))
+            if (empty($super_deny)) {
                 $result .= $this->text_buffer;
+            }
 
             // close opened tags
-            while ($tag = array_pop($stack))
+            while ($tag = array_pop($stack)) {
                 $result .= '</' . $tag . '>';
+            }
 
             // success exit
             return $result;
         } catch (Exception $e) {
             $this->last_error = $e->getMessage();
             // failure exit
-            return FALSE;
+            return false;
         }
     }
 

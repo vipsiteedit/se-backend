@@ -473,7 +473,7 @@ function se_table_migration($migration_table, $link = 'db_link')
         }
     }
 
-    if (!empty($result))
+    if (!empty($result)) {
         while ($value = mysqli_fetch_array($result)) {
             $sql = "INSERT INTO `{$migration_table}`(";
             foreach ($fields as $field => $tablfield) {
@@ -489,8 +489,7 @@ function se_table_migration($migration_table, $link = 'db_link')
             }
             $sql = substr($sql, 0, -1);
             $sql .= ");";
-            //echo $sql."\n";
             @mysqli_query($$link, $sql);
-            //echo mysql_error()."\n";
         }
+    }
 }

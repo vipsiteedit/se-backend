@@ -129,8 +129,8 @@ abstract class AYandexMarket
         if ($this->productList == null) {
             $shop_price = new seTable('shop_price', 'sp');
             $shop_price->select("sp.id, sp.name, sp.price, sp.code,
-			(SELECT GROUP_CONCAT(sha.id_acc) FROM shop_accomp sha WHERE sha.id_price=sp.id) as rec, 
-			(SELECT b.name FROM shop_brand b WHERE b.id=sp.id_brand) as brand, 
+			(SELECT GROUP_CONCAT(sha.id_acc) FROM shop_accomp sha WHERE sha.id_price=sp.id) as rec,
+			(SELECT b.name FROM shop_brand b WHERE b.id=sp.id_brand) as brand,
 			(SELECT 1 FROM shop_modifications sm WHERE sm.id_price=sp.id LIMIT 1) AS modifications");
             //            $shop_price->innerjoin('shop_group sg', 'sg.id=sp.id_group');
             $shop_price->where('sp.`name`<>""');
@@ -163,7 +163,7 @@ abstract class AYandexMarket
     {
         if ($this->paramList == null) {
             $shop_feature = new seTable('shop_feature', 'sf');
-            $shop_feature->select("sf.id, sf.name, 
+            $shop_feature->select("sf.id, sf.name,
             (SELECT GROUP_CONCAT(sfl.value SEPARATOR '|||') FROM `shop_feature_value_list` `sfl` WHERE sfl.id_feature=sf.id) as `values`,
             (SELECT GROUP_CONCAT(sfl.id SEPARATOR '|||') FROM `shop_feature_value_list` `sfl` WHERE sfl.id_feature=sf.id) as `ids`");
             $list = $shop_feature->getList();
@@ -235,7 +235,7 @@ abstract class AYandexMarket
     protected function getParamValue($id = 0)
     {
         return (!empty($id) && !empty($this->paramValueList[$id]))
-            ? $this->paramValueList[$id] : array();
+        ? $this->paramValueList[$id] : array();
     }
 
     protected function setParamValue($item = array())
@@ -269,7 +269,7 @@ abstract class AYandexMarket
             'ц' => "ts", 'ч' => "ch", 'ш' => "sh", 'щ' => "shch", 'ъ' => "", 'ь' => "", 'ю' => "yu", 'я' => "ya",
             'Ё' => "yo", 'Х' => "h", 'Ц' => "ts", 'Ч' => "ch", 'Ш' => "sh", 'Щ' => "shch", 'Ъ' => "", 'Ь' => "",
             'Ю' => "yu", 'Я' => "ya", '№' => "", " " => "-", '"' => 'qout', "'" => '039', '&' => 'amp',
-            ',' => 'comma', ';' => 'smcl', '.' => 'dot'
+            ',' => 'comma', ';' => 'smcl', '.' => 'dot',
         );
         $string = strtr($str, $translate);
         $string = trim(preg_replace('/[^\w]+/ui', $delimer, $string), $delimer);
@@ -343,7 +343,10 @@ abstract class AYandexMarket
                 $data = array();
         }
 
-        if (empty($table) || empty($data)) return true;
+        if (empty($table) || empty($data)) {
+            return true;
+        }
+
         try {
             se_db_InsertList($table, $data);
             //            echo $table . ': ' . se_db_error() . "<br>";
