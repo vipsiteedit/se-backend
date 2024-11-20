@@ -158,20 +158,20 @@ class siteMap {
     }
 
     private function setMap( $name, $maplist ) {
-        $new = '<?xml version=\'1.0\' encoding=\'UTF-8\'?>\n';
-        $new .= '<urlset xmlns=\'http://www.sitemaps.org/schemas/sitemap/0.9\'\n';
-        $new .= 'xmlns:xsi=\'http://www.w3.org/2001/XMLSchema-instance\'\n';
-        $new .= 'xsi:schemaLocation=\'http://www.sitemaps.org/schemas/sitemap/0.9\n";
-        $new .= "http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd\'>\n';
+        $new = "<?xml version='1.0' encoding='UTF-8'?>\n";
+        $new .= "<urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'\n";
+        $new .= " xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'\n";
+        $new .= " xsi:schemaLocation='http://www.sitemaps.org/schemas/sitemap/0.9\n";
+        $new .= " http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd'>\n";
         foreach ( $maplist as $item ) {
-            $new .= '\t<url>\n';
-            $new .= '\t\t<loc>' . $item[ 'loc' ] . '/</loc>\n';
-            $new .= '\t\t<lastmod>' . $item[ 'lastmod' ] . '</lastmod>\n';
-            $new .= '\t\t<changefreq>' . $item[ 'changefreq' ] . '</changefreq>\n';
-            $new .= '\t\t<priority>' . $item[ 'priority' ] . '</priority>\n';
-            $new .= '\t</url>\n';
+            $new .= "\t<url>\n";
+            $new .= "\t\t<loc>{$item[ 'loc' ]}</loc>\n";
+            $new .= "\t\t<lastmod>{$item[ 'lastmod' ]}</lastmod>\n";
+            $new .= "\t\t<changefreq>{$item[ 'changefreq' ]}</changefreq>\n";
+            $new .= "\t\t<priority>{$item[ 'priority' ]}</priority>\n";
+            $new .= "\t</url>\n";
         }
-        $new .= '</urlset>\n';
+        $new .= "</urlset>\n";
         $file = fopen( $name . '.xml', 'w+' );
         fwrite( $file, $new );
         fclose( $file );
@@ -245,15 +245,15 @@ class siteMap {
         $this->setRoots();
 
         if ( $this->countpos ) {
-            $new = '<?xml version=\'1.0\' encoding=\'UTF-8\'?>\n';
-            $new .= '<sitemapindex xmlns=\'http://www.sitemaps.org/schemas/sitemap/0.9\'>\n';
+            $new = "<?xml version='1.0' encoding='UTF-8'?>\n";
+            $new .= "<sitemapindex xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>\n";
             for ( $i = 1; $i <= $this->countpos; $i++ ) {
                 $new .= '<sitemap>';
-                $new .= '\t<loc>' . $domain . '/'  . $this->name . $i . '.xml</loc>\n';
-                $new .= '\t\t<lastmod>' . date( 'c', filemtime( SE_DIR . $this->name . $i . '.xml' ) ) . '</lastmod>\n';
-                $new .= '</sitemap>\n';
+                $new .= "\t<loc>" . $domain . '/'  . $this->name . $i . ".xml</loc>\n";
+                $new .= "\t\t<lastmod>" . date( 'c', filemtime( SE_DIR . $this->name . $i . '.xml' ) ) . "</lastmod>\n";
+                $new .= "</sitemap>\n";
             }
-            $new .= '</sitemapindex>\n';
+            $new .= "</sitemapindex>\n";
             $file = fopen( SE_DIR . $this->name . '.xml', 'w+' );
             fwrite( $file, $new );
             fclose( $file );

@@ -32,6 +32,7 @@ class plugin_jmail
     private $addr_to = '';
     private $body = '';
     private $headers;
+	public $domainEmail = '';
 
     private $messages = array();
     private $attaches = array();
@@ -59,6 +60,7 @@ class plugin_jmail
         $this->headers .= "Mime-Version: 1.0\n";
         $this->headers .= "Content-Type: multipart/mixed; ";
         $this->headers .= "boundary=\"" . $this->boundary . "\"\n\n";
+		$this->domainEmail = 'admin@'.$_SERVER['HTTP_HOST'];
 
     }
     public function attach($filename = '', $filepath = '', $mime = '', $cid = false)
@@ -167,6 +169,6 @@ class plugin_jmail
     {
         $this->create();
         //return
-        return mail($this->addr_to, $this->subject, $this->body, $this->headers);
+        return mail($this->addr_to, $this->subject, $this->body, $this->headers, '-f'.$this->domainEmail);
     }
 }

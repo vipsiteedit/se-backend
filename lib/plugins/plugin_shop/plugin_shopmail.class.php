@@ -113,11 +113,11 @@ class plugin_shopmail
                 $host = (isset($_SERVER['HTTP_HOST'])) ? str_replace('www.', '', $_SERVER['HTTP_HOST']) : 'siteedit.ru';
             }
 
-            $from = '=?utf-8?b?' . base64_encode($smail->subject) . '?=  ' . $host . ' <' . $email_from . '>';
+            //$from = '=?utf-8?b?' . base64_encode($smail->subject) . '?=  ' . $host . ' <' . $email_from . '>';
             $emaillist = explode(';', $email_to);
             $result = true;
             foreach ($emaillist as $email_to) {
-                $mailsend = new plugin_mail($smail->subject, $email_to, $from, $smail->letter, "text/{$this->typpost}", $filename);
+                $mailsend = new plugin_mail($smail->subject, $email_to, $email_from, $smail->letter, "text/{$this->typpost}", $filename);
                 if (!$mailsend->sendfile()) {
                     $result = false;
                 }
