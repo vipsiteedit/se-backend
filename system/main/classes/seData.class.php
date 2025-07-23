@@ -929,6 +929,66 @@ class seData
         return false;
     }
 
+
+    private function redirect($namepage)
+    {
+        if (file_exists(SE_SAFE . 'projects/urlredirect.dat')) {
+            $redirect = file(SE_SAFE . 'projects/urlredirect.dat');
+            @list($oldurl,) = explode('?', $_SERVER['REQUEST_URI']);
+            $url_in = autoencode($oldurl);
+            $host = $_SERVER['HTTP_HOST'];
+            $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
+            
+            foreach ($redirect as $ur) {
+                $ur = explode("\t", trim($ur));
+                if (count($ur) !== 2) continue; // Пропускаем некорректные строки
+                
+                $pattern = trim($ur[0]);
+                $target = trim($ur[1]);
+                
+                // Удаляем протокол и хост из паттерна для сравнения, если они есть
+                $pattern_clean = preg_replace('#^https?://[^/]+#', '', $pattern);
+                if ($pattern_clean === '') $pattern_clean = '/';
+                
+                // Если в паттерне есть *, убираем последний слэш для сравнения
+                $has_wildcard = strpos($pattern_clean, '*') !== false;
+                if ($has_wildcard) {
+                    $url_in_compare = rtrim($url_in, '/');
+                    $pattern_clean = rtrim($pattern_clean, '/');
+                } else {
+                    $url_in_compare = $url_in;
+                }
+
+                $pattern_regex = str_replace('*', '(.*)', str_replace('\*', '*', preg_quote($pattern_clean, '/')));
+
+                // Проверяем совпадение URL с паттерном
+                if (preg_match("/^$pattern_regex$/", $url_in_compare, $matches)) {
+                    // Формируем целевой URL
+
+                    $redirect_url = $target;
+                    if (isset($matches[1])) {
+                        $redirect_url = str_replace('*', $matches[1], $target);
+                    }
+                    
+                    // Обрабатываем относительные и абсолютные URL
+                    if (strpos($redirect_url, '://') === false) {
+                        // Для относительных путей добавляем протокол и хост
+                        $redirect_url = rtrim($protocol . $host, '/') . '/' . ltrim($redirect_url, '/');
+                    }
+                    //$this->log($redirect_url);
+                    header("HTTP/1.1 301 Moved Permanently");
+                    header("Location: $redirect_url");
+                    exit;
+                }
+            }
+        }
+        
+        if (file_exists($namepage) && !is_dir($namepage)) {
+            echo join('', file($namepage));
+            exit;
+        }
+    }
+/*
     private function redirect($namepage)
     {
         if (file_exists(SE_SAFE . 'projects/urlredirect.dat')) {
@@ -969,7 +1029,7 @@ class seData
             exit;
         }
     }
-
+*/
     private function openUrlList()
     {
         $fileurl = SE_SAFE . 'projects/' . SE_DIR;
