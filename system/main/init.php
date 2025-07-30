@@ -14,7 +14,6 @@ else
         define('_HTTP_', ((!$_SERVER['HTTPS'] || $_SERVER['HTTPS'] == 'off') ? 'http://' : 'https://'));
     }
 
-define('_HTTP_', (((!$_SERVER['HTTPS'] || $_SERVER['HTTPS'] == 'off') || $_SERVER['REQUEST_SCHEME']!=='https') ? 'http://' : 'https://'));
 
 define('_HOST_', _HTTP_ . $_SERVER['HTTP_HOST']);
 

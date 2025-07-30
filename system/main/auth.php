@@ -1,12 +1,5 @@
 <?php
 
-//********************************************************************
-// ������� �������������� ��� ������ Standard � Business
-// �����: 	����������
-// ��������:	EDGESTILE
-// ����:	21/02/2009
-//********************************************************************
-
 function auth_activate()
 {
     if (isRequest('activate_code') && isRequest('login')) {
@@ -111,7 +104,6 @@ function GetLogin($ch, $login, $password, $ladmin, $padmin, $admin, $group)
     $user->fetchOne();
     if ($user->id) {
         $usergroup = $user->getAccess();
-        // ���� ���� ������ // �������� ������������� getList()
         foreach ($usergroup as $access) break;
 
         $person = $user->getPerson();
@@ -245,21 +237,28 @@ function check_session($logout, $arr_auth = array())
 function seUserGroup()
 {
     global $SESSION_VARS;
-    return intval($SESSION_VARS['GROUPUSER']);
+    if (isset($SESSION_VARS['GROUPUSER'])) {
+        return intval($SESSION_VARS['GROUPUSER']);
+    }
+    return false;
 }
 
 //Получить ID учетной записи пользователя
 function seUserId()
 {
-    global $SESSION_VARS;
-    return intval($SESSION_VARS['IDUSER']);
+    if (isset($SESSION_VARS['IDUSER'])) {
+        return intval($SESSION_VARS['IDUSER']);
+    }
+    return false;
 }
 
 //Полцчить наименование группы
 function seUserGroupName()
 {
-    global $SESSION_VARS;
-    return $SESSION_VARS['ADMINUSER'];
+    if (isset($SESSION_VARS['ADMINUSER'])) {
+        return strval($SESSION_VARS['ADMINUSER']);
+    }
+    return '';
 }
 
 //Получить имя пользователя

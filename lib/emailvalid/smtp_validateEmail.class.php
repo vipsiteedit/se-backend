@@ -269,6 +269,3 @@ class SMTP_validateEmail {
  }
 
 }
-
- 
-?>
