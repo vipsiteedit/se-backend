@@ -338,7 +338,8 @@ class seMenu
 
     private function isAccess($item)
     {
-        if (empty($item->access)) {
+        $item->access = intval($item->access);
+        if (!$item->access) {
             return seUserAccess($item->name);
         } else {
             if ($item->access > 3) {
