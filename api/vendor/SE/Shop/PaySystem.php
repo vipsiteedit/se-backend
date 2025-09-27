@@ -33,6 +33,7 @@ class PaySystem extends Base
             $u->orderBy('sort');
             $u->addOrderBy('id');
             $objects = $u->getList($this->limit, $this->offset);
+            $count = $u->getListCount();
             $paySystems = array();
             foreach ($objects as $item) {
                 $paySystem = $item;
@@ -54,7 +55,7 @@ class PaySystem extends Base
                 $paySystems[] = $paySystem;
             }
 
-            $this->result['count'] = sizeof($objects);
+            $this->result['count'] = $count;
             $this->result['items'] = $paySystems;
             return $paySystems;
         } catch (Exception $e) {
