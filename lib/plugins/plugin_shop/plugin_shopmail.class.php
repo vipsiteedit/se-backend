@@ -114,7 +114,7 @@ class plugin_shopmail
             $emaillist = explode(';', $email_to);
             $result = true;
             foreach ($emaillist as $email_to) {
-                $mailsend = new plugin_mail($smail->subject, $email_to, $from, $smail->letter, "text/{$this->typpost}", $filename);
+                $mailsend = new plugin_mail($smail->subject, $email_to, $email_from, $smail->letter, "text/{$this->typpost}", $filename);
                 if (!$mailsend->sendfile()) {
                     $result = false;
                 }
