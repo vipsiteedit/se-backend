@@ -104,13 +104,16 @@ class plugin_shopmail
                 $smail->letter = preg_replace('/{attachment:registration_upload_file.([^}]+)}/', '', $smail->letter);
             }
 
-            list($email_from,) = preg_split("/[\s,;]+/", $emailadmin);
-            if ($email_from == $email_to || (strpos($email_from, "@mail.ru")))
+            list($email_from) = preg_split('/[\s,;]+/', $emailadmin);
+            if ($email_from == $email_to || (strpos($email_from, '@mail.ru'))) {
                 $email_from = 'noreply@' . str_replace('www.', '', $_SERVER['HTTP_HOST']);
-            if (empty($host))
-                $host = (isset($_SERVER['HTTP_HOST'])) ? str_replace('www.', '', $_SERVER['HTTP_HOST']) : 'siteedit.ru';
+            }
 
-            $from =  "=?utf-8?b?" . base64_encode($smail->subject) . "?=  " . $host . " <" . $email_from . '>';
+            if (empty($host)) {
+                $host = (isset($_SERVER['HTTP_HOST'])) ? str_replace('www.', '', $_SERVER['HTTP_HOST']) : 'siteedit.ru';
+            }
+
+            //$from =  "=?utf-8?b?" . base64_encode($smail->subject) . "?=  " . $host . " <" . $email_from . '>';
             $emaillist = explode(';', $email_to);
             $result = true;
             foreach ($emaillist as $email_to) {
