@@ -362,7 +362,7 @@ class plugin_shopgroups
 
 	public function getChilds($id, $add_current = false)
 	{
-		$childs_id = $this->getChildsId($id, $add_current);
+		$childs_id = array_merge($this->getChildsId($id, $add_current), $this->getCrossgroup($id));
 		if (empty($childs_id)) return;
 		$groups = array();
 		foreach ($childs_id as $val) {
@@ -434,6 +434,23 @@ class plugin_shopgroups
 			$groups[] = $this->groups[$val];
 		}
 		return $groups;
+	}
+
+	public function getCrossgroup($id)
+	{
+        $groups = array();
+        if ($id) {
+            $t = new seTable('shop_group', 'sg');
+            $t->select('sg.id');
+            $t->where('sg.id IN (SELECT scg.id FROM shop_crossgroup AS scg WHERE scg.group_id = ?)', $id);
+            $t->andWhere('sg.id<>?', $id);
+            $t->orderBy('sg.position');
+            foreach ($t->getList() as $val) {
+                $groups[] = $val['id'];
+            };
+        }
+        
+        return $groups;
 	}
 
 	public function getRelated($id)

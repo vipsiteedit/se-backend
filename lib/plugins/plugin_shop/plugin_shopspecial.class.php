@@ -82,7 +82,10 @@ class plugin_shopspecial
             case 'topOrders':
                 $id_list = true;
                 $shop_price->select('sp.id');
-                $shop_price->orderBy('(SELECT count(*) FROM shop_tovarorder st INNER JOIN shop_order so ON (so.id = st.id_order) WHERE st.id_price = sp.id AND so.status <> "N" GROUP BY st.id_price LIMIT 1)', 1);
+                $shop_price->innerJoin('(SELECT st.id_price, COUNT(*) AS cnt FROM shop_tovarorder st INNER JOIN shop_order so ON so.id = st.id_order WHERE so.status <> \'N\' GROUP BY st.id_price ) counts', 'counts.id_price = sp.id');
+                $shop_price->orderBy('COALESCE(counts.cnt, 0)', 1);
+
+                //$shop_price->orderBy('(SELECT count(*) FROM shop_tovarorder st INNER JOIN shop_order so ON (so.id = st.id_order) WHERE st.id_price = sp.id AND so.status <> "N" GROUP BY st.id_price LIMIT 1)', 1);
                 break;
             case 'topVotes':
                 $id_list = true;
