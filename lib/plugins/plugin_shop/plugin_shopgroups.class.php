@@ -347,6 +347,10 @@ class plugin_shopgroups
 		foreach ($childrens_id as $val) {
 			$groups[] = $this->groups[$val];
 		}
+		foreach ($this->getRelated($id) as $val) {
+			$groups[] = $val;
+		}
+		
 		return $groups;
 	}
 
