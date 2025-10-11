@@ -67,7 +67,7 @@ class plugin_shopdiscount
 			sd.type_discount,
 			sd.summ_type,
 			GROUP_CONCAT(DISTINCT sdl.id_price) AS products,
-			GROUP_CONCAT(DISTINCT sdl.id_group) AS groups,
+			GROUP_CONCAT(DISTINCT sdl.id_group) AS `groups`,
 			GROUP_CONCAT(DISTINCT sdl.id_user) AS users,
 			GROUP_CONCAT(DISTINCT sdl.id_usergroup) AS user_groups
 		');
