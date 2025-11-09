@@ -526,17 +526,39 @@ class Order extends Base
     }
     public function export()
     {
+        $filePath = DOCUMENT_ROOT . "/files";
+        if (!file_exists($filePath) || !is_dir($filePath))
+            mkdir($filePath, 0777, true);
+
+        $deletedCount = 0;
+        $oneHourAgo = time() - 3600; // 1 час = 3600 секунд
+        $pattern = $filePath . '/export_order' . '*.xlsx';
+        $files = glob($pattern);
+        foreach($files as $file) {
+            if (!is_file($file) || pathinfo($file, PATHINFO_EXTENSION) !== 'xlsx') {
+                continue;
+            }
+    
+            $fileTime = filemtime($file);
+    
+            // Если файл старше 1 часа — удаляем
+            if ($fileTime && $fileTime < $oneHourAgo) {
+                if (@unlink($file)) {
+                    $deletedCount++;
+                }
+            }            
+        }
+
         if ($this->input["id"]) {
             $this->exportItem();
             return;
         }
+        
 
-        $fileName = "export_orders.xlsx";
-        $filePath = DOCUMENT_ROOT . "/files/tmp";
-        if (!file_exists($filePath) || !is_dir($filePath))
-            mkdir($filePath, 0777, true);
+        $fileName = 'export_orders'.time().'.xlsx';
+
         $filePath .= "/{$fileName}";
-        $urlFile = '//' . HOSTNAME . "/files/tmp/{$fileName}";
+        $urlFile = 'http://' . HOSTNAME . "/files/{$fileName}";
 
         $xls = new PHPExcel();
         $xls->setActiveSheetIndex(0);
@@ -572,12 +594,11 @@ class Order extends Base
         $sheet->getColumnDimension('M')->setWidth(20);
         $sheet->getColumnDimension('N')->setWidth(20);
 
-        $this->limit = null;
-        $this->sortOrder = "asc";
+        //$this->limit = null;
+        $this->sortOrder = "desc";
         $orders = $this->fetch();
-        foreach ($orders as $k => $i)
-            if ($i['isDelete'] == 'Y') unset($orders[$k]);
-        /** фильтрация удаленных заказов */
+        foreach($orders as $k=>$i)
+            if ($i['isDelete'] == 'Y') unset($orders[$k]); /** фильтрация удаленных заказов */
         $i = 2;
         $startSym = "O";
         $codeSym = ord($startSym);
@@ -598,30 +619,31 @@ class Order extends Base
             $sheet->setCellValue("N$i", $this->deliveryStatuses[$order["deliveryStatus"]]);
 
             $sheet->getStyle("E$i")->getNumberFormat()->setFormatCode('#,##0.00');
-
+            
             $customFields = $this->getCustomFields($order["id"]);
-
+            
             $startSym = "O";
             $codeSym = ord($startSym);
-
+            
             foreach ($customFields as $groupField) {
                 foreach ($groupField['items'] as $item) {
                     $sheet->setCellValue(chr($codeSym) . 1, $item["name"]);
                     $sheet->setCellValue(chr($codeSym++) . $i, $item["value"]);
                 }
             }
-
+            
             $i++;
-        }
-
-        $sheet->getStyle('A1:' . chr($codeSym - 1) . '1')->getFont()->setBold(true);
-
+        } 
+        
+        $sheet->getStyle('A1:' . chr($codeSym-1) . '1')->getFont()->setBold(true);
+        
 
         $objWriter = new PHPExcel_Writer_Excel2007($xls);
         $objWriter->save($filePath);
 
         $this->result["url"] = $urlFile;
         $this->result["name"] = $fileName;
+        $this->result["deletedFiles"] = $deletedCount;
     }
 
     private function exportItem()
