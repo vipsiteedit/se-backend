@@ -1,15 +1,94 @@
 <?php
 
+/**
+ * Подготавливает имя тега XML: удаляет пробелы, делает CamelCase,
+ * декодирует entities, экранирует для XML. Поддержка кириллицы (UTF-8).
+ *
+ * @param string $name Оригинальное имя
+ * @return string Обработанное имя (пустая строка, если недопустимое)
+ */
+function prepareXmlTagName($name) {
+    if (empty($name)) {
+        return '';
+    }
+    
+    // Устанавливаем кодировку для multibyte (если не установлена)
+    mb_internal_encoding('UTF-8');
+    
+    // Шаг 1: Декодируем HTML-entities
+    $decodedName = html_entity_decode($name, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    
+    // Шаг 2: Нормализуем пробелы
+    $trimmedName = trim(preg_replace('/\s+/', ' ', $decodedName));
+    
+    // Шаг 3: Делаем CamelCase, если есть пробелы
+    if (strpos($trimmedName, ' ') !== false) {
+        $words = explode(' ', $trimmedName);
+        $camelName = '';
+        foreach ($words as $word) {
+            if (!empty($word)) {
+                // Multibyte-версия ucfirst: первая буква заглавная, остальное строчное
+                $mbUcfirst = mb_strtoupper(mb_substr($word, 0, 1, 'UTF-8'), 'UTF-8') .
+                             mb_strtolower(mb_substr($word, 1, null, 'UTF-8'), 'UTF-8');
+                $camelName .= $mbUcfirst;
+            }
+        }
+        $cleanName = $camelName;
+    } else {
+        // Просто капитализируем первое слово (multibyte)
+        $cleanName = mb_strtoupper(mb_substr($trimmedName, 0, 1, 'UTF-8'), 'UTF-8') .
+                     mb_strtolower(mb_substr($trimmedName, 1, null, 'UTF-8'), 'UTF-8');
+    }
+    
+    // Шаг 4: Проверяем валидность для XML (буквы: латиница/кириллица, цифры, _; начинается с буквы или _)
+    if (!preg_match('/^[\p{L}_][\p{L}0-9_]*$/u', $cleanName)) {
+        // \p{L} — любая буква (Unicode), флаг u для UTF-8
+        return 'InvalidName';
+    }
+    
+    // Шаг 5: Экранирование не нужно для имен тегов, но на всякий случай (оно не повредит)
+    return $cleanName;
+}
+
+function prepareXmlDescription($description) {
+    if (empty($description)) {
+        return '';
+    }
+    
+    // Устанавливаем кодировку для multibyte (если не установлена)
+    mb_internal_encoding('UTF-8');
+    
+    // Шаг 1: Декодируем HTML-entities
+    $decodedDesc = html_entity_decode($description, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    $decodedDesc = strip_tags($decodedDesc);
+    
+    // Шаг 2: Нормализуем пробелы
+    $normalizedDesc = trim(preg_replace('/\s+/', ' ', $decodedDesc));
+    
+    // Шаг 3: Ограничиваем длину до 255 символов (без обрезки слов)
+    if (mb_strlen($normalizedDesc, 'UTF-8') > 255) {
+        $truncatedDesc = mb_substr($normalizedDesc, 0, 255, 'UTF-8');
+        // Обрезаем до последнего пробела, чтобы не резать слово
+        $lastSpace = mb_strrpos($truncatedDesc, ' ', 0, 'UTF-8');
+        if ($lastSpace !== false) {
+            $truncatedDesc = mb_substr($truncatedDesc, 0, $lastSpace, 'UTF-8');
+        }
+        return trim($truncatedDesc);
+    }
+    
+    return $normalizedDesc;
+}
+
 function getExternalCode($prefix = 'product')
 {
     $pass = md5($_SERVER['HTTP_HOST'] . uniqid($prefix, true));
-    return substr($pass,  0, 8) . '-' . substr($pass, 8, 4) . '-' . substr($pass, 12,  4) . '-' . substr($pass, 16, 4) . '-' . substr($pass, 20, 12);
+    return substr($pass, 0, 8) . '-' . substr($pass, 8, 4) . '-' . substr($pass, 12, 4) . '-' . substr($pass, 16, 4) . '-' . substr($pass, 20, 12);
 }
 
-function create_guid($namespace = "")
+function create_guid($namespace = '')
 {
     static $guid = '';
-    $uid = uniqid("", true);
+    $uid = uniqid('', true);
     $data = $namespace;
     $data .= $_SERVER['REQUEST_TIME'];
     $data .= $_SERVER['HTTP_USER_AGENT'];
@@ -17,11 +96,11 @@ function create_guid($namespace = "")
     $data .= $_SERVER['REMOTE_ADDR'];
     $data .= $_SERVER['REMOTE_PORT'];
     $hash = hash('ripemd128', $uid . $guid . md5($data));
-    $guid = substr($hash,  0,  8) .
-        '-' . substr($hash,  8,  4) .
-        '-' . substr($hash, 12,  4) .
-        '-' . substr($hash, 16,  4) .
-        '-' . substr($hash, 20, 12);
+    $guid = substr($hash, 0, 8) .
+    '-' . substr($hash, 8, 4) .
+    '-' . substr($hash, 12, 4) .
+    '-' . substr($hash, 16, 4) .
+    '-' . substr($hash, 20, 12);
     return $guid;
 }
 
@@ -42,8 +121,10 @@ function get_code_goods($xml, $type = 'translit', $id = 0, $length = 255)
         $find_goods = new seTable('shop_price');
         $find_goods->select('id');
         $find_goods->where("code = '?'", $find_code);
-        if ($id)
-            $find_goods->andwhere("id <> ?", $id);
+        if ($id) {
+            $find_goods->andwhere('id <> ?', $id);
+        }
+
         $find_goods->fetchOne();
         if (!$find_goods->isFind()) {
             $code = $find_code;
@@ -61,9 +142,9 @@ function getIdBrand($value = '')
         $sb->select('id');
         $sb->where('name = "?"', $value);
         $sb->fetchOne();
-        if ($sb->isFind())
+        if ($sb->isFind()) {
             $id = $sb->id;
-        else {
+        } else {
             $sb->insert();
             $sb->name = $value;
             $sb->code = translit($value);
@@ -80,10 +161,14 @@ function getMeasure($xml)
     if (!empty($xml)) {
         $children = $xml->children();
         if (count($children) > 0) {
-            if (!empty($xml['НаименованиеПолное']))
+            if (!empty($xml['НаименованиеПолное'])) {
                 $measure = trim($xml['НаименованиеПолное']);
-        } else
+            }
+
+        } else {
             $measure = trim($xml);
+        }
+
     }
     return $measure;
 }
@@ -97,27 +182,27 @@ function getUserRequisites($id_user)
     if ($user_urid->isFind()) {
         $requisites[] = array(
             'name' => 'ИмяКомпании',
-            'value' => $user_urid->company
+            'value' => $user_urid->company,
         );
         $requisites[] = array(
             'name' => 'Директор',
-            'value' => $user_urid->director
+            'value' => $user_urid->director,
         );
         $requisites[] = array(
             'name' => 'Телефон',
-            'value' => $user_urid->tel
+            'value' => $user_urid->tel,
         );
         $requisites[] = array(
             'name' => 'Факс',
-            'value' => $user_urid->fax
+            'value' => $user_urid->fax,
         );
         $requisites[] = array(
             'name' => 'ФизАдрес',
-            'value' => $user_urid->fizadres
+            'value' => $user_urid->fizadres,
         );
         $requisites[] = array(
             'name' => 'ЮрАдрес',
-            'value' => $user_urid->uradres
+            'value' => $user_urid->uradres,
         );
     }
 
@@ -131,7 +216,7 @@ function getUserRequisites($id_user)
         foreach ($list as $val) {
             $requisites[] = array(
                 'name' => $val['title'],
-                'value' => $val['value']
+                'value' => $val['value'],
             );
         }
     }
@@ -154,8 +239,10 @@ function get_orders_xml($date_export_orders, $currencies, $upd_orders)
     $orders = new seTable('shop_order');
     $orders->select('id, id_exchange, date_order, curr, payment_type, id_author, discount, status, commentary, delivery_payee, delivery_type, delivery_status, is_delete, transact_amount, transact_curr, updated_at, created_at, (SELECT sdt.name FROM shop_deliverytype sdt WHERE sdt.id=delivery_type LIMIT 1) as delivery_name');
     $orders->where("created_at >= '?'", $date_export_orders);
-    if ($upd_orders)
+    if ($upd_orders) {
         $orders->andwhere('(updated_at > date_exchange OR created_at > date_exchange)');
+    }
+
     $order_list = $orders->getList();
 
     $count_orders = count($order_list);
@@ -165,8 +252,9 @@ function get_orders_xml($date_export_orders, $currencies, $upd_orders)
     $orders->select('id, date_exchange');
 
     foreach ($order_list as $val) {
-        if (empty($val['id_author']))
+        if (empty($val['id_author'])) {
             continue;
+        }
 
         $orders->find($val['id']);
         $orders->date_exchange = date('Y-m-d H:i:s');
@@ -176,15 +264,15 @@ function get_orders_xml($date_export_orders, $currencies, $upd_orders)
         $summ_order = $val['delivery_payee'];
 
         $document = $xml->addChild('Документ');
-        if (!empty($val['id_exchange']))
+        if (!empty($val['id_exchange'])) {
             $document->addChild('Ид', $val['id_exchange']);
-        else {
+        } else {
             $document->addChild('Ид', $_SERVER['HTTP_HOST'] . '_order_' . $val['id']);
         }
 
         $document->addChild('Номер', $val['id']);
         $document->addChild('Дата', date('Y-m-d', $time));
-        $document->addChild('Время',  date('H:i:s', $time));
+        $document->addChild('Время', date('H:i:s', $time));
         $document->addChild('ХозОперация', 'Заказ товара');
         $document->addChild('Роль', 'Продавец');
         if (isset($currencies[trim($val['curr'])])) {
@@ -192,8 +280,9 @@ function get_orders_xml($date_export_orders, $currencies, $upd_orders)
         }
         $document->addChild('Валюта', $val['curr']);
         $document->addChild('Курс', '1');
-        if (!empty($val['commentary']))
+        if (!empty($val['commentary'])) {
             $document->addChild('Комментарий', $val['commentary']);
+        }
 
         if (!empty($val['id_author'])) {
             $kontragents = $document->addChild('Контрагенты');
@@ -209,10 +298,12 @@ function get_orders_xml($date_export_orders, $currencies, $upd_orders)
                 $users[$id_user]['last_name'] = $person->last_name;
                 $users[$id_user]['first_name'] = $person->first_name;
                 $users[$id_user]['sec_name'] = $person->sec_name;
-                if ($person->sex == 'M')
+                if ($person->sex == 'M') {
                     $users[$id_user]['sex'] = 'М';
-                elseif ($person->sex == 'F')
+                } elseif ($person->sex == 'F') {
                     $users[$id_user]['sex'] = 'Ж';
+                }
+
                 $users[$id_user]['birth_date'] = $person->birth_date;
                 $users[$id_user]['email'] = $person->email;
                 $users[$id_user]['post_index'] = $person->post_index;
@@ -235,16 +326,21 @@ function get_orders_xml($date_export_orders, $currencies, $upd_orders)
             $kontragent->addChild('Фамилия', $users[$id_user]['last_name']);
             $kontragent->addChild('Имя', $users[$id_user]['first_name']);
             $kontragent->addChild('Отчество', $users[$id_user]['sec_name']);
-            if (!empty($users[$id_user]['birth_date']))
+            if (!empty($users[$id_user]['birth_date'])) {
                 $kontragent->addChild('ДатаРождения', $users[$id_user]['birth_date']);
-            if (!empty($users[$id_user]['sex']))
+            }
+
+            if (!empty($users[$id_user]['sex'])) {
                 $kontragent->addChild('Пол', $users[$id_user]['sex']);
-            if (!empty($users[$id_user]['comment']))
-                $kontragent->addChild('Комментарий', $users[$id_user]['comment']);
+            }
+
+            if (!empty($users[$id_user]['comment'])) {
+                $kontragent->addChild('Комментарий', prepareXmlDescription($users[$id_user]['comment']));
+            }
 
             if (!empty($users[$id_user]['requisites'])) {
                 foreach ($users[$id_user]['requisites'] as $req) {
-                    $kontragent->addChild($req['name'], $req['value']);
+                    $kontragent->addChild(prepareXmlTagName($req['name']), $req['value']);
                 }
             }
 
@@ -295,8 +391,10 @@ function get_orders_xml($date_export_orders, $currencies, $upd_orders)
                     unset($region);
                 }
                 if (!empty($regions[$state_id])) {
-                    if (!empty($full_addres))
+                    if (!empty($full_addres)) {
                         $full_addres .= ', ';
+                    }
+
                     $full_addres .= $regions[$state_id];
                     $addr_field = $addres->addChild('АдресноеПоле');
                     $addr_field->addChild('Тип', 'Регион');
@@ -315,16 +413,20 @@ function get_orders_xml($date_export_orders, $currencies, $upd_orders)
                     unset($town);
                 }
                 if (!empty($cities[$city_id])) {
-                    if (!empty($full_addres))
+                    if (!empty($full_addres)) {
                         $full_addres .= ', ';
+                    }
+
                     $full_addres .= $cities[$city_id];
                     $addr_field = $addres->addChild('АдресноеПоле');
                     $addr_field->addChild('Тип', 'Город');
                     $addr_field->addChild('Значение', $cities[$city_id]);
                 }
             }
-            if (!empty($full_addres))
+            if (!empty($full_addres)) {
                 $full_addres .= ', ';
+            }
+
             $full_addres .= $users[$id_user]['addr'];
             $addres->addChild('Представление', $full_addres);
         }
@@ -372,11 +474,14 @@ function get_orders_xml($date_export_orders, $currencies, $upd_orders)
                     $product->addChild('Ид', $goods[$id_price]['id_exchange']);
                 }
                 $product->addChild('Артикул', $goods[$id_price]['article']);
-                $product->addChild('Наименование', $goods[$id_price]['name']);
-                if (!empty($goods[$id_price]['note']))
-                    $product->addChild('Описание', $goods[$id_price]['note']);
-                if (!empty($goods[$id_price]['measure']))
+                $product->addChild('Наименование', prepareXmlDescription($goods[$id_price]['name']));
+                if (!empty($goods[$id_price]['note'])) {
+                    $product->addChild('Описание', prepareXmlDescription($goods[$id_price]['note']));
+                }
+
+                if (!empty($goods[$id_price]['measure'])) {
                     $product->addChild('БазоваяЕдиница', $goods[$id_price]['measure'])->addAttribute('НаименованиеПолное', $goods[$id_price]['measure']);
+                }
 
                 $product->addChild('ЦенаЗаЕдиницу', $val_goods['price']);
                 $product->addChild('Количество', $val_goods['count']);
@@ -405,7 +510,7 @@ function get_orders_xml($date_export_orders, $currencies, $upd_orders)
                 $properties = $product->addChild('ЗначенияРеквизитов');
                 $property = $properties->addChild('ЗначениеРеквизита');
                 $property->addChild('Наименование', 'ВидНоменклатуры');
-                $property->addChild('Значение', "Товар");
+                $property->addChild('Значение', 'Товар');
                 $property = $properties->addChild('ЗначениеРеквизита');
                 $property->addChild('Наименование', 'ТипНоменклатуры');
                 $property->addChild('Значение', 'Товар');
@@ -481,7 +586,7 @@ function get_orders_xml($date_export_orders, $currencies, $upd_orders)
             }
         }
 
-        $document->addChild("Сумма", $summ_order);
+        $document->addChild('Сумма', $summ_order);
         if ($val['discount'] > 0) {
             $discounts = $document->addChild('Скидки');
             $discount = $discounts->addChild('Скидка');
@@ -549,8 +654,10 @@ function get_orders_xml($date_export_orders, $currencies, $upd_orders)
 
             $property = $properties->addChild('ЗначениеРеквизита');
             $property->addChild('Наименование', 'Валюта оплаты');
-            if (isset($currencies[trim($val['transact_curr'])]))
+            if (isset($currencies[trim($val['transact_curr'])])) {
                 $val['transact_curr'] = $currencies[trim($val['transact_curr'])];
+            }
+
             $property->addChild('Значение', $val['transact_curr']);
         }
         $i++;
@@ -567,7 +674,7 @@ function update_order($xml, $new_status, $date_order, $date_payee)
     $status_list = array('Y', 'N', 'K', 'P');
 
     $order = new seTable('shop_order');
-    $order->find((int)$xml->Номер);
+    $order->find((int) $xml->Номер);
 
     $order->id_exchange = $xml->Ид;
 
@@ -658,7 +765,7 @@ function import_catalog($xml, $exchange_dir, $type_image, $code_type, $lang, $ex
                     $image_name = basename($image);
 
                     if (is_file($exchange_dir . $image_name) && !empty($image_name)) {
-                        //exchange_log('import product images '.$exchange_dir.$image_name.'->'.$images_dir.$image_name);
+                        //exchange_log( 'import product images '.$exchange_dir.$image_name.'->'.$images_dir.$image_name );
                         rename($exchange_dir . $image_name, $images_dir . $image_name);
                     }
                     if (file_exists($images_dir . $image_name)) {
@@ -686,11 +793,11 @@ function import_catalog($xml, $exchange_dir, $type_image, $code_type, $lang, $ex
 
         if (isset($_SESSION['exchange_manufacturer']['id']) && isset($xml->ЗначенияСвойств->ЗначенияСвойства)) {
             foreach ($xml->ЗначенияСвойств->ЗначенияСвойства as $property) {
-                $guid = (string)$property->Ид;
-                $guid_value = (string)$property->Значение;
+                $guid = (string) $property->Ид;
+                $guid_value = (string) $property->Значение;
                 if ($_SESSION['exchange_manufacturer']['id'] == $guid) {
                     if ($_SESSION['exchange_manufacturer']['type'] == 'list') {
-                        $id_brand = (int)$_SESSION['exchange_manufacturer']['values'][$guid_value];
+                        $id_brand = (int) $_SESSION['exchange_manufacturer']['values'][$guid_value];
                     } else {
                         $id_brand = getIdBrand($guid_value);
                     }
@@ -708,11 +815,11 @@ function import_catalog($xml, $exchange_dir, $type_image, $code_type, $lang, $ex
             $id_price = $goods->id;
         } elseif ($ex_catalog_name['goods'] != 1) {
             $goods->select('id');
-            if ($ex_catalog_name['goods'] == 2)
+            if ($ex_catalog_name['goods'] == 2) {
                 $goods->where("name = '?'", trim($xml->Наименование));
-            elseif ($ex_catalog_name['goods'] == 3)
+            } elseif ($ex_catalog_name['goods'] == 3) {
                 $goods->where("article = '?'", trim($xml->Артикул));
-            elseif ($ex_catalog_name['goods'] == 4) {
+            } elseif ($ex_catalog_name['goods'] == 4) {
                 $goods->where("article = '?'", trim($xml->Артикул));
                 $goods->orwhere("name = '?'", trim($xml->Наименование));
             } else {
@@ -755,25 +862,38 @@ function import_catalog($xml, $exchange_dir, $type_image, $code_type, $lang, $ex
                 }
             }
 
-            if ($update_data['article'])
+            if ($update_data['article']) {
                 $goods->article = trim($xml->Артикул);
-            if ($update_data['name'])
+            }
+
+            if ($update_data['name']) {
                 $goods->name = trim($xml->Наименование);
-            if ($update_data['manufacturer'] && !empty($id_brand))
+            }
+
+            if ($update_data['manufacturer'] && !empty($id_brand)) {
                 $goods->id_brand = $id_brand;
-            if (!empty($xml->Описание) && $update_data['note'])
+            }
+
+            if (!empty($xml->Описание) && $update_data['note']) {
                 $goods->note = $xml->Описание;
-            if (!empty($add_image) && $update_data['main_image'])
+            }
+
+            if (!empty($add_image) && $update_data['main_image']) {
                 $goods->img = $add_image;
-            if ($update_data['code'])
+            }
+
+            if ($update_data['code']) {
                 $goods->code = get_code_goods($xml, $code_type, $id_price);
-            if ($update_data['measure'])
+            }
+
+            if ($update_data['measure']) {
                 $goods->measure = getMeasure($xml->БазоваяЕдиница);
+            }
 
             if ($update_data['weight']) {
                 foreach ($xml->ЗначенияРеквизитов->ЗначениеРеквизита as $property) {
                     if ($property->Наименование == 'Вес') {
-                        $goods->weight = (int)$property->Значение;
+                        $goods->weight = (int) $property->Значение;
                         break;
                     }
                 }
@@ -814,10 +934,12 @@ function import_catalog($xml, $exchange_dir, $type_image, $code_type, $lang, $ex
         } else {
             $goods->insert();
             $goods->id_exchange = trim($id_product_ex);
-            if ($lang)
+            if ($lang) {
                 $goods->lang = $lang;
-            else
+            } else {
                 $goods->lang = 'rus';
+            }
+
             if ($xml->Группы->Ид) {
                 $group = new seTable('shop_group');
                 $group->select('id, name');
@@ -832,18 +954,25 @@ function import_catalog($xml, $exchange_dir, $type_image, $code_type, $lang, $ex
 
             $goods->code = get_code_goods($xml, $code_type);
 
-            if (trim($xml->Артикул))
+            if (trim($xml->Артикул)) {
                 $goods->article = trim($xml->Артикул);
-            if (trim($xml->Наименование))
+            }
+
+            if (trim($xml->Наименование)) {
                 $goods->name = trim($xml->Наименование);
-            if (trim($xml->Описание))
+            }
+
+            if (trim($xml->Описание)) {
                 $goods->note = trim($xml->Описание);
+            }
 
-            if ($manufacturer)
+            if ($manufacturer) {
                 $goods->manufacturer = $manufacturer;
+            }
 
-            if (!empty($id_brand))
+            if (!empty($id_brand)) {
                 $goods->id_brand = $id_brand;
+            }
 
             if (isset($xml->ПолноеНаименование)) {
                 $goods->title = trim($xml->ПолноеНаименование);
@@ -862,26 +991,30 @@ function import_catalog($xml, $exchange_dir, $type_image, $code_type, $lang, $ex
                 }
             }
 
-            if (!empty($nds))
+            if (!empty($nds)) {
                 $goods->nds = $nds;
-            if (isset($xml->БазоваяЕдиница))
-                $goods->measure = getMeasure($xml->БазоваяЕдиница);
+            }
 
-            if (!empty($add_image))
+            if (isset($xml->БазоваяЕдиница)) {
+                $goods->measure = getMeasure($xml->БазоваяЕдиница);
+            }
+
+            if (!empty($add_image)) {
                 $goods->img = $add_image;
+            }
 
             if (isset($xml->ЗначенияРеквизитов->ЗначениеРеквизита)) {
                 foreach ($xml->ЗначенияРеквизитов->ЗначениеРеквизита as $property) {
                     if ($property->Наименование == 'Вес') {
-                        $goods->weight = (int)$property->Значение;
+                        $goods->weight = (int) $property->Значение;
                         continue;
                     }
                     /*
-                    if ($property->Наименование == 'Полное наименование'){
-                        $goods->note = (string)$property->Значение;
-                        continue;
+                    if ( $property->Наименование == 'Полное наименование' ) {
+                    $goods->note = ( string )$property->Значение;
+                    continue;
                     }
-                    */
+                     */
 
                     if ($property->Наименование == 'ОписаниеВФорматеHTML') {
                         if (trim($property->Значение)) {
@@ -922,8 +1055,8 @@ function import_catalog($xml, $exchange_dir, $type_image, $code_type, $lang, $ex
 
         if ($id_price && isset($xml->ЗначенияСвойств->ЗначенияСвойства) && $update_data['features']) {
             foreach ($xml->ЗначенияСвойств->ЗначенияСвойства as $property) {
-                $guid = (string)$property->Ид;
-                $value = (string)$property->Значение;
+                $guid = (string) $property->Ид;
+                $value = (string) $property->Значение;
                 if (isset($_SESSION['properties'][$guid]) && $value) {
                     $id_feature = $_SESSION['properties'][$guid]['id'];
                     $type = $_SESSION['properties'][$guid]['type'];
@@ -932,28 +1065,32 @@ function import_catalog($xml, $exchange_dir, $type_image, $code_type, $lang, $ex
                     $smf->select('id');
                     $smf->where('id_price=?', $id_price);
                     $smf->andWhere('id_feature=?', $id_feature);
-                    if ($type == 'list')
+                    if ($type == 'list') {
                         $smf->andWhere('id_value=?', $_SESSION['properties'][$guid]['values'][$value]);
-                    elseif ($type == 'number') {
-                        $value = preg_replace("/[\s]+/ui", '', $value);
+                    } elseif ($type == 'number') {
+                        $value = preg_replace('/[\s]+/ui', '', $value);
                         $value = str_replace(',', '.', $value);
                         $smf->andWhere('value_number=?', $value);
-                    } elseif ($type == 'bool')
-                        $smf->andWhere('value_bool=?', (bool)$value);
-                    else
+                    } elseif ($type == 'bool') {
+                        $smf->andWhere('value_bool=?', (bool) $value);
+                    } else {
                         $smf->andWhere('value_string="?"', $value);
+                    }
+
                     if (!$smf->fetchOne()) {
                         $smf->insert();
                         $smf->id_price = $id_price;
                         $smf->id_feature = $id_feature;
-                        if ($type == 'list')
+                        if ($type == 'list') {
                             $smf->id_value = $_SESSION['properties'][$guid]['values'][$value];
-                        elseif ($type == 'number')
+                        } elseif ($type == 'number') {
                             $smf->value_number = $value;
-                        elseif ($type == 'bool')
-                            $smf->value_bool = (bool)$value;
-                        else
+                        } elseif ($type == 'bool') {
+                            $smf->value_bool = (bool) $value;
+                        } else {
                             $smf->value_string = $value;
+                        }
+
                         $smf->save();
                     }
                 }
@@ -969,7 +1106,7 @@ function import_catalog($xml, $exchange_dir, $type_image, $code_type, $lang, $ex
 
                 $price_params = new seTable('shop_price_param');
                 $price_params->update('id_exchange', "'$id_offer_ex'");
-                $price_params->where("id = ?", $parent_id);
+                $price_params->where('id = ?', $parent_id);
                 $price_params->save();
             }
         }
@@ -980,11 +1117,11 @@ function import_catalog($xml, $exchange_dir, $type_image, $code_type, $lang, $ex
 function add_images($imagelist, $id_price)
 {
     $shop_img = new seTable('shop_img');
-    $shop_img->where("id_price = ?", $id_price)->deletelist();
+    $shop_img->where('id_price = ?', $id_price)->deletelist();
     foreach ($imagelist as $image) {
         $shop_img->select('id');
         $shop_img->where("picture = '?'", $image);
-        $shop_img->andwhere("id_price = ?", $id_price);
+        $shop_img->andwhere('id_price = ?', $id_price);
         $shop_img->fetchOne();
         if ($shop_img->isFind()) {
             continue;
@@ -1018,8 +1155,9 @@ function import_offers($xml, $default_param_name, $update_data)
             if (isset($xml->Цены->Цена)) {
                 $price = null;
                 foreach ($xml->Цены->Цена as $type_price) {
-                    if (empty($price))
+                    if (empty($price)) {
                         $price = $type_price->ЦенаЗаЕдиницу;
+                    }
 
                     if (!empty($id_offers_ex)) {
                         if (trim($type_price->ИдТипаЦены) == trim($_SESSION['exchange_type_price']['main'])) {
@@ -1053,8 +1191,8 @@ function import_offers($xml, $default_param_name, $update_data)
                     $params_val = array();
                     $i = 0;
                     foreach ($xml->ХарактеристикиТовара->ХарактеристикаТовара as $param) {
-                        $params_name[$i] = (string)$param->Наименование;
-                        $params_val[$i] = (string)$param->Значение;
+                        $params_name[$i] = (string) $param->Наименование;
+                        $params_val[$i] = (string) $param->Значение;
                         $i++;
                     }
 
@@ -1065,10 +1203,14 @@ function import_offers($xml, $default_param_name, $update_data)
 
                     $price_params = new seTable('shop_price_param');
                     $price_params->find($parent_id);
-                    if ($update_data['price'])
+                    if ($update_data['price']) {
                         $price_params->price = $price;
-                    if ($update_data['count'])
-                        $price_params->count = (int)$xml->Количество;
+                    }
+
+                    if ($update_data['count']) {
+                        $price_params->count = (int) $xml->Количество;
+                    }
+
                     $price_params->id_exchange = $id_offer_ex;
                     $price_params->save();
                 } else {
@@ -1077,10 +1219,14 @@ function import_offers($xml, $default_param_name, $update_data)
                     $price_params->where("id_exchange = '?'", $id_offer_ex);
                     $price_params->fetchOne();
                     if ($price_params->isFind()) {
-                        if ($update_data['price'])
+                        if ($update_data['price']) {
                             $price_params->price = $price;
-                        if ($update_data['count'])
-                            $price_params->count = (int)$xml->Количество;
+                        }
+
+                        if ($update_data['count']) {
+                            $price_params->count = (int) $xml->Количество;
+                        }
+
                         $price_params->save();
                     } else {
                         $value_param = trim(str_replace(array($goods->name, '(', ')'), '', $xml->Наименование));
@@ -1088,29 +1234,42 @@ function import_offers($xml, $default_param_name, $update_data)
 
                         $price_params = new seTable('shop_price_param');
                         $price_params->update('id_exchange', "'$id_offer_ex'");
-                        if ($update_data['price'])
+                        if ($update_data['price']) {
                             $price_params->addupdate('price', $price);
-                        if ($update_data['count'])
-                            $price_params->addupdate('count', (int)$xml->Количество);
-                        $price_params->where("id = ?", $parent_id);
+                        }
+
+                        if ($update_data['count']) {
+                            $price_params->addupdate('count', (int) $xml->Количество);
+                        }
+
+                        $price_params->where('id = ?', $parent_id);
                         $price_params->save();
                     }
                 }
-                if ($update_data['count'])
+                if ($update_data['count']) {
                     $goods->presence_count = -1;
+                }
+
                 $goods->save();
             } else {
                 if ($update_data['price']) {
                     $goods->price = $price;
-                    if ($price_opt)
+                    if ($price_opt) {
                         $goods->price_opt = $price_opt;
-                    if ($price_opt_corp)
+                    }
+
+                    if ($price_opt_corp) {
                         $goods->price_opt_corp = $price_opt_corp;
-                    if ($price_bonus)
+                    }
+
+                    if ($price_bonus) {
                         $goods->bonus = $price_bonus;
+                    }
+
                 }
-                if ($update_data['count'])
-                    $goods->presence_count = ((int)$xml->Количество > 0) ? (int)$xml->Количество : 0;
+                if ($update_data['count']) {
+                    $goods->presence_count = ((int) $xml->Количество > 0) ? (int) $xml->Количество : 0;
+                }
 
                 $goods->save();
             }
@@ -1133,7 +1292,6 @@ function add_param($name)
     }
 }
 
-
 function import_params($name, $value, $price_id, $up_id)
 {
 
@@ -1141,8 +1299,8 @@ function import_params($name, $value, $price_id, $up_id)
 
     $price_params = new seTable('shop_price_param');
     $price_params->select('id');
-    $price_params->where("price_id = ?", $price_id);
-    $price_params->andWhere("param_id = ?", $param_id);
+    $price_params->where('price_id = ?', $price_id);
+    $price_params->andWhere('param_id = ?', $param_id);
     $price_params->andWhere("value = '?'", trim($value));
     $price_params->andWhere("(parent_id IS NULL OR parent_id = '?')", $up_id);
     $price_params->fetchOne();
@@ -1161,12 +1319,13 @@ function import_params($name, $value, $price_id, $up_id)
     }
 }
 
-
 function import_groups($xml, $up_id = '', $code_type, $lang, $ex_group_name, $update_data)
 {
     $count_groups = 0;
-    if (empty($up_id))
+    if (empty($up_id)) {
         $up_id = 'null';
+    }
+
     if (isset($xml->Группы->Группа)) {
         foreach ($xml->Группы->Группа as $xml_group) {
             $count_groups++;
@@ -1177,35 +1336,45 @@ function import_groups($xml, $up_id = '', $code_type, $lang, $ex_group_name, $up
             $groups->fetchOne();
             $id = $groups->id;
             if ($id) {
-                if ($update_data['name'])
+                if ($update_data['name']) {
                     $groups->name = $xml_group->Наименование;
+                }
+
                 if ($update_data['code']) {
                     if ($code_type == 'translit') {
                         $translit_name = substr(translit($xml_group->Наименование), 0, 40);
                         $find_group = new seTable('shop_group');
                         $find_group->select('id');
                         $find_group->where("code_gr = '?'", $translit_name);
-                        $find_group->andWhere("id <> ?", $id);
+                        $find_group->andWhere('id <> ?', $id);
                         $find_group->fetchOne();
-                        if (!$find_group->isFind())
+                        if (!$find_group->isFind()) {
                             $groups->code_gr = $translit_name;
-                        else
+                        } else {
                             $groups->code_gr = trim($xml_group->Ид);
-                    } else
+                        }
+
+                    } else {
                         $groups->code_gr = trim($xml_group->Ид);
+                    }
+
                 }
-                if ($up_id > 0 && $update_data['upid'])
+                if ($up_id > 0 && $update_data['upid']) {
                     $groups->upid = $up_id;
+                }
+
                 $groups->save();
             } else {
                 $id = 0;
                 if ($ex_group_name) {
                     $groups->select('id');
                     $groups->where("name = '?'", trim($xml_group->Наименование));
-                    if ($up_id)
-                        $groups->andwhere("upid = ?", $up_id);
-                    else
-                        $groups->andwhere("upid IS NULL OR upid=0");
+                    if ($up_id) {
+                        $groups->andwhere('upid = ?', $up_id);
+                    } else {
+                        $groups->andwhere('upid IS NULL OR upid=0');
+                    }
+
                     $groups->fetchOne();
                     $id = $groups->id;
                 }
@@ -1215,8 +1384,10 @@ function import_groups($xml, $up_id = '', $code_type, $lang, $ex_group_name, $up
                 } else {
                     $groups->insert();
                     $groups->name = $xml_group->Наименование;
-                    if ($lang)
+                    if ($lang) {
                         $groups->lang = $lang;
+                    }
+
                     $groups->title = $xml_group->Наименование;
                     $groups->keywords = $xml_group->Наименование;
                     if ($code_type == 'translit') {
@@ -1225,12 +1396,16 @@ function import_groups($xml, $up_id = '', $code_type, $lang, $ex_group_name, $up
                         $find_group->select('id');
                         $find_group->where("code_gr = '?'", $translit_name);
                         $find_group->fetchOne();
-                        if (!$find_group->isFind())
+                        if (!$find_group->isFind()) {
                             $groups->code_gr = $translit_name;
-                        else
+                        } else {
                             $groups->code_gr = trim($xml_group->Ид);
-                    } else
+                        }
+
+                    } else {
                         $groups->code_gr = trim($xml_group->Ид);
+                    }
+
                     $groups->id_exchange = trim($xml_group->Ид);
                     if ($up_id) {
                         $groups->upid = $up_id;
@@ -1248,25 +1423,28 @@ function import_groups($xml, $up_id = '', $code_type, $lang, $ex_group_name, $up
 function check_brand_properties($xml, $manufacturer)
 {
     $_SESSION['properties'] = array();
-    if (isset($xml->Свойства->Свойство))
+    if (isset($xml->Свойства->Свойство)) {
         $properties = $xml->Свойства->Свойство;
-    elseif (isset($xml->Свойства->СвойствоНоменклатуры))
+    } elseif (isset($xml->Свойства->СвойствоНоменклатуры)) {
         $properties = $xml->Свойства->СвойствоНоменклатуры;
-    else
+    } else {
         return;
+    }
+
     foreach ($properties as $property) {
         if (strtolower(trim($property->Наименование)) == strtolower(trim($manufacturer))) {
-            $_SESSION['exchange_manufacturer']['id'] = (string)$property->Ид;
+            $_SESSION['exchange_manufacturer']['id'] = (string) $property->Ид;
             if (isset($property->ВариантыЗначений)) {
                 $list_val = $property->ВариантыЗначений;
                 $_SESSION['exchange_manufacturer']['type'] = 'list';
                 if (isset($list_val->Справочник)) {
                     foreach ($list_val->Справочник as $val) {
-                        $_SESSION['exchange_manufacturer']['values'][(string)$val->ИдЗначения] = getIdBrand((string)$val->Значение);
+                        $_SESSION['exchange_manufacturer']['values'][(string) $val->ИдЗначения] = getIdBrand((string) $val->Значение);
                     }
                 }
-            } else
+            } else {
                 $_SESSION['exchange_manufacturer']['type'] = 'value';
+            }
 
             break;
         }
@@ -1277,29 +1455,33 @@ function check_brand_properties($xml, $manufacturer)
 function import_properties($xml, $manufacturer)
 {
     $_SESSION['properties'] = array();
-    if (isset($xml->Свойства->Свойство))
+    if (isset($xml->Свойства->Свойство)) {
         $properties = $xml->Свойства->Свойство;
-    elseif (isset($xml->Свойства->СвойствоНоменклатуры))
+    } elseif (isset($xml->Свойства->СвойствоНоменклатуры)) {
         $properties = $xml->Свойства->СвойствоНоменклатуры;
-    else
+    } else {
         return;
+    }
+
     foreach ($properties as $property) {
         if (strtolower(trim($property->Наименование)) == strtolower(trim($manufacturer))) {
-            $_SESSION['exchange_manufacturer']['id'] = (string)$property->Ид;
+            $_SESSION['exchange_manufacturer']['id'] = (string) $property->Ид;
             if (isset($property->ВариантыЗначений)) {
                 $list_val = $property->ВариантыЗначений;
                 $_SESSION['exchange_manufacturer']['type'] = 'list';
                 if (isset($list_val->Справочник)) {
                     foreach ($list_val->Справочник as $val) {
-                        $_SESSION['exchange_manufacturer']['values'][(string)$val->ИдЗначения] = getIdBrand((string)$val->Значение);
+                        $_SESSION['exchange_manufacturer']['values'][(string) $val->ИдЗначения] = getIdBrand((string) $val->Значение);
                     }
                 }
-            } else
+            } else {
                 $_SESSION['exchange_manufacturer']['type'] = 'value';
+            }
+
         } else {
             //continue;
-            $guid_feature = (string)$property->Ид;
-            $name_feature = (string)$property->Наименование;
+            $guid_feature = (string) $property->Ид;
+            $name_feature = (string) $property->Наименование;
             $type_feature = isset($property->ВариантыЗначений) && isset($property->ВариантыЗначений->Справочник) ? 'list' : 'string';
             $sf = new seTable('shop_feature', 'sf');
             $sf->select('sf.id, sf.type');
@@ -1323,9 +1505,9 @@ function import_properties($xml, $manufacturer)
                     $type = $type_feature;
 
                     if (isset($property->ТипЗначений)) {
-                        if ((string)$property->ТипЗначений == 'Число') {
+                        if ((string) $property->ТипЗначений == 'Число') {
                             $type = 'number';
-                        } elseif ((string)$property->ТипЗначений == 'Логический') {
+                        } elseif ((string) $property->ТипЗначений == 'Логический') {
                             $type = 'bool';
                         }
                     }
@@ -1341,15 +1523,15 @@ function import_properties($xml, $manufacturer)
             if (!empty($id_feature)) {
                 $_SESSION['properties'][$guid_feature] = array(
                     'id' => $id_feature,
-                    'type' => $type
+                    'type' => $type,
                 );
             }
 
             if ($type_feature == 'list') {
                 $values = array();
                 foreach ($property->ВариантыЗначений->Справочник as $val) {
-                    $guid_value = (string)$val->ИдЗначения;
-                    $value = (string)$val->Значение;
+                    $guid_value = (string) $val->ИдЗначения;
+                    $value = (string) $val->Значение;
                     $sfvl = new seTable('shop_feature_value_list');
                     $sfvl->select('id, id_exchange');
                     $sfvl->where('id_feature = ?', $id_feature);
@@ -1387,17 +1569,11 @@ function unzip($file, $folder = '')
         while ($zip_entry = zip_read($zip)) {
             $filename = basename(zip_entry_name($zip_entry));
             $name = $folder . $filename;
-            /*
-            $path_parts = pathinfo($name);
-            
-            if(!is_dir($path_parts['dirname'])){
-                mkdir($path_parts['dirname'], 0755, true);
-            }
-            */
-            if (zip_entry_open($zip, $zip_entry, "r")) {
+
+            if (zip_entry_open($zip, $zip_entry, 'r')) {
                 $buf = zip_entry_read($zip_entry, zip_entry_filesize($zip_entry));
 
-                $file = fopen($name, "wb");
+                $file = fopen($name, 'wb');
                 if ($file) {
                     fwrite($file, $buf);
                     fclose($file);
@@ -1418,14 +1594,15 @@ function translit($str, $dir = 'en', $type = 'url')
 
     $en = array(0 => 'A', 1 => 'a', 2 => 'B', 3 => 'b', 4 => 'V', 5 => 'v', 6 => 'G', 7 => 'g', 8 => 'D', 9 => 'd', 10 => 'E', 11 => 'e', 12 => 'E', 13 => 'e', 14 => 'ZH', 15 => 'zh', 16 => 'Z', 17 => 'z', 18 => 'I', 19 => 'i', 20 => 'J', 21 => 'j', 22 => 'K', 23 => 'k', 24 => 'L', 25 => 'l', 26 => 'M', 27 => 'm', 28 => 'N', 29 => 'n', 30 => 'O', 31 => 'o', 32 => 'P', 33 => 'p', 34 => 'R', 35 => 'r', 36 => 'S', 37 => 's', 38 => 'T', 39 => 't', 40 => 'U', 41 => 'u', 42 => 'F', 43 => 'f', 44 => 'H', 45 => 'h', 46 => 'TS', 47 => 'ts', 48 => 'CH', 49 => 'ch', 50 => 'SH', 51 => 'sh', 52 => 'SCH', 53 => 'sch', 54 => '', 55 => '', 56 => 'Y', 57 => 'y', 58 => '', 59 => '', 60 => 'E', 61 => 'e', 62 => 'YU', 63 => 'yu', 64 => 'YA', 65 => 'ya');
 
-    if ($dir == 'en')
+    if ($dir == 'en') {
         $str = str_replace($ru, $en, $str);
-    else
+    } else {
         $str = str_replace($en, $ru, $str);
+    }
 
     if ($type == 'url') {
-        $str = preg_replace("/[\s]+/ui", '-', trim($str));
-        $str = preg_replace("/[^0-9a-zа-я\_\-]+/ui", '', $str);
+        $str = preg_replace('/[\s]+/ui', '-', trim($str));
+        $str = preg_replace('/[^0-9a-zа-я\_\-]+/ui', '', $str);
         $str = strtolower($str);
     }
 
@@ -1439,20 +1616,22 @@ function getEncoding($string)
         'utf-8', 'windows-1251', 'ASCII', 'windows-1252', 'windows-1254',
         'iso-8859-1', 'iso-8859-2', 'iso-8859-3', 'iso-8859-4', 'iso-8859-5',
         'iso-8859-6', 'iso-8859-7', 'iso-8859-8', 'iso-8859-9', 'iso-8859-10',
-        'iso-8859-13', 'iso-8859-14', 'iso-8859-15', 'iso-8859-16'
+        'iso-8859-13', 'iso-8859-14', 'iso-8859-15', 'iso-8859-16',
     );
 
     foreach ($encoding_list as $val) {
         $sample = iconv($val, $val, $string);
-        if ($sample == $string)
+        if ($sample == $string) {
             return $val;
+        }
+
     }
     return null;
 }
 
 function exchange_log($text, $log_file = 'exchange_log.txt', $mode = 'ab')
 {
-    $text = date('[Y-m-d H:i:s]') . ' ' . $text . "\r\n";
+    $text = date('[Y-m-d H:i:s]') . ' ' . $text . '\r\n';
     $file = fopen('../' . $log_file, $mode);
     fwrite($file, $text);
     fclose($file);
@@ -1467,7 +1646,7 @@ function updateCountGroup()
     foreach ($price->getList() as $val) {
         echo $query = 'UPDATE shop_group SET scount = ' . $val['count'] . ' WHERE id = ' . $val['id_group'];
         echo '<br />';
-        //se_db_query($query);
+        //se_db_query( $query );
     }
 }
 
@@ -1485,10 +1664,12 @@ function addFeatureModification($name, $value, $id_product, $id_modification)
         $shop_feature->where('name="?"', $name);
         $shop_feature->fetchOne();
         if ($shop_feature->isFind()) {
-            if ($shop_feature->type == 'list' || $shop_feature->type == 'colorlist')
+            if ($shop_feature->type == 'list' || $shop_feature->type == 'colorlist') {
                 $id_feature = $shop_feature->id;
-            else
+            } else {
                 $name .= '_1s';
+            }
+
         }
         if (empty($id_feature)) {
             $shop_feature->insert();
@@ -1539,9 +1720,9 @@ function addModificationsGroup($group_name = '1s')
         $mod_group->select('id');
         $mod_group->where('name = "?"', $group_name);
         $mod_group->fetchOne();
-        if ($mod_group->isFind())
+        if ($mod_group->isFind()) {
             $id_group = $mod_group->id;
-        else {
+        } else {
             $mod_group->insert();
             $mod_group->name = $group_name;
             $mod_group->vtype = 2;
@@ -1552,13 +1733,14 @@ function addModificationsGroup($group_name = '1s')
     return $id_group;
 }
 
-
 function import_offers_51($xml, $default_param_name, $update_data)
 {
     $guid_product = $guid_offer = $price_opt = $price_opt_corp = $price_bonus = $price = 0;
     @list($guid_product, $guid_offer) = explode('#', $xml->Ид);
-    if ($guid_offer)
+    if ($guid_offer) {
         $guid_offer = trim($xml->Ид);
+    }
+
     if (($xml->Статус == 'Удален' || $xml['Статус'] == 'Удален') && $guid_offer && $update_data['delete']) {
         $shop_modifications = new seTable('shop_modifications');
         $shop_modifications->where("id_exchange = '?'", $guid_offer)->deletelist();
@@ -1574,11 +1756,11 @@ function import_offers_51($xml, $default_param_name, $update_data)
             if (isset($xml->Цены->Цена)) {
                 $price = null;
                 foreach ($xml->Цены->Цена as $type_price) {
-                    if (empty($price))
+                    if (empty($price)) {
                         $price = $type_price->ЦенаЗаЕдиницу;
+                    }
 
                     $nameprice = trim($type_price->ИдТипаЦены);
-
 
                     if ($nameprice == trim($_SESSION['exchange_type_price']['main'])) {
                         $price = $type_price->ЦенаЗаЕдиницу;
@@ -1596,13 +1778,13 @@ function import_offers_51($xml, $default_param_name, $update_data)
             }
             $id_good = $goods->id;
 
-            //$count = ((float)$xml->Количество > 0) ? (float)$xml->Количество : 0;
+            //$count = ( ( float )$xml->Количество > 0 ) ? ( float )$xml->Количество : 0;
 
             $count = 0;
             if (!empty($xml->Количество)) {
-                $count = (float)$xml->Количество;
+                $count = (float) $xml->Количество;
             } elseif (!empty($xml->Склад['КоличествоНаСкладе'])) {
-                $count = (float)$xml->Склад['КоличествоНаСкладе'];
+                $count = (float) $xml->Склад['КоличествоНаСкладе'];
             }
             $count = max(0, $count);
 
@@ -1618,8 +1800,10 @@ function import_offers_51($xml, $default_param_name, $update_data)
                         $shop_modifications->value_opt = $price_opt;
                         $shop_modifications->value_opt_corp = $price_opt_corp;
                     }
-                    if ($update_data['count'])
+                    if ($update_data['count']) {
                         $shop_modifications->count = $count;
+                    }
+
                     $shop_modifications->save();
                 } else {
                     $shop_modifications->insert();
@@ -1650,13 +1834,18 @@ function import_offers_51($xml, $default_param_name, $update_data)
             } else {
                 if ($update_data['price']) {
                     $goods->price = $price;
-                    if ($price_opt)
+                    if ($price_opt) {
                         $goods->price_opt = $price_opt;
-                    if ($price_opt_corp)
+                    }
+
+                    if ($price_opt_corp) {
                         $goods->price_opt_corp = $price_opt_corp;
+                    }
+
                 }
-                if ($update_data['count'])
+                if ($update_data['count']) {
                     $goods->presence_count = $count;
+                }
 
                 $goods->save();
             }

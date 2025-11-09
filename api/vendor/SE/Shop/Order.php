@@ -343,6 +343,30 @@ class Order extends Base
         return true;
     }
 
+    public function setStatus() 
+    {
+        if (empty($this->input['ids']) || (!isset($this->input['order']) && !isset($this->input['delivery']))) {
+            $this->error = "Не указан идентификатор заказа или статус!";
+            return;
+        }
+        $u = new DB('shop_order', 'so');
+        $p = array();
+        if (isset($this->input['order']))
+            $p['status'] = $this->input['order'];
+        if (isset($this->input['delivery']))
+            $p['delivery_status'] = $this->input['delivery'];
+
+        foreach ($this->input['ids'] as $id) {
+            $p['id'] = $id;
+            $u->setValuesFields($p);
+            if ($u->save()) {
+                $this->input["id"] = $id;
+                $this->send("orduserch");
+            }
+        }
+        return true;
+    }
+
     public function save($isTransaction = false)
     {
         if ($this->input['deliveryDocDate']) $this->input['deliveryDocDate'] = date('Y-m-d', strtotime($this->input['deliveryDocDate']));
