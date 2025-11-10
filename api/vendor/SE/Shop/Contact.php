@@ -787,7 +787,7 @@ class Contact extends Base
         if (!file_exists($tempFilePath) || !is_dir($tempFilePath))
             mkdir($tempFilePath);
         $filePath = $tempFilePath . "/{$fileName}";
-        $urlFile = 'http://' . HOSTNAME . "/files/tempfiles/{$fileName}";
+        $urlFile = '//' . HOSTNAME . "/files/tempfiles/{$fileName}";
 
         $this->rmdir_recursive($tempFilePath);
         /** очистка директории с временными файлами */
@@ -901,7 +901,7 @@ class Contact extends Base
         if (!file_exists($tempFilePath) || !is_dir($tempFilePath))
             mkdir($tempFilePath);
         $filePath = $tempFilePath . "/{$fileName}";
-        $urlFile = 'http://' . HOSTNAME . "/files/tempfiles/{$fileName}";
+        $urlFile = '//' . HOSTNAME . "/files/tempfiles/{$fileName}";
 
         $this->rmdir_recursive($tempFilePath);
         /** очистка директории с временными файлами */

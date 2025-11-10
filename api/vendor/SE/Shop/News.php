@@ -83,8 +83,8 @@ class News extends Base
                 }
                 if ($new['imageFile']) {
                     if (strpos($new['imageFile'], "://") === false) {
-                        $new['imageUrl'] = 'http://' . $this->hostname . "/images/rus/newsimg/" . $new['imageFile'];
-                        $new['imageUrlPreview'] = "http://{$this->hostname}/lib/image.php?size=64&img=images/rus/newsimg/" . $new['imageFile'];
+                        $new['imageUrl'] = '//' . $this->hostname . "/images/rus/newsimg/" . $new['imageFile'];
+                        $new['imageUrlPreview'] = "//{$this->hostname}/lib/image.php?size=64&img=images/rus/newsimg/" . $new['imageFile'];
                     } else {
                         $new['imageUrl'] = $new['imageFile'];
                         $new['imageUrlPreview'] = $new['imageFile'];
@@ -150,8 +150,8 @@ class News extends Base
             $image['isMain'] = (bool)$item['default'];
             if ($image['imageFile']) {
                 if (strpos($image['imageFile'], "://") === false) {
-                    $image['imageUrl'] = 'http://' . $this->hostname . "/images/rus/newsimg/" . $image['imageFile'];
-                    $image['imageUrlPreview'] = "http://{$this->hostname}/lib/image.php?size=64&img=images/rus/newsimg/" . $image['imageFile'];
+                    $image['imageUrl'] = '//' . $this->hostname . "/images/rus/newsimg/" . $image['imageFile'];
+                    $image['imageUrlPreview'] = "//{$this->hostname}/lib/image.php?size=64&img=images/rus/newsimg/" . $image['imageFile'];
                 } else {
                     $image['imageUrl'] = $image['imageFile'];
                     $image['imageUrlPreview'] = $image['imageFile'];
@@ -240,8 +240,8 @@ class News extends Base
             $news['images'] = $this->getImages($item['id']);
             if ($news['imageFile']) {
                 if (strpos($news['imageFile'], "://") === false) {
-                    $news['imageUrl'] = 'http://' . $this->hostname . "/images/rus/newsimg/" . $news['imageFile'];
-                    $news['imageUrlPreview'] = "http://{$this->hostname}/lib/image.php?size=64&img=images/rus/newsimg/" . $news['imageFile'];
+                    $news['imageUrl'] = '//' . $this->hostname . "/images/rus/newsimg/" . $news['imageFile'];
+                    $news['imageUrlPreview'] = "//{$this->hostname}/lib/image.php?size=64&img=images/rus/newsimg/" . $news['imageFile'];
                 } else {
                     $news['imageUrl'] = $news['imageFile'];
                     $news['imageUrlPreview'] = $news['imageFile'];

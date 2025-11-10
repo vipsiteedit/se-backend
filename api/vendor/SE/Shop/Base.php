@@ -613,7 +613,7 @@ class Base extends CustomBase
                 $file = empty($_FILES["file"]) ? $_FILES["file$i"]['name'] : $_FILES["file"]['name'];
                 $uploadFile = $dir . '/' . $file;
                 $fileTemp = $_FILES["file$i"]['tmp_name'];
-                $urlFile = 'http://' . HOSTNAME . "/files/{$file}";
+                $urlFile = '//' . HOSTNAME . "/files/{$file}";
                 if (!filesize($fileTemp) || move_uploaded_file($fileTemp, $uploadFile)) {
                     $items[] = array("url" => $urlFile, "name" => $file);
                     $ups++;
@@ -632,7 +632,7 @@ class Base extends CustomBase
         if ($this->input['send']) {
             if ($codeMail) {
                 try {
-                    $urlSendEmail = 'http://' . HOSTNAME . '/upload/sendmailorder.php';
+                    $urlSendEmail = '//' . HOSTNAME . '/upload/sendmailorder.php';
                     $params = array(
                         'lang' => 'rus',
                         'idorder' => (!$idOrder) ? $this->input['id'] : $idOrder,
@@ -656,7 +656,7 @@ class Base extends CustomBase
     public function postRequest($shorturl, $data)
     {
 
-        $url = "http://" . HOSTNAME . "/" . $shorturl;
+        $url = "//" . HOSTNAME . "/" . $shorturl;
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);

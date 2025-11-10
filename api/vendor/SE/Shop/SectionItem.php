@@ -31,8 +31,8 @@ class SectionItem extends Base
             $item['description'] = substr(str_replace("\r\n", ' ', strip_tags($item['description'])), 0, 50);
             if (isset($item['picture'])) {
                 if (strpos($item['picture'], "://") === false) {
-                    $item['imageUrl'] = 'http://' . $this->hostname . "/images/rus/sections/" . $item['picture'];
-                    $item['imageUrlPreview'] = "http://{$this->hostname}/lib/image.php?size=64&img=images/rus/sections/" . $item['picture'];
+                    $item['imageUrl'] = '//' . $this->hostname . "/images/rus/sections/" . $item['picture'];
+                    $item['imageUrlPreview'] = "//{$this->hostname}/lib/image.php?size=64&img=images/rus/sections/" . $item['picture'];
                 } else {
                     $item['imageUrl'] = $item['imageUrlPreview'] = $item['picture'];
                 }
@@ -47,8 +47,8 @@ class SectionItem extends Base
         //$this->result['imagePath'] = str_replace('//', '/', $this->result['imagePath']);
         if ($this->result['imageFile']) {
             if (strpos($this->result['imageFile'], "://") === false) {
-                $this->result['imageUrl'] = 'http://' . $this->hostname . "/images/rus/sections/" . $this->result['imageFile'];
-                $this->result['imageUrlPreview'] = "http://{$this->hostname}/lib/image.php?size=64&img=images/rus/sections/" . $this->result['imageFile'];
+                $this->result['imageUrl'] = '//' . $this->hostname . "/images/rus/sections/" . $this->result['imageFile'];
+                $this->result['imageUrlPreview'] = "//{$this->hostname}/lib/image.php?size=64&img=images/rus/sections/" . $this->result['imageFile'];
             } else {
                 $this->result['imageUrl'] = $this->result['imageFile'];
                 $this->result['imageUrlPreview'] = $this->result['imageFile'];

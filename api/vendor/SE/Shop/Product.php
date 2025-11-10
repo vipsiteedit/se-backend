@@ -189,7 +189,7 @@ class Product extends Base
             foreach ($list as $item) {
                 if (strpos($item['img'], "://") === false) {
                     if ($item['img'] && file_exists(DOCUMENT_ROOT . '/images/rus/shopprice/' . $item['img']))
-                        $item['imageUrlPreview'] = "http://" . HOSTNAME . "/lib/image.php?size=64&img=images/rus/shopprice/" . $item['img'];
+                        $item['imageUrlPreview'] = "//" . HOSTNAME . "/lib/image.php?size=64&img=images/rus/shopprice/" . $item['img'];
                 } else {
                     $item['imageUrlPreview'] = $item['img'];
                 }
@@ -395,8 +395,8 @@ class Product extends Base
             $image['isMain'] = (bool)$item['default'];
             if ($image['imageFile']) {
                 if (strpos($image['imageFile'], "://") === false) {
-                    $image['imageUrl'] = 'http://' . HOSTNAME . "/images/rus/shopprice/" . $image['imageFile'];
-                    $image['imageUrlPreview'] = "http://" . HOSTNAME . "/lib/image.php?size=64&img=images/rus/shopprice/" . $image['imageFile'];
+                    $image['imageUrl'] = '//' . HOSTNAME . "/images/rus/shopprice/" . $image['imageFile'];
+                    $image['imageUrlPreview'] = "//" . HOSTNAME . "/lib/image.php?size=64&img=images/rus/shopprice/" . $image['imageFile'];
                 } else {
                     $image['imageUrl'] = $image['imageFile'];
                     $image['imageUrlPreview'] = $image['imageFile'];
@@ -435,7 +435,7 @@ class Product extends Base
             $file['sortIndex'] = $item['sort'];
             if ($file['fileUrl']) {
                 if (strpos($file['fileUrl'], "://") === false) {
-                    $file['fileUrl'] = 'http://' . HOSTNAME . "/files/" . $item['file'];
+                    $file['fileUrl'] = '//' . HOSTNAME . "/files/" . $item['file'];
                 }
             }
             $result[] = $file;
@@ -730,8 +730,8 @@ class Product extends Base
                         $value['imageFile'] = $feature[2];
                         if ($value['imageFile']) {
                             if (strpos($value['imageFile'], "://") === false) {
-                                $value['imageUrl'] = 'http://' . HOSTNAME . "/images/rus/shopprice/" . $value['imageFile'];
-                                $value['imageUrlPreview'] = "http://" . HOSTNAME . "/lib/image.php?size=64&img=images/rus/shopprice/" . $value['imageFile'];
+                                $value['imageUrl'] = '//' . HOSTNAME . "/images/rus/shopprice/" . $value['imageFile'];
+                                $value['imageUrlPreview'] = "//" . HOSTNAME . "/lib/image.php?size=64&img=images/rus/shopprice/" . $value['imageFile'];
                             } else {
                                 $value['imageUrl'] = $image['imageFile'];
                                 $value['imageUrlPreview'] = $image['imageFile'];
@@ -869,7 +869,7 @@ class Product extends Base
         if (isset($this->input["code"])/* && empty($this->input["code"])*/)
             $this->input["code"] = strtolower(se_translite_url($this->input["code"]));
 
-        file_get_contents('http://' . HOSTNAME . "/lib/shoppreorder_checkCount.php?id={$this->input["id"]}");
+        file_get_contents('//' . HOSTNAME . "/lib/shoppreorder_checkCount.php?id={$this->input["id"]}");
 
         parent::save();
     }
@@ -1973,7 +1973,7 @@ class Product extends Base
         //     mkdir($temporaryFilePath, 0777);
         $oldFilePath = $filePath . "/{$oldFileName}";
         $filePath .= "/{$fileName}";
-        $urlFile = 'http://' . HOSTNAME . "/files/tempfiles/{$fileName}";
+        $urlFile = '//' . HOSTNAME . "/files/tempfiles/{$fileName}";
 
         try {
 

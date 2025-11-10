@@ -393,7 +393,7 @@ class Order extends Base
                 ),
             ));
             return (file_get_contents(
-                'http://' . HOSTNAME . '/upload/sendmailorder.php',
+                '//' . HOSTNAME . '/upload/sendmailorder.php',
                 false,
                 $context
             ) == 'ok');
@@ -558,7 +558,7 @@ class Order extends Base
         $fileName = 'export_orders'.time().'.xlsx';
 
         $filePath .= "/{$fileName}";
-        $urlFile = 'http://' . HOSTNAME . "/files/{$fileName}";
+        $urlFile = '//' . HOSTNAME . "/files/{$fileName}";
 
         $xls = new PHPExcel();
         $xls->setActiveSheetIndex(0);

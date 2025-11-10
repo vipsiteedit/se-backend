@@ -12,7 +12,7 @@ class PaySystem extends Base
 
     private function getPlugins()
     {
-        $urlRoot = 'http://' . HOSTNAME;
+        $urlRoot = '//' . HOSTNAME;
         $buffer = file_get_contents($urlRoot . "/lib/merchant/getlist.php");
         $items = explode("|", $buffer);
         $plugins = array();
@@ -45,8 +45,8 @@ class PaySystem extends Base
                 $paySystem['sortIndex'] = (int)$item['sort'];
                 if ($paySystem['imageFile']) {
                     if (strpos($paySystem['imageFile'], "://") === false) {
-                        $paySystem['imageUrl'] = 'http://' . HOSTNAME . "/images/rus/shoppayment/" . $paySystem['imageFile'];
-                        $paySystem['imageUrlPreview'] = "http://" . HOSTNAME . "/lib/image.php?size=64&img=images/rus/shoppayment/" . $paySystem['imageFile'];
+                        $paySystem['imageUrl'] = '//' . HOSTNAME . "/images/rus/shoppayment/" . $paySystem['imageFile'];
+                        $paySystem['imageUrlPreview'] = "//" . HOSTNAME . "/lib/image.php?size=64&img=images/rus/shoppayment/" . $paySystem['imageFile'];
                     } else {
                         $paySystem['imageUrl'] = $paySystem['imageFile'];
                         $paySystem['imageUrlPreview'] = $paySystem['imageFile'];
@@ -77,7 +77,7 @@ class PaySystem extends Base
                 $this->info();
                 DB::commit();
                 if (!empty($this->input["identifier"])) {
-                    $scriptPlugin = 'http://' . HOSTNAME . "/lib/merchant/result.php?payment=" . $this->input["identifier"];
+                    $scriptPlugin = '//' . HOSTNAME . "/lib/merchant/result.php?payment=" . $this->input["identifier"];
                     file_get_contents($scriptPlugin);
                 }
                 $this->saveParams();
@@ -164,8 +164,8 @@ class PaySystem extends Base
             $paySystem['filters'] = $this->getFilters(array_filter(explode("\r\n", $paySystem['filters'])));
             if ($paySystem['imageFile']) {
                 if (strpos($paySystem['imageFile'], "://") === false) {
-                    $paySystem['imageUrl'] = 'http://' . HOSTNAME . "/images/rus/shoppayment/" . $paySystem['imageFile'];
-                    $paySystem['imageUrlPreview'] = "http://" . HOSTNAME . "/lib/image.php?size=200&img=images/rus/shoppayment/" . $paySystem['imageFile'];
+                    $paySystem['imageUrl'] = '//' . HOSTNAME . "/images/rus/shoppayment/" . $paySystem['imageFile'];
+                    $paySystem['imageUrlPreview'] = "//" . HOSTNAME . "/lib/image.php?size=200&img=images/rus/shoppayment/" . $paySystem['imageFile'];
                 } else {
                     $paySystem['imageUrl'] = $paySystem['imageFile'];
                     $paySystem['imageUrlPreview'] = $paySystem['imageFile'];

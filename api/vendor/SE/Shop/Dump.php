@@ -15,7 +15,7 @@ class Dump extends Base
             mkdir($filePath);
         $fileName = HOSTNAME . '.sql.gz';
         $filePath .= "/{$fileName}";
-        $urlFile = 'http://' . HOSTNAME . "/files/{$fileName}";
+        $urlFile = '//' . HOSTNAME . "/files/{$fileName}";
 
         try {
             $dump = new MySQLDump();

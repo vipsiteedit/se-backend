@@ -60,8 +60,8 @@ class Brand extends Base
                 $brand['countGoods'] = (int)$item['countGoods'];
                 if ($brand['imageFile']) {
                     if (strpos($brand['imageFile'], "://") === false) {
-                        $brand['imageUrl'] = 'http://' . $this->hostname . "/images/rus/shopbrand/" . $brand['imageFile'];
-                        $brand['imageUrlPreview'] = "http://{$this->hostname}/lib/image.php?size=64&img=images/rus/shopbrand/" . $brand['imageFile'];
+                        $brand['imageUrl'] = '//' . $this->hostname . "/images/rus/shopbrand/" . $brand['imageFile'];
+                        $brand['imageUrlPreview'] = "//{$this->hostname}/lib/image.php?size=64&img=images/rus/shopbrand/" . $brand['imageFile'];
                     } else {
                         $brand['imageUrl'] = $brand['imageFile'];
                         $brand['imageUrlPreview'] = $brand['imageFile'];
@@ -92,8 +92,8 @@ class Brand extends Base
             $brand['description'] = $brand['text'];
             if ($brand['imageFile']) {
                 if (strpos($brand['imageFile'], "://") === false) {
-                    $brand['imageUrl'] = 'http://' . $this->hostname . "/images/rus/shopbrand/" . $brand['imageFile'];
-                    $brand['imageUrlPreview'] = "http://{$this->hostname}/lib/image.php?size=64&img=images/rus/shopbrand/" . $brand['imageFile'];
+                    $brand['imageUrl'] = '//' . $this->hostname . "/images/rus/shopbrand/" . $brand['imageFile'];
+                    $brand['imageUrlPreview'] = "//{$this->hostname}/lib/image.php?size=64&img=images/rus/shopbrand/" . $brand['imageFile'];
                 } else {
                     $brand['imageUrl'] = $brand['imageFile'];
                     $brand['imageUrlPreview'] = $brand['imageFile'];

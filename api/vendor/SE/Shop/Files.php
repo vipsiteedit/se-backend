@@ -112,7 +112,7 @@ class Files extends Base
                     $item["name"] = $file;
                     $item["file"] = $file;
                     $item["ext"] = strtoupper(substr(strrchr($file, '.'), 1));
-                    $item['url'] = 'http://' . HOSTNAME . "/files/" . $item["file"];
+                    $item['url'] = '//' . HOSTNAME . "/files/" . $item["file"];
                     $items[] = $item;
                     //writeLog($item);
                 }

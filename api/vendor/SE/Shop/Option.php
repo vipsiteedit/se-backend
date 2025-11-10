@@ -30,8 +30,8 @@ class Option extends Base
         foreach ($this->result['items'] as &$item) {
             if ($item['image']) {
                 if (strpos($item['image'], "://") === false) {
-                    $item['imageUrl'] = 'http://' . $this->hostname . "/images/rus/options/" . $item['image'];
-                    $item['imageUrlPreview'] = "http://{$this->hostname}/lib/image.php?size=64&img=images/rus/options/" . $item['image'];
+                    $item['imageUrl'] = '//' . $this->hostname . "/images/rus/options/" . $item['image'];
+                    $item['imageUrlPreview'] = "//{$this->hostname}/lib/image.php?size=64&img=images/rus/options/" . $item['image'];
                 } else {
                     $item['imageUrl'] = $item['image'];
                     $item['imageUrlPreview'] = $item['image'];

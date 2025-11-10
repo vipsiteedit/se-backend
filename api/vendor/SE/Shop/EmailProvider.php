@@ -171,7 +171,7 @@ class EmailProvider extends Base
     // запросить информацию смс-провайдера
     private function requestSmsProviderInfo($provider, $action, $parameters = null)
     {
-        $url = "http://" . HOSTNAME . "/lib/esp.php";
+        $url = "//" . HOSTNAME . "/lib/esp.php";
         $ch = curl_init($url);
         $data["serial"] = DB::$dbSerial;
         $data["db_password"] = DB::$dbPassword;

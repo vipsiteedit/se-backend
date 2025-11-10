@@ -39,7 +39,7 @@ class SmsLog extends Base
     {
         $providers = array("sms.ru", "qtelecom.ru");
         foreach ($providers as $provider) {
-            $url = "http://" . HOSTNAME . "/lib/sms.php";
+            $url = "//" . HOSTNAME . "/lib/sms.php";
             $ch = curl_init($url);
             $data["serial"] = DB::$dbSerial;
             $data["db_password"] = DB::$dbPassword;

@@ -124,7 +124,7 @@ class UserAccount extends Base
         if (!file_exists($filePath) || !is_dir($filePath))
             mkdir($filePath);
         $filePath .= "/{$fileName}";
-        $urlFile = 'http://' . HOSTNAME . "/files/{$fileName}";
+        $urlFile = '//' . HOSTNAME . "/files/{$fileName}";
         $xls = new PHPExcel();
         $xls->setActiveSheetIndex(0);
         $sheet = $xls->getActiveSheet();
