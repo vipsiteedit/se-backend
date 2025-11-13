@@ -14,6 +14,8 @@ use \PHPExcel_Writer_Excel2007 as PHPExcel_Writer_Excel2007;
 class Order extends Base
 {
     protected $tableName = "shop_order";
+    protected $orderStatuses = array('Y'=>'Оплачен', 'N'=> 'Не оплачен','A'=>'Предоплата','K'=>'Кредит','P'=>'Подарок','W'=>'В ожидании','C'=>'Возврат');
+    protected $deliveryStatuses = array('Y'=>'Доставлен','N'=>'Не доставлен','M'=>'В обработке','P'=>'В пути');
 
     public static function fetchByCompany($idCompany)
     {
