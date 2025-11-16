@@ -783,11 +783,11 @@ class Contact extends Base
 
         /** объявляем переменные */
         $fileName = "export_persons.xlsx";
-        $tempFilePath = DOCUMENT_ROOT . "/files/tempfiles";
+        $tempFilePath = DOCUMENT_ROOT . "/files/tmp";
         if (!file_exists($tempFilePath) || !is_dir($tempFilePath))
             mkdir($tempFilePath);
         $filePath = $tempFilePath . "/{$fileName}";
-        $urlFile = '//' . HOSTNAME . "/files/tempfiles/{$fileName}";
+        $urlFile = '//' . HOSTNAME . "/files/tmp/{$fileName}";
 
         $this->rmdir_recursive($tempFilePath);
         /** очистка директории с временными файлами */
@@ -897,11 +897,11 @@ class Contact extends Base
 
         /** объявляем переменные */
         $fileName = "export_person_{$idContact}.xlsx";
-        $tempFilePath = DOCUMENT_ROOT . "/files/tempfiles";
+        $tempFilePath = DOCUMENT_ROOT . "/files/tmp";
         if (!file_exists($tempFilePath) || !is_dir($tempFilePath))
             mkdir($tempFilePath);
         $filePath = $tempFilePath . "/{$fileName}";
-        $urlFile = '//' . HOSTNAME . "/files/tempfiles/{$fileName}";
+        $urlFile = '//' . HOSTNAME . "/files/tmp/{$fileName}";
 
         $this->rmdir_recursive($tempFilePath);
         /** очистка директории с временными файлами */
@@ -960,7 +960,8 @@ class Contact extends Base
 
         $enCols   = array(
             "Время регистрации"     => "regDateTime",
-            "Код"                   => "username",
+            "Логин"                 => "username",
+            "Пароль"                => "password",
             "Фамилия"               => "lastName",
             "Имя"                   => "firstName",
             "Отчество"              => "secName",
@@ -972,7 +973,7 @@ class Contact extends Base
         );
 
         $skip     = $param["skip"];
-        $path     = DOCUMENT_ROOT . "/files/tempfiles";
+        $path     = DOCUMENT_ROOT . "/files/tmp";
         $filePath = $path . "/{$fileName}";
 
         $contacts = $this->getDataFromFile($fileName, $filePath, $param);
@@ -992,12 +993,21 @@ class Contact extends Base
         $headers       = array();
         $newArray      = array();
         $arrayUserName = array();
+        $arrayFields = array();
+        foreach ($enCols as $ncell=>$cell) {
+            $arrayFields[] = $cell;
+        }
         foreach ($contacts as $k => $row) {
 
             if ($k == 0) {
                 /** линия заголовка */
-                foreach ($row as $kCell => $cell)
-                    if ($enCols[$cell]) $headers[] = $enCols[$cell];
+                foreach ($row as $kCell => $cell){
+                    if ($enCols[$cell]) {
+                        $headers[] = $enCols[$cell];
+                    } else if (in_array($cell, $arrayFields)){
+                        $headers[] = $cell;
+                    }
+                }
             } elseif ($k >= $skip) {
                 /** если обычные строки (с учетом пользовательского отступа) */
                 $arrayNewRow = array();
@@ -1011,16 +1021,19 @@ class Contact extends Base
                     unset($arrayNewRow['birthDate']);
                 foreach ($arrayNewRow as $kHead => $head)
                     if ($head == '')  unset($arrayNewRow[$kHead]);
-
+                if (empty($arrayNewRow["username"]) && !empty($arrayNewRow["email"]))  $arrayNewRow["username"] = $arrayNewRow["email"];
+                if (!empty($arrayNewRow["password"]))  $arrayNewRow["password"] = md5($arrayNewRow["password"]);
 
                 $newArray[]                                     = $arrayNewRow;
-                if ($arrayNewRow["username"])  $arrayUserName[] = '"' . $arrayNewRow["username"] . '"';
+                if (!empty($arrayNewRow["username"]))  $arrayUserName[] = '"' . $arrayNewRow["username"] . '"';
                 unset($contacts[$k]);
-            } else {
             }
         }
-        unset($contacts);
 
+        unset($contacts);
+        if (count($arrayUserName) == 0) {
+            return array();
+        }
 
         /** получение связки код-id (если есть) */
         $u = new DB('se_user', 'su');
@@ -1038,11 +1051,10 @@ class Contact extends Base
 
         foreach ($newArray as $k => $i)
             if ($nameId[$i["username"]])  $newArray[$k]["id"] = $nameId[$i["username"]];
-
         return $newArray;
     } // раскладываем файл
 
-    private function getDataFromFile($filename, $filePath, $options)
+    private function getDataFromFile($filename, $filePath, $options=[])
     {
         /** Получить данные из файла
          * @param  str        $filename
@@ -1050,11 +1062,10 @@ class Contact extends Base
          * @return array                массив строк файла  array{0=>array(0=>'dfg',1=>'dsg'),1=>array(...)...}
          * @throws \Exception
          */
-
         try {
-            $temporaryFilePath = DOCUMENT_ROOT . "/files/tempfiles/";
+            $temporaryFilePath = DOCUMENT_ROOT . "/files/tmp/";
             $file              = $temporaryFilePath . $filename;
-            if (file_exists($file) and is_readable($file)) {
+            if (file_exists($file) && is_readable($file)) {
                 $extension = pathinfo($file, PATHINFO_EXTENSION);
 
                 if ($extension == 'xlsx')
@@ -1062,11 +1073,12 @@ class Contact extends Base
                 elseif ($extension == 'csv')
                     return $this->getDataFromFileCSV($file, $options);
                 else
-                    writeLog('НЕ КОРРЕКТНОЕ РАСШИРЕНИЕ ФАЙЛА ' . $file);
+                    echo 'НЕ КОРРЕКТНОЕ РАСШИРЕНИЕ ФАЙЛА ' . $file;
             } else {
-                writeLog('ФАЙЛА НЕТ ' . $file);
+                echo 'ФАЙЛА НЕТ ' . $file;
             }
         } catch (Exception $e) {
+            echo $e->getMessage();
             writeLog($e->getMessage());
         }
     } // Получить данные из файла
@@ -1097,7 +1109,7 @@ class Contact extends Base
         return $arrayRows;
     } // чтение файлов xlsx в windows1251 и utf-8
 
-    private function getDataFromFileCSV($file, $options)
+    private function getDataFromFileCSV($file, $options=[])
     {
         /**
          * чтение файлов csv в windows1251 и utf-8 (в том числе с автоопределителем разделителя в csv)
@@ -1108,43 +1120,96 @@ class Contact extends Base
          * @param  array  $line         массив ячеек строчки
          * @return array  $arrayRows    массив строк файла  array{0=>array(0=>'dfg',1=>'dsg'),1=>array(...)...}
          */
-
         $arrayRows    = array();
         $delimiter    = $options['delimiter'];
         $skip         = $options['skip'];
         $limiterField = $options['limiterField'];
 
         /** автоопределитель разделителя (чувствителен к порядку знаков - по убывающей приоритетности) */
-        if ($delimiter == 'auto') {
-            $delimiters_first_line  = array('\t' => 0, ';'  => 0, ':'  => 0);
-            $delimiters_second_line = $delimiters_first_line;
-            $delimiters_final       = array();
-
-            /** читаем первые 2 строки для обработки (вторая строка с учетом пользовательского отступа) */
-            $handle      = fopen($file, 'r');
-            $first_line  = fgets($handle);
-            for ($c = 0; $c < $skip; $c++)  $second_line = fgets($handle);
-            fclose($handle);
-
-            /** производим подсчет знаков из $delimiters_first/second_line в обеих строках */
-            foreach ($delimiters_first_line as $delimiter => &$count)
-                $count = count(str_getcsv($first_line, $delimiter, $limiterField));
-            foreach ($delimiters_second_line as $delimiter => &$count)
-                $count = count(str_getcsv($second_line, $delimiter, $limiterField));
-            $delimiter = array_search(max($delimiters_first_line), $delimiters_first_line);
-
-            /** сопоставляем колво знаков - совпадает, в $delimiters_final */
-            foreach ($delimiters_first_line as $key => $value)
-                if ($delimiters_first_line[$key] == $delimiters_second_line[$key])
-                    $delimiters_final[$key] = $value;
-
-            /** получаем максимальное совпадение из $delimiters_final - переназначаем разделитель с ";" */
-            if (count($delimiters_final) > 1) {
-                $delimiters_final2 = array_keys($delimiters_final, max($delimiters_final));
-                foreach ($delimiters_final2 as $value) $delimiter = $value;
-            } else
-                foreach ($delimiters_final as $key => $value) $delimiter = $key;
-        };
+        if ($delimiter === 'auto') {
+            // Используем реальные символы разделителей
+            $candidates_first  = ["\t" => 0, ";" => 0, ":" => 0];
+            $candidates_second = $candidates_first;
+            $final_candidates  = [];
+        
+            // читаем первые 2 строки (вторая с учетом $skip; если $skip = 0 — читаем следующую строку)
+            $handle = @fopen($file, 'r');
+            if ($handle === false) {
+                // не удалось открыть файл — можно оставить $delimiter как есть или задать значение по умолчанию
+                $delimiter = ';';
+            } else {
+                $first_line = fgets($handle);
+                $second_line = false;
+        
+                // Чтобы получить "вторую" линию с учётом $skip: читаем (skip+1) строк после первой
+                $toRead = max(0, (int)$skip) + 1;
+                for ($i = 0; $i < $toRead; $i++) {
+                    $line = fgets($handle);
+                    if ($line === false) break;
+                    $second_line = $line;
+                }
+                fclose($handle);
+        
+                // если чтение провалилось — присваиваем пустые строки, чтобы не ломать count()
+                $first_line  = $first_line  === false ? "" : $first_line;
+                $second_line = $second_line === false ? "" : $second_line;
+        
+                // подсчёт полей для каждого кандидата
+                foreach ($candidates_first as $key => &$count) {
+                    $count = count(str_getcsv($first_line, $key, $limiterField));
+                }
+                unset($count);
+                foreach ($candidates_second as $key => &$count) {
+                    $count = count(str_getcsv($second_line, $key, $limiterField));
+                }
+                unset($count);
+        
+                // выбираем только те разделители, у которых одинаковое количество полей в обеих строках
+                foreach ($candidates_first as $k => $v) {
+                    if ($candidates_second[$k] === $v && $v > 1) { // >1 чтобы избежать ложных совпадений на 1 поле
+                        $final_candidates[$k] = $v;
+                    }
+                }
+        
+                // логика выбора: если есть кандидаты с совпадением — берём максимальный,
+                // при нескольких равных — даём явный приоритет [';', "\t", ':']
+                if (count($final_candidates) > 0) {
+                    $max = max($final_candidates);
+                    $ties = array_keys($final_candidates, $max);
+        
+                    // приоритет между равными вариантами
+                    $priority = [';' , "\t", ':'];
+                    $detected = null;
+                    foreach ($priority as $p) {
+                        if (in_array($p, $ties, true)) {
+                            $detected = $p;
+                            break;
+                        }
+                    }
+                    // если приоритет не помог (маловероятно), берём первый
+                    if ($detected === null) $detected = $ties[0];
+        
+                    $delimiter = $detected;
+                } else {
+                    // нет совпадений — выбираем разделитель с наибольшим числом столбцов в первой строке,
+                    // при равенстве — используем тот же приоритет
+                    $maxKey = array_search(max($candidates_first), $candidates_first);
+                    // проверяем на возможное несколько равных максимумов
+                    $maxVal = max($candidates_first);
+                    $tiesAll = array_keys($candidates_first, $maxVal);
+                    if (count($tiesAll) > 1) {
+                        foreach ([';', "\t", ':'] as $p) {
+                            if (in_array($p, $tiesAll, true)) {
+                                $delimiter = $p;
+                                break;
+                            }
+                        }
+                    } else {
+                        $delimiter = $maxKey;
+                    }
+                }
+            }
+        }
 
         /** формируем массив */
         if (($handle = fopen($file, "r")) !== FALSE) {

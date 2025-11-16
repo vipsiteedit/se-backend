@@ -10,12 +10,12 @@ class Dump extends Base
 {
     public function info($id = null)
     {
-        $filePath = DOCUMENT_ROOT . "/files";
+        $filePath = DOCUMENT_ROOT . "/files/tmp";
         if (!file_exists($filePath) || !is_dir($filePath))
             mkdir($filePath);
         $fileName = HOSTNAME . '.sql.gz';
         $filePath .= "/{$fileName}";
-        $urlFile = '//' . HOSTNAME . "/files/{$fileName}";
+        $urlFile = '//' . HOSTNAME . "/files/tmp/{$fileName}";
 
         try {
             $dump = new MySQLDump();
@@ -35,7 +35,7 @@ class Dump extends Base
     {
         $this->error = "Не удаётся развернуть дамп базы данных для вашего проекта!";
         try {
-            $filePath = DOCUMENT_ROOT . "/files";
+            $filePath = DOCUMENT_ROOT . "/files/tmp";
             if (!file_exists($filePath) || !is_dir($filePath))
                 mkdir($filePath);
             $fileName = $_FILES["file"]['name'];
@@ -44,25 +44,12 @@ class Dump extends Base
                 exit;
 
             $query = null;
-
-            /*$fp = gzopen($fileName, "r");
-            while (!feof($fp)) {
-                $ch = fread($fp, 1);
-                $query .= $ch;
-            }
-            fclose($fp);*/
-
             $lines = gzfile($fileName);
             foreach ($lines as $line) {
                 $query .= $line;
             }
 
             if ($query) {
-
-                //file_put_contents($filePath . '/dump.sql', $query);
-
-                //exec('mysql  -u' . DB::$connect['DBUserName'] . ' -p' . DB::$connect['DBPassword'] . ' ' . DB::$connect['DBName'] . ' < ' . $filePath . '/dump.sql');
-
                 DB::exec($query);
             }
 

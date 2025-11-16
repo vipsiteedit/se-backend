@@ -528,7 +528,7 @@ class Order extends Base
     }
     public function export()
     {
-        $filePath = DOCUMENT_ROOT . "/files";
+        $filePath = DOCUMENT_ROOT . "/files/tmp";
         if (!file_exists($filePath) || !is_dir($filePath))
             mkdir($filePath, 0777, true);
 
@@ -560,7 +560,7 @@ class Order extends Base
         $fileName = 'export_orders'.time().'.xlsx';
 
         $filePath .= "/{$fileName}";
-        $urlFile = '//' . HOSTNAME . "/files/{$fileName}";
+        $urlFile = '//' . HOSTNAME . "/files/tmp/{$fileName}";
 
         $xls = new PHPExcel();
         $xls->setActiveSheetIndex(0);
