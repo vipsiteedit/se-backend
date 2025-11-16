@@ -798,7 +798,7 @@ class Contact extends Base
         /** поднимаем записи из БД */
         $rusCols = array(
             "regDateTime"   => "Время регистрации",
-            "username"      => "Код",
+            "login"         => "Логин",
             "lastName"      => "Фамилия",
             "firstName"     => "Имя",
             "secName"       => "Отчество",
@@ -814,7 +814,7 @@ class Contact extends Base
         //    p.sex gender, p.birth_date, p.email, p.phone, p.note');
         //$u->select('p.reg_date regDateTime, su.username, p.last_name, p.first_name, p.sec_name,
         //    p.sex gender, p.birth_date, p.email, p.phone, p.note');
-        $u->select('p.reg_date regDateTime, su.username, p.last_name, p.first_name, p.sec_name, 
+        $u->select('p.reg_date regDateTime, su.username AS login, p.last_name, p.first_name, p.sec_name, 
             p.sex gender, p.birth_date, p.email, p.phone, p.note');
         $u->innerJoin('se_user su', 'p.id = su.id');
         $u->leftJoin('se_user_group sug', 'p.id = sug.user_id');
@@ -960,7 +960,7 @@ class Contact extends Base
 
         $enCols   = array(
             "Время регистрации"     => "regDateTime",
-            "Логин"                 => "username",
+            "Логин"                 => "login",
             "Пароль"                => "password",
             "Фамилия"               => "lastName",
             "Имя"                   => "firstName",
@@ -1021,11 +1021,11 @@ class Contact extends Base
                     unset($arrayNewRow['birthDate']);
                 foreach ($arrayNewRow as $kHead => $head)
                     if ($head == '')  unset($arrayNewRow[$kHead]);
-                if (empty($arrayNewRow["username"]) && !empty($arrayNewRow["email"]))  $arrayNewRow["username"] = $arrayNewRow["email"];
+                if (empty($arrayNewRow["login"]) && !empty($arrayNewRow["email"]))  $arrayNewRow["login"] = $arrayNewRow["email"];
                 if (!empty($arrayNewRow["password"]))  $arrayNewRow["password"] = md5($arrayNewRow["password"]);
 
                 $newArray[]                                     = $arrayNewRow;
-                if (!empty($arrayNewRow["username"]))  $arrayUserName[] = '"' . $arrayNewRow["username"] . '"';
+                if (!empty($arrayNewRow["login"]))  $arrayUserName[] = '"' . $arrayNewRow["login"] . '"';
                 unset($contacts[$k]);
             }
         }
