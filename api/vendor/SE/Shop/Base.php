@@ -594,7 +594,7 @@ class Base extends CustomBase
         $countFiles = count($_FILES);
         $ups = 0;
         $items = [];
-        if ($tempFile == true) $dir = DOCUMENT_ROOT . "/files/tempfiles";
+        if ($tempFile == true) $dir = DOCUMENT_ROOT . "/files/tmp";
         else $dir = DOCUMENT_ROOT . "/files";
         $url = !empty($_POST["url"]) ? $_POST["url"] : null;
         if (!file_exists($dir) || !is_dir($dir))
