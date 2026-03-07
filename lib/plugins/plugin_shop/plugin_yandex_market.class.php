@@ -351,6 +351,10 @@ class yandex_market
 						$offer = $offers->addChild('offer');
 						$offer->addAttribute('id', $product['id'] . str_replace(',', '', $mod['id']));
 						$offer->addAttribute('available', $available);
+						$modif_name = '';
+						if (!empty($mod['features'])) {
+						    $modif_name .= ' ' . join('-', $mod['features']);
+						}
 
 						$offer->addAttribute('group_id', $product['id']);
 
@@ -392,9 +396,9 @@ class yandex_market
 							$offer->addAttribute('type', 'vendor.model');
 							if (!empty($product['type_prefix']))
 								$offer->addChild('typePrefix', $product['type_prefix']);
-							$offer->addChild('model', $product['model']);
+							$offer->addChild('model', $product['model'] . $modif_name);
 						} else {
-							$offer->addChild('name', $product['name']);
+							$offer->addChild('name', $product['name'] . $modif_name);
 						}
 
 						if (!empty($product['brand']))
