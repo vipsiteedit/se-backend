@@ -165,7 +165,6 @@ function SE_PARTSELECTOR($razdel, $count, $limit, $item, $sel)
         }
     }
 
-    $item = 1;
     $sel = '';
     if ($__data->req->razdel == $razdel) {
         $_SESSION['SE'][$_page . '_' . $razdel . '_item'] = $item = getRequest('item');

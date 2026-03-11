@@ -360,7 +360,10 @@ class seData
             if (is_numeric($uname) && empty($_GET[$uname]) && strpos($uri, '?') !== false) {
                 list($url,) = explode('?', $uri);
                 // echo $url[0];
-                $this->go301($url);
+                if (!isRequest('item', 1)) {
+                    $this->go301($url);
+                }
+                return;
             }
             foreach ($SE_REQUEST_NAME as $qname => $name) {
                 if (strval($uname) == strval($qname) || !isset($arr) || isset($_GET[$uname]) || $isShow || $qname == $uri || isset($urllist[$uname])) {
