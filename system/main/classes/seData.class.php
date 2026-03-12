@@ -552,9 +552,183 @@ class seData
             $this->go301($_SERVER['REQUEST_URI'] . '/');
         }
 
+        $this->filterRequestByRules();
+
         if (strpos($_SERVER['REQUEST_URI'], seMultiDir() . '/' . $this->pagename . '/') === 0) {
             $alias = explode('?', substr($_SERVER['REQUEST_URI'], strlen(seMultiDir() . '/' . $this->pagename . '/')), 2);
         }
+    }
+
+    private function filterRequestByRules()
+    {
+        if (!empty($_POST)) {
+            return;
+        }
+
+        $rules = $this->getUrlFilterRules();
+        $relative_path = $this->getRelativeRequestPath();
+
+        // Служебные каталоги движка не должны быть страницами сайта.
+        foreach ($rules['forbidden_path_prefixes'] as $prefix) {
+            $prefix = '/' . trim($prefix, '/');
+            if ($relative_path == $prefix || strpos($relative_path, $prefix . '/') === 0) {
+                header('HTTP/1.1 403 Forbidden');
+                exit;
+            }
+        }
+
+        // Фильтрация мусорных "хвостов" в URL страницы (бот-трафик, мусор из выдачи и т.п.).
+        $segments = explode('/', trim($relative_path, '/'));
+        if (
+            $this->pagename
+            && count($segments) == 2
+            && isset($segments[0])
+            && isset($segments[1])
+            && $segments[0] == $this->pagename
+            && $this->isForbiddenAlias($segments[1], $rules['forbidden_alias_patterns'])
+        ) {
+            $this->go404();
+        }
+
+        // Канонизация query-параметров.
+        if (strpos($_SERVER['REQUEST_URI'], '?') !== false) {
+            list($url_path, $query_string) = explode('?', $_SERVER['REQUEST_URI'], 2);
+
+            // /path/? -> /path/
+            if ($query_string === '') {
+                $this->go301($url_path);
+            }
+
+            parse_str($query_string, $query_params);
+            $clean_query = $query_params;
+
+            // Первая страница пагинации не должна иметь отдельный URL.
+            if (isset($clean_query['item']) && !is_array($clean_query['item']) && intval($clean_query['item']) <= 1) {
+                unset($clean_query['item']);
+            }
+
+            if (isset($clean_query['sheet']) && !is_array($clean_query['sheet']) && intval($clean_query['sheet']) <= 1) {
+                unset($clean_query['sheet']);
+            }
+
+            foreach ($clean_query as $name => $value) {
+                $param = strtolower($name);
+                $drop = false;
+
+                foreach ($rules['query_drop_prefixes'] as $prefix) {
+                    if (strpos($param, $prefix) === 0) {
+                        $drop = true;
+                        break;
+                    }
+                }
+
+                if (!$drop && in_array($param, $rules['query_drop_keys'], true)) {
+                    $drop = true;
+                }
+
+                if ($drop) {
+                    unset($clean_query[$name]);
+                }
+            }
+
+            if ($clean_query != $query_params) {
+                $new_query = http_build_query($clean_query);
+                $this->go301($url_path . ($new_query ? '?' . $new_query : ''));
+            }
+        }
+    }
+
+    private function getRelativeRequestPath()
+    {
+        $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        if ($path === false || $path === null || $path === '') {
+            $path = '/';
+        }
+        $path = rawurldecode($path);
+
+        $multi_dir = rtrim(seMultiDir(), '/');
+        if (!empty($multi_dir)) {
+            if ($path === $multi_dir) {
+                return '/';
+            }
+            if (strpos($path, $multi_dir . '/') === 0) {
+                $path = substr($path, strlen($multi_dir));
+            }
+        }
+        return $path;
+    }
+
+    private function isForbiddenAlias($alias, $patterns)
+    {
+        foreach ($patterns as $pattern) {
+            if (preg_match($pattern, $alias)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private function getUrlFilterRules()
+    {
+        $rules = array(
+            // Относительные пути (уже без seMultiDir()).
+            'forbidden_path_prefixes' => array('/lib'),
+            // Правила блокировки мусорных хвостов /page/<alias>/
+            'forbidden_alias_patterns' => array(
+                '/^tel:/i',
+                '/^noclick_$/i',
+                '/^\d{7,}$/',
+                '/[\[\]&]/',
+                '/[^a-z0-9\-_]/i',
+            ),
+            // Префиксы и ключи query-параметров, которые нужно удалять 301-редиректом.
+            'query_drop_prefixes' => array('utm_'),
+            'query_drop_keys' => array(
+                'gclid',
+                'fbclid',
+                'yclid',
+                'msclkid',
+                'wbraid',
+                'gbraid',
+                'search_source',
+                'search_domain',
+                'disableglobalinfocollect',
+                'zarsrc',
+                'ssp',
+                'darkschemeovr',
+                'setlang',
+                'safesearch',
+                'spm',
+                '_ym_debug',
+                'hl'
+            )
+        );
+
+        // Персональные правила сайта:
+        // основной файл - projects/<site>/urlfilter.json
+        // fallback для обратной совместимости - projects/<site>/cache/urlfilter.json
+        $config_files = array(
+            SE_SAFE . 'projects/' . SE_DIR . 'urlfilter.json',
+            SE_SAFE . 'projects/' . SE_DIR . 'cache/urlfilter.json'
+        );
+
+        foreach ($config_files as $config_file) {
+            if (!file_exists($config_file)) {
+                continue;
+            }
+            $custom_rules = json_decode(file_get_contents($config_file), true);
+            if (!is_array($custom_rules)) {
+                continue;
+            }
+            foreach ($rules as $name => $value) {
+                if (!empty($custom_rules[$name]) && is_array($custom_rules[$name])) {
+                    $rules[$name] = array_values(array_unique(array_merge($rules[$name], $custom_rules[$name])));
+                }
+            }
+            break;
+        }
+
+        return $rules;
     }
 
 

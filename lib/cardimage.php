@@ -1,16 +1,27 @@
 <?php
 error_reporting(0);
 
+header('X-Robots-Tag: noindex, nofollow, noimageindex');
+
 $pin = "";
 for ($i = 1; $i <= 5; $i++) $pin .= mt_rand(0, 9);
 
 
 $time = time();
-if (!isset($_GET['session']))
+if (empty($_GET['session'])) {
+  header('HTTP/1.1 404 Not Found');
   exit;
-$hash = htmlspecialchars($_GET['hash'], ENT_QUOTES);
+}
+
+$sid_get = htmlspecialchars($_GET['session'], ENT_QUOTES);
+if (!preg_match('/^[a-zA-Z0-9\-_]+$/', $sid_get)) {
+  header('HTTP/1.1 404 Not Found');
+  exit;
+}
+
+$hash = isset($_GET['hash']) ? htmlspecialchars($_GET['hash'], ENT_QUOTES) : '';
 $hash = ($hash) ? $hash : '';
-$sid = htmlspecialchars($_GET['session'], ENT_QUOTES) . $hash;
+$sid = $sid_get . $hash;
 $pin_dir  = $_SERVER["DOCUMENT_ROOT"] . '/system/pin/';
 $font_dir = $_SERVER["DOCUMENT_ROOT"] . '/lib/fonts/';
 
