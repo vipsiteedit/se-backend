@@ -10,7 +10,7 @@ declare(strict_types=1);
  * @return array|null Возвращает данные о валюте(ах) в виде массива или null при неудаче.
  * @throws RuntimeException Если не удалось получить данные или выполнить файловые операции.
  */
-function getCurrencyValues(string $code = 'USD', bool $single = true): ?array
+function getCurrencyValues(string $code = 'USD', bool $single = true)
 {
     // Проверка константы SE_ROOT
     if (!defined('SE_ROOT')) {
